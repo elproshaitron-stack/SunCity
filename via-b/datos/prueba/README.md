@@ -8,6 +8,9 @@ están al oeste de la ciudad; su idoneidad no ha sido evaluada.
 `ciclo_diario.csv` contiene medias 2003–2019 inventadas por hora y producto.
 Terra tiene MOD11 y MOD21; Aqua solo MOD11. Los signos diurnos de Yale
 también son inventados y sirven únicamente para probar el marcador.
+`nivel.csv` contiene la media primaria de MOD11 y una transformación sintética
+para MOD21. `ecostress_zoom.json` es una rejilla 40 × 40 inventada del sector
+prioritario S01, con un conteo ficticio de 18 escenas.
 La serie representa diferencias nocturnas sintéticas sector menos desierto,
 con etiqueta MOD11 Terra para probar la interfaz, sin observaciones satelitales.
 El cálculo primario usa 2001–2019; 2020–2025 solo se dibuja punteado.

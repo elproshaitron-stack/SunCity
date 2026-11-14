@@ -1,11 +1,11 @@
 import {dibujarSerieAnual} from '../compartido/serie-anual.js';
 import {ESQUEMA} from './datos/esquema.js';
-import {RUTA_DATOS} from './config.js';
+import {RUTA_DATOS, datosDePrueba, pasosAqua, sectorPrioritario} from './config.js';
 import {semaforo} from './semaforo.js';
 import {dibujarVariantes} from './variantes.js';
 import {nombreSector, guardarNombre, nombresPersonalizados} from './nombres.js';
 import {dibujarCicloDiario} from './ciclo-diario.js';
-import {pasosAqua} from './config.js';
+import {dibujarZoom} from './zoom-ecostress.js';
 
 const $ = id => document.getElementById(id);
 const colores = {rojo:'#bd4b3e', azul:'#347baf', gris:'#8b9697'};
@@ -46,17 +46,18 @@ async function cargar(nombre, json = false) {
 
 async function iniciar() {
   if (!window.L) throw new Error('No se pudo cargar Leaflet. Revisa la conexión y vuelve a cargar.');
-  const [geojson, csvSerie, csvResultados, csvCiclo, nombres] = await Promise.all([cargar('sectores.geojson', true), cargar('serie.csv'), cargar('resultados.csv'), cargar('ciclo_diario.csv'), cargar('nombres.json', true).catch(() => null)]);
+  const [geojson, csvSerie, csvResultados, csvCiclo, csvNivel, zoom, nombres] = await Promise.all([cargar('sectores.geojson', true), cargar('serie.csv'), cargar('resultados.csv'), cargar('ciclo_diario.csv'), cargar('nivel.csv'), sectorPrioritario ? cargar('ecostress_zoom.json', true).catch(() => null) : Promise.resolve(null), cargar('nombres.json', true).catch(() => null)]);
   const configNombres = nombres && Array.isArray(nombres.centro) && Number.isFinite(nombres.radio_centro_km) && typeof nombres.ciudad === 'string'
     ? nombres : {ciudad:'Hermosillo', centro:[29.0729, -110.9559], radio_centro_km:2, sectores:{}};
   const nombreDe = f => nombreSector(f, geojson.features, configNombres);
   const series = leerCSV(csvSerie, ESQUEMA.serie), resultados = leerCSV(csvResultados, ESQUEMA.resultados);
   const ciclo = leerCSV(csvCiclo, ESQUEMA.ciclo_diario);
+  const niveles = leerCSV(csvNivel, ESQUEMA.nivel);
   if (ciclo.some(f => !['terra_1030','aqua_1330','terra_2230','aqua_0130'].includes(f.paso) || !['MOD11','MOD21'].includes(f.producto) || !['','+','-'].includes(f.yale_signo))) throw new Error('Hay valores desconocidos en ciclo_diario.csv.');
   if (resultados.some(r => !ESQUEMA.variantes.includes(r.variante))) throw new Error('Hay variantes desconocidas en los datos.');
   const primarios = new Map(resultados.filter(r => r.variante === ESQUEMA.variantes[0]).map(r => [r.sector, r]));
   const sectores = geojson.features.filter(f => f.properties.tipo === 'sector');
-  for (const f of sectores) if (!primarios.has(f.properties.id) || !series.some(s => s.sector === f.properties.id)) throw new Error(`Faltan datos del sector ${f.properties.id}.`);
+  for (const f of sectores) if (!primarios.has(f.properties.id)) throw new Error(`Falta el resultado primario del sector ${f.properties.id}.`);
   const mapa = L.map('mapa', {zoomControl:false});
   L.control.zoom({position:'topleft', zoomInTitle:'Acercar', zoomOutTitle:'Alejar'}).addTo(mapa);
   const mosaicos = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(mapa);
@@ -87,7 +88,8 @@ async function iniciar() {
     sectores.forEach(f => {
       const nombre = nombreDe(f).nombre;
       $('sector').querySelector(`option[value="${f.properties.id}"]`).textContent = nombre;
-      capas.get(f.properties.id).setTooltipContent(nombre);
+      const etiqueta = document.createElement('span'); etiqueta.textContent = nombre;
+      capas.get(f.properties.id).setTooltipContent(etiqueta);
     });
     if (seleccionado) {
       const {nombre, origen} = nombreDe(sectores.find(f => f.properties.id === seleccionado));
@@ -123,7 +125,7 @@ async function iniciar() {
   function abrir(id) {
     const f = sectores.find(f => f.properties.id === id), r = primarios.get(id);
     const datos = series.filter(s => s.sector === id).sort((a,b) => a.anio - b.anio);
-    const principales = datos.filter(s => s.anio <= 2019), color = semaforo(r);
+    const color = semaforo(r);
     seleccionado = id; $('sector').value = id; editar(false); refrescarNombres();
     $('expediente').hidden = false; $('expediente').scrollTop = 0; geometria.setStyle(estilo);
     dibujarSerieAnual($('serie-anual'), {anios:datos.map(d => d.anio), valores:datos.map(d => d.valor), resultado:r, unidad:'°C', aniosPunteados:datos.filter(d => d.anio > 2019).map(d => d.anio)});
@@ -131,23 +133,50 @@ async function iniciar() {
     dibujarCicloDiario($('ciclo-diario'), ciclo.filter(fila => fila.sector === id), pasosAqua);
     const lectura = $('lectura'); lectura.replaceChildren();
     const badge = document.createElement('span'); badge.className = `estado-sector ${color}`; badge.textContent = `Semáforo provisional: ${color}`;
-    const dl = document.createElement('dl'), nivel = principales.map(d => d.valor);
+    const dl = document.createElement('dl'), nivel = niveles.filter(d => d.sector === id);
+    const medias = nivel.filter(d => Number.isFinite(d.nivel_c));
+    const valoresNivel = medias.map(d => d.nivel_c);
+    const textoNivel = medias.length === 0 ? 'Sin datos' : medias.length === 1
+      ? `${medias[0].nivel_c.toFixed(1)} °C (${medias[0].producto})`
+      : `entre ${Math.min(...valoresNivel).toFixed(1)} y ${Math.max(...valoresNivel).toFixed(1)} °C`;
     for (const [titulo, texto] of [
-      ['Nivel de prueba', `${Math.min(...nivel).toFixed(2)} a ${Math.max(...nivel).toFixed(2)} °C`],
-      ['Población inventada', new Intl.NumberFormat('es-MX').format(f.properties.poblacion)],
+      ['Nivel medio 2001–2019 (Modelo F)', textoNivel],
+      [datosDePrueba ? 'Población inventada' : 'Población estimada (GPW 2020)',
+        Number.isFinite(f.properties.poblacion) ? new Intl.NumberFormat('es-MX').format(f.properties.poblacion) : 'Sin datos'],
       ['p ajustado por FDR', Number.isFinite(r.p_fdr) ? r.p_fdr.toPrecision(3) : '—']
     ]) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = titulo; dd.textContent = texto; dl.append(dt,dd); }
-    const descripcion = document.createElement('p'); descripcion.textContent = 'Nivel provisional: mínimo y máximo anual de la diferencia en 2001–2019; no es un intervalo de confianza.';
+    const descripcion = document.createElement('p');
+    descripcion.textContent = medias.length === 2 ? 'Rango entre medias MOD11 y MOD21.' : '';
     const veredicto = document.createElement('p');
-    veredicto.textContent = color === 'gris' ? 'En estos datos inventados no hay evidencia suficiente de un cambio con el criterio provisional.' : `En estos datos inventados, la diferencia nocturna entre sector y desierto ${color === 'rojo' ? 'aumenta' : 'disminuye'} de forma significativa con el criterio provisional.`;
+    veredicto.textContent = !Number.isFinite(r.p_fdr) ? 'No se pudo evaluar la significancia.' : color === 'gris'
+      ? 'No hay evidencia suficiente de un cambio con el criterio provisional.'
+      : `La diferencia nocturna entre sector y desierto ${color === 'rojo' ? 'aumenta' : 'disminuye'} de forma significativa con el criterio provisional.`;
     const pendiente = document.createElement('p'); pendiente.textContent = Number.isFinite(r.pendiente_c_decada)
       ? `${r.pendiente_c_decada.toFixed(2)} °C por década (IC 95 %: ${r.ic95_inf.toFixed(2)} a ${r.ic95_sup.toFixed(2)}).`
       : `Sin cálculo: solo ${r.n_anios} años válidos, menos que el mínimo.`;
     lectura.append(badge, dl, descripcion, veredicto, pendiente);
+    if (Number.isFinite(r.p_mk) && !Number.isFinite(r.p_hamed_rao)) {
+      const nota = document.createElement('p');
+      nota.textContent = 'Hamed–Rao no se pudo calcular. Se usó Mann–Kendall para el FDR.';
+      lectura.append(nota);
+    }
     if (color === 'gris') { const nota = document.createElement('p'); nota.className = 'nota'; nota.textContent = 'gris no significa sin tendencia: 19 años pueden no alcanzar para pendientes chicas'; lectura.append(nota); }
+    const zoomContenedor = $('zoom-ecostress'); zoomContenedor.replaceChildren();
+    if (id === sectorPrioritario && zoom?.sector_id === id) dibujarZoom(zoomContenedor, zoom, datosDePrueba);
+    else zoomContenedor.textContent = id === sectorPrioritario
+      ? 'El sector prioritario todavía no tiene datos de ECOSTRESS.'
+      : 'El zoom a 70 m solo se muestra en el sector prioritario.';
     $('titulo-sector').focus({preventScroll:true});
     requestAnimationFrame(() => { mapa.invalidateSize(); mapa.panTo(capas.get(id).getBounds().getCenter()); });
   }
-  $('estado').textContent = `${sectores.length} sectores de prueba · Toca un polígono o usa el selector.`;
+  $('estado').textContent = `${sectores.length} sectores${datosDePrueba ? ' de prueba' : ''} · Toca un polígono o usa el selector.`;
+  const idEnlace = new URLSearchParams(location.search).get('sector');
+  if (sectores.some(f => f.properties.id === idEnlace)) abrir(idEnlace);
+}
+if (!datosDePrueba) {
+  $('aviso-prueba').hidden = true;
+  $('serie-descripcion').textContent = 'Diferencia de temperatura superficial nocturna entre sector y desierto. MOD11 Terra.';
+  $('expediente-etiqueta').textContent = 'EXPEDIENTE';
+  $('mapa-descripcion').textContent = 'Semáforo provisional con ajuste FDR.';
 }
 iniciar().catch(error => { $('estado').textContent = `No se pudo abrir el explorador: ${error.message}`; });

@@ -56,6 +56,7 @@ export function dibujarSerieAnual(contenedor, {anios, valores, resultado, unidad
   el('polygon', {points:[...limites.map(d => `${x(d.anio)},${y(d.alto)}`), ...[...limites].reverse().map(d => `${x(d.anio)},${y(d.bajo)}`)].join(' '), fill:'#197268', opacity:'.18'});
   for (let i = 1; i < datos.length; i++) {
     const a = datos[i - 1], b = datos[i];
+    if (b.anio !== a.anio + 1) continue;
     el('line', {x1:x(a.anio), y1:y(a.valor), x2:x(b.anio), y2:y(b.valor), stroke:'#667872', 'stroke-width':1.5, 'stroke-dasharray':punteados.has(a.anio) || punteados.has(b.anio) ? '4 4' : 'none'});
   }
   el('polyline', {points:extremos.map(anio => coords({anio, valor:estimar(anio, resultado.pendiente_c_decada)})).join(' '), fill:'none', stroke:'#12665c', 'stroke-width':3});

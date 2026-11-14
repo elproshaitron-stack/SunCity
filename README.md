@@ -2,7 +2,7 @@
 
 Herramienta para responder **qué variable climática cambia en una región, cuánto por década y si el cambio es significativo**. Proyecto del equipo para NASA Space Apps Challenge 2026, sede Hermosillo (14 y 15 de noviembre de 2026).
 
-> **Estado al 14 de noviembre de 2026:** repositorio recién iniciado. Este repositorio todavía no contiene resultados sobre Hermosillo. Los únicos números locales citados en la documentación vienen de López González y otros (2021).
+> **Estado al 14 de noviembre de 2026:** la Vía A consulta series regionales de NASA POWER. La Vía B incluye un expediente de demostración con datos sintéticos y un flujo de procesamiento probado con exportaciones simuladas. Siguen pendientes los resultados observados por sector.
 
 ## Qué se entrega
 
@@ -12,7 +12,7 @@ Una sola herramienta con dos niveles que comparten el mismo cálculo de tendenci
 |---|---|---|
 | Desarrollador | Navarrete | Mario |
 | Pregunta | ¿Qué variable cambia en mi región, cuánto, y es significativo? | ¿Qué sectores se calientan de noche más rápido que su desierto? |
-| Datos | NASA POWER (MERRA-2), 1981 a hoy, sin clave | MODIS a 1 km, 2001-2019; ECOSTRESS a 70 m |
+| Datos | NASA POWER (MERRA-2), 1981–2025, sin clave | MODIS a 1 km, 2001–2019; ECOSTRESS a 70 m |
 | Escala | Celda de reanálisis: no distingue una ciudad | Sector de 9 km² o más |
 | Cálculo | Theil-Sen + Mann-Kendall en el navegador | La misma función en Python, con variantes y FDR |
 

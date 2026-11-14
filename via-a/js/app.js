@@ -118,11 +118,16 @@
     estado.lugar = lugar;
     sincronizarControles();
     moverMarcador(centrar);
+    var mio = ++pedido;
     var clave = lugar.lat.toFixed(2) + "," + lugar.lon.toFixed(2);
     if (cache[clave]) { estado.datos = cache[clave].json; estado.origen = cache[clave].origen; calcular(); return; }
 
-    var mio = ++pedido;
     estado.datos = null;
+    estado.serie = null;
+    estado.res = null;
+    $("tarjeta").hidden = true;
+    $("escala").hidden = true;
+    guardarEnURL();
     mostrarEstado("Descargando 45 años de NASA POWER para " + nombreLugar(lugar) + "…", "cargando");
     Power.cargar(lugar.lat, lugar.lon, lugar.ciudad && lugar.ciudad.respaldo)
       .then(function (r) {
@@ -236,14 +241,15 @@
   }
 
   function leerURL() {
-    var q = {};
-    location.hash.replace(/^#/, "").split("&").forEach(function (par) {
-      var kv = par.split("="); if (kv[0]) q[kv[0]] = decodeURIComponent(kv[1] || "");
-    });
-    if (q["var"] && Power.VARIABLES[q["var"]]) estado.variable = q["var"];
-    var m = parseInt(q.mes, 10); if (m >= 0 && m <= 12) estado.mes = m;
-    var lat = parseFloat(q.lat), lon = parseFloat(q.lon);
-    return isNaN(lat) || isNaN(lon) ? null : { lat: lat, lon: lon };
+    var q = new URLSearchParams(location.hash.slice(1));
+    var variable = q.get("var");
+    if (Object.prototype.hasOwnProperty.call(Power.VARIABLES, variable)) estado.variable = variable;
+    var m = Number(q.get("mes")); if (Number.isInteger(m) && m >= 0 && m <= 12) estado.mes = m;
+    var lat = q.get("lat"), lon = q.get("lon");
+    if (!lat || !lat.trim() || !lon || !lon.trim()) return null;
+    lat = Number(lat); lon = Number(lon);
+    return Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180
+      ? { lat: lat, lon: lon } : null;
   }
 
   function descargarCSV() {

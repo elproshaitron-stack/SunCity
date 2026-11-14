@@ -28,7 +28,7 @@ flowchart LR
    python via-b/procesamiento/procesar.py
    ```
    Lee `resumen.json`: trae los avisos (años sin cobertura, sectores sin cálculo, referencias con vegetación).
-6. **Ver en la interfaz:** en `via-b/config.js` cambiar `RUTA_DATOS` a `'datos/reales/'`, correr `python servir.py` y abrir <http://localhost:8000/via-b/>.
+6. **Validar y ver en la interfaz:** correr `python via-b/datos/validar.py via-b/datos/reales/`. Después, en `via-b/config.js` cambiar `RUTA_DATOS` a `'datos/reales/'`, correr `python servir.py` y abrir <http://localhost:8000/via-b/>.
 
 ## Qué hace cada archivo
 
@@ -65,6 +65,7 @@ Colecciones, bandas y bits verificados en el catálogo de Earth Engine el 14 nov
 | `resultados.csv` | Pendiente, intervalo, p de Mann-Kendall y Hamed-Rao, p y p FDR por sector y variante | B, C, D, E |
 | `ciclo_diario.csv` | Media 2003-2019 de sector − RA en `terra_1030`, `aqua_1330`, `terra_2230` y `aqua_0130`, con MOD11 y MOD21, y el signo diurno de Yale (esquema de `datos/esquema.js`) | J |
 | `sectores.geojson` | Polígonos con población 2020, NDVI, área y nivel (MOD11 y MOD21) | F |
+| `nivel.csv` | Diferencia nocturna media 2001–2019 por sector y producto disponible | F |
 | `yale.csv` | Diferencia nocturna propia junto a Yale día y noche, 2003-2018 | H |
 | `aire.csv` | LST nocturna media de los sectores junto a `T2M_MIN` de POWER, y correlación en `resumen.json` | G |
 

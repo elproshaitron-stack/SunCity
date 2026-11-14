@@ -4,6 +4,7 @@ Entrada (carpeta --export, por defecto via-b/datos/reales/export/):
   suncity_lst.csv, suncity_yale.csv, suncity_extra.csv   (de exportar_ee.js)
 Salida (carpeta --salida, por defecto via-b/datos/reales/):
   sectores.geojson   polígonos con población 2020, NDVI y nivel (Modelo F)
+  nivel.csv          medias nocturnas por sector y producto (Modelo F)
   serie.csv          diferencia nocturna sector − referencia A, 2001-2025 (esquema de esquema.js)
   resultados.csv     tendencia por sector y variante, con FDR por variante (Modelos B-E)
   ciclo_diario.csv   ciclo diario 2003-2019, cuatro pasos y dos algoritmos, signo de Yale (Modelo J)
@@ -185,6 +186,8 @@ def main():
     extra = {r["poligono"]: r for r in leer_csv(a.export / "suncity_extra.csv")}
     a0, a1 = prim["anios"]
     anios_prim = list(range(a0, a1 + 1))
+    esquema_nivel = ESQUEMA["nivel"]
+    filas_nivel = []
     for f in geo["features"]:
         pr = f["properties"]
         e = extra.get(pr["id"], {})
@@ -199,6 +202,10 @@ def main():
                 d = delta(lst, pr["id"], P.REFERENCIA_PRINCIPAL, prod, anios_prim)
                 d = d[~np.isnan(d)]
                 niveles[alg] = round(float(d.mean()), 3) if len(d) else None
+                if niveles[alg] is not None:
+                    filas_nivel.append({esquema_nivel["sector"]: pr["id"],
+                                        esquema_nivel["producto"]: alg,
+                                        esquema_nivel["nivel_c"]: niveles[alg]})
             vals = [v for v in niveles.values() if v is not None]
             pr["nivel_mod11_c"], pr["nivel_mod21_c"] = niveles["MOD11"], niveles["MOD21"]
             pr["nivel_min_c"], pr["nivel_max_c"] = (min(vals), max(vals)) if vals else (None, None)
@@ -207,6 +214,7 @@ def main():
         elif math.isfinite(nd) and nd > 0.2:
             avisos.append(f"{pr['id']}: NDVI {nd:.2f}; una referencia de desierto debería estar por debajo de 0.2")
     (a.salida / "sectores.geojson").write_text(json.dumps(geo, ensure_ascii=False), encoding="utf-8")
+    escribir_csv(a.salida / "nivel.csv", list(esquema_nivel.values()), filas_nivel)
 
     # ---- yale.csv: Modelo H (sector − nada: Yale ya es intensidad de isla de calor) ----
     filas_yale = []
