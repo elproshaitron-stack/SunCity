@@ -5,6 +5,9 @@ Los seis sectores miden aproximadamente 3.1 × 3.1 km. Las referencias
 están al oeste de la ciudad; su idoneidad no ha sido evaluada.
 
 `generar_prueba.py` usa semilla 2027 y el esquema de `../esquema.js`.
+`ciclo_diario.csv` contiene medias 2003–2019 inventadas por hora y producto.
+Terra tiene MOD11 y MOD21; Aqua solo MOD11. Los signos diurnos de Yale
+también son inventados y sirven únicamente para probar el marcador.
 La serie representa diferencias nocturnas sintéticas sector menos desierto,
 con etiqueta MOD11 Terra para probar la interfaz, sin observaciones satelitales.
 El cálculo primario usa 2001–2019; 2020–2025 solo se dibuja punteado.

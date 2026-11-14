@@ -24,12 +24,20 @@ def escribir(nombre, esquema, filas):
 def generar():
     rng = np.random.default_rng(2027)
     anios = np.arange(2001, 2026)
-    series, resultados, datos = [], [], {}
+    series, resultados, datos, ciclo = [], [], {}, []
     for i, (pendiente, ruido) in enumerate([(0.09, 0.12), (0, 0.55), (-0.08, 0.12), (0.035, 0.3), (0.005, 0.5), (0.065, 0.18)], 1):
         sector = f'S{i:02d}'
         valores = np.round(1 + i * 0.12 + pendiente * (anios - 2001) + rng.normal(0, ruido, len(anios)), 6)
         datos[sector] = valores
         series.extend(dict(sector=sector, anio=int(a), valor=float(v)) for a, v in zip(anios, valores))
+        # Medias 2003-2019 inventadas; cada fila representa un producto y hora.
+        centros = [-0.35 + i * 0.055, -0.18 + i * 0.04, 1.10 + i * 0.11, 0.85 + i * 0.095]
+        for paso, centro in zip(('terra_1030', 'aqua_1330', 'terra_2230', 'aqua_0130'), centros):
+            mod11 = round(centro + float(rng.normal(0, 0.035)), 3)
+            signo = '+' if mod11 > 0 else '-' if paso in ('terra_1030', 'aqua_1330') else ''
+            ciclo.append(dict(sector=sector, paso=paso, producto='MOD11', valor=mod11, yale_signo=signo if paso in ('terra_1030', 'aqua_1330') else ''))
+            if paso.startswith('terra'):
+                ciclo.append(dict(sector=sector, paso=paso, producto='MOD21', valor=round(mod11 + float(rng.uniform(-0.18, 0.22)), 3), yale_signo=signo if paso == 'terra_1030' else ''))
     for variante in ESQUEMA['variantes']:
         grupo = []
         for sector, valores in datos.items():
@@ -56,7 +64,8 @@ def generar():
     assert any(r['p_fdr'] >= .05 for r in primarios)
     escribir('serie.csv', ESQUEMA['serie'], series)
     escribir('resultados.csv', ESQUEMA['resultados'], resultados)
-    print(f'Generados {len(series)} registros anuales y {len(resultados)} resultados inventados.')
+    escribir('ciclo_diario.csv', ESQUEMA['ciclo_diario'], ciclo)
+    print(f'Generados {len(series)} registros anuales, {len(resultados)} resultados y {len(ciclo)} filas de ciclo diario inventados.')
 
 
 if __name__ == '__main__':
