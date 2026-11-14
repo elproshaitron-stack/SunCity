@@ -1,4 +1,4 @@
-# Vía B · Explorador de Hermosillo, fase 1
+# Vía B · Explorador de Hermosillo, fase 2
 
 Datos inventados. No son resultados. HTML, CSS y módulos ES sin build.
 
@@ -32,7 +32,10 @@ lo cierra. En celular aparece como hoja inferior y en escritorio como panel late
 - `semaforo.js`: regla provisional de color con p ajustado por FDR.
 - `datos/prueba/sectores.geojson`: seis polígonos urbanos y dos referencias esquemáticas.
 - `datos/prueba/generar_prueba.py`: semilla fija, cálculo compartido y FDR entre
-  sectores para cada variante; genera `serie.csv` y `resultados.csv`.
+  sectores para cada variante; genera `serie.csv`, `resultados.csv` y `ciclo_diario.csv`.
+- `ciclo-diario.js`: cuatro barras SVG y cotejo del signo diurno de Yale.
+- `config.js`: `pasosAqua` conserva `solo_mod11` mientras D04 está abierta;
+  `rango` usa MOD21 de Aqua si aparece en el CSV.
 - `datos/prueba/README.md`: recetas exactas de las variantes inventadas.
 - `nombres.js`: nombre único para mapa, selector y expediente. Prioridad:
   personalizado en `localStorage`, oficial en `datos/prueba/nombres.json`,
@@ -57,6 +60,7 @@ valores). No es una banda de predicción. Incluye línea horizontal en cero.
 
 Esquema, semáforo, mínimo de años, geometrías, población y nivel (rango mínimo–máximo
 de la serie primaria) esperan las reglas y datos de v4 / `docs/DECISIONES.md`.
-El ciclo diario, la curva de variantes y el zoom ECOSTRESS son secciones pendientes.
+La curva de variantes y el zoom ECOSTRESS son secciones pendientes.
+El ciclo diario usa medias y signos inventados; D04 sobre Aqua sigue abierta.
 Solo `con_deriva` incorpora 2020–2025; esos años quedan fuera del cálculo primario.
 Las recetas sintéticas no establecen decisiones para los datos reales.

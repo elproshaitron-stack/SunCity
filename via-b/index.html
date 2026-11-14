@@ -12,7 +12,7 @@
 </head>
 <body>
   <div class="banner">Datos de prueba inventados</div>
-  <header><a class="marca" href="./">SunCity<span>Hermosillo / Vía B</span></a><span class="fase">Fase 1 · Explorador</span></header>
+  <header><a class="marca" href="./">SunCity<span>Hermosillo / Vía B</span></a><span class="fase">Fase 2 · Explorador</span></header>
   <main>
     <div class="introduccion"><p class="ceja">LECTURA POR SECTOR</p><h1>La noche, sector por sector</h1><p>Diferencia de temperatura superficial nocturna entre sector y desierto. MOD11 Terra · Serie sintética.</p></div>
     <div class="herramientas"><label for="sector">Explorar un sector</label><select id="sector" disabled><option value="">Selecciona un sector</option></select><button id="exportar-nombres" type="button" disabled>Exportar nombres</button><p id="estado" role="status">Cargando datos de prueba…</p></div>
@@ -24,7 +24,7 @@
       </section>
       <aside id="expediente" aria-labelledby="titulo-sector" hidden>
         <div class="cabecera-panel"><div class="grupo-nombre"><p class="ceja">EXPEDIENTE DE PRUEBA</p><div class="titulo-fila"><h2 id="titulo-sector" tabindex="-1"></h2><button id="editar-nombre" class="icono" type="button" aria-label="Editar nombre del sector" title="Editar nombre"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9M4 16.5V20h3.5L19 8.5 15.5 5 4 16.5ZM14 6.5l3.5 3.5"/></svg></button></div><form id="form-nombre" hidden><label for="entrada-nombre">Nombre del sector</label><input id="entrada-nombre" type="text" maxlength="80" autocomplete="off" enterkeyhint="done" required><button type="submit">Guardar</button><button id="cancelar-nombre" type="button">Cancelar</button></form><p id="origen-nombre" class="origen"></p><button id="restaurar-nombre" type="button">Restaurar</button></div><button id="cerrar" type="button" aria-label="Cerrar expediente">Cerrar</button></div>
-        <section><h3>01 · Ciclo diario</h3><p class="pendiente">Pendiente: Modelo J</p></section>
+        <section><h3>01 · Ciclo diario</h3><p>Media 2003–2019 · Diferencia sector menos Referencia A · °C</p><div id="ciclo-diario"></div></section>
         <section><h3>02 · Serie de diferencias nocturna 2001–2019</h3><p>Sector menos desierto · 2020–2025 punteado, fuera del cálculo primario.</p><div id="serie-anual"></div></section>
         <section><h3>03 · Curva de variantes</h3><p class="pendiente">Pendiente</p></section>
         <section><h3>04 · Lectura del sector</h3><div id="lectura"></div></section>

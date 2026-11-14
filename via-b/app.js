@@ -3,6 +3,8 @@ import {ESQUEMA} from './datos/esquema.js';
 import {RUTA_DATOS} from './config.js';
 import {semaforo} from './semaforo.js';
 import {nombreSector, guardarNombre, nombresPersonalizados} from './nombres.js';
+import {dibujarCicloDiario} from './ciclo-diario.js';
+import {pasosAqua} from './config.js';
 
 const $ = id => document.getElementById(id);
 const colores = {rojo:'#bd4b3e', azul:'#347baf', gris:'#8b9697'};
@@ -27,7 +29,7 @@ function leerCSV(texto, esquema) {
   for (const nombre of Object.values(esquema)) if (!cabecera.includes(nombre)) throw new Error(`Falta la columna ${nombre}.`);
   return filas.map(f => Object.fromEntries(Object.entries(esquema).map(([clave, nombre]) => {
     const valor = f[cabecera.indexOf(nombre)];
-    if (clave === 'sector' || clave === 'variante') return [clave, valor];
+    if (['sector', 'variante', 'paso', 'producto', 'yale_signo'].includes(clave)) return [clave, valor];
     if (valor === undefined || valor.trim() === '' || !Number.isFinite(Number(valor))) throw new Error(`Valor inválido en ${nombre}.`);
     return [clave, Number(valor)];
   })));
@@ -41,11 +43,13 @@ async function cargar(nombre, json = false) {
 
 async function iniciar() {
   if (!window.L) throw new Error('No se pudo cargar Leaflet. Revisa la conexión y vuelve a cargar.');
-  const [geojson, csvSerie, csvResultados, nombres] = await Promise.all([cargar('sectores.geojson', true), cargar('serie.csv'), cargar('resultados.csv'), cargar('nombres.json', true).catch(() => null)]);
+  const [geojson, csvSerie, csvResultados, csvCiclo, nombres] = await Promise.all([cargar('sectores.geojson', true), cargar('serie.csv'), cargar('resultados.csv'), cargar('ciclo_diario.csv'), cargar('nombres.json', true).catch(() => null)]);
   const configNombres = nombres && Array.isArray(nombres.centro) && Number.isFinite(nombres.radio_centro_km) && typeof nombres.ciudad === 'string'
     ? nombres : {ciudad:'Hermosillo', centro:[29.0729, -110.9559], radio_centro_km:2, sectores:{}};
   const nombreDe = f => nombreSector(f, geojson.features, configNombres);
   const series = leerCSV(csvSerie, ESQUEMA.serie), resultados = leerCSV(csvResultados, ESQUEMA.resultados);
+  const ciclo = leerCSV(csvCiclo, ESQUEMA.ciclo_diario);
+  if (ciclo.some(f => !['terra_1030','aqua_1330','terra_2230','aqua_0130'].includes(f.paso) || !['MOD11','MOD21'].includes(f.producto) || !['','+','-'].includes(f.yale_signo))) throw new Error('Hay valores desconocidos en ciclo_diario.csv.');
   if (resultados.some(r => !ESQUEMA.variantes.includes(r.variante))) throw new Error('Hay variantes desconocidas en los datos.');
   const primarios = new Map(resultados.filter(r => r.variante === ESQUEMA.variantes[0]).map(r => [r.sector, r]));
   const sectores = geojson.features.filter(f => f.properties.tipo === 'sector');
@@ -120,6 +124,7 @@ async function iniciar() {
     seleccionado = id; $('sector').value = id; editar(false); refrescarNombres();
     $('expediente').hidden = false; $('expediente').scrollTop = 0; geometria.setStyle(estilo);
     dibujarSerieAnual($('serie-anual'), {anios:datos.map(d => d.anio), valores:datos.map(d => d.valor), resultado:r, unidad:'°C', aniosPunteados:datos.filter(d => d.anio > 2019).map(d => d.anio)});
+    dibujarCicloDiario($('ciclo-diario'), ciclo.filter(fila => fila.sector === id), pasosAqua);
     const lectura = $('lectura'); lectura.replaceChildren();
     const badge = document.createElement('span'); badge.className = `estado-sector ${color}`; badge.textContent = `Semáforo provisional: ${color}`;
     const dl = document.createElement('dl'), nivel = principales.map(d => d.valor);
