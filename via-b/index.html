@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SunCity · Sectores de Hermosillo</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23225d4d'/%3E%3Cpath d='M9 22V10h14v12Z' fill='none' stroke='%23f4d28c' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="estilos.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="banner">Datos de prueba inventados</div>
+  <header><a class="marca" href="./">SunCity<span>Hermosillo / Vía B</span></a><span class="fase">Fase 1 · Explorador</span></header>
+  <main>
+    <div class="introduccion"><p class="ceja">LECTURA POR SECTOR</p><h1>La noche, sector por sector</h1><p>Diferencia de temperatura superficial nocturna entre sector y desierto. MOD11 Terra · Serie sintética.</p></div>
+    <div class="herramientas"><label for="sector">Explorar un sector</label><select id="sector" disabled><option value="">Selecciona un sector</option></select><button id="exportar-nombres" type="button" disabled>Exportar nombres</button><p id="estado" role="status">Cargando datos de prueba…</p></div>
+    <div class="espacio">
+      <section class="mapa-panel" aria-label="Mapa de sectores">
+        <div id="mapa" aria-label="Sectores y referencias de desierto de Hermosillo"></div>
+        <div class="leyenda" aria-label="Semáforo provisional"><span><i class="rojo"></i>Rojo: aumento</span><span><i class="azul"></i>Azul: descenso</span><span><i class="gris"></i>Gris: evidencia insuficiente</span><span><i class="referencia"></i>Desierto de referencia</span></div>
+        <p class="pie-mapa">Semáforo provisional con ajuste FDR. Polígonos esquemáticos y población inventada.</p>
+      </section>
+      <aside id="expediente" aria-labelledby="titulo-sector" hidden>
+        <div class="cabecera-panel"><div class="grupo-nombre"><p class="ceja">EXPEDIENTE DE PRUEBA</p><div class="titulo-fila"><h2 id="titulo-sector" tabindex="-1"></h2><button id="editar-nombre" class="icono" type="button" aria-label="Editar nombre del sector" title="Editar nombre"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9M4 16.5V20h3.5L19 8.5 15.5 5 4 16.5ZM14 6.5l3.5 3.5"/></svg></button></div><form id="form-nombre" hidden><label for="entrada-nombre">Nombre del sector</label><input id="entrada-nombre" type="text" maxlength="80" autocomplete="off" enterkeyhint="done" required><button type="submit">Guardar</button><button id="cancelar-nombre" type="button">Cancelar</button></form><p id="origen-nombre" class="origen"></p><button id="restaurar-nombre" type="button">Restaurar</button></div><button id="cerrar" type="button" aria-label="Cerrar expediente">Cerrar</button></div>
+        <section><h3>01 · Ciclo diario</h3><p class="pendiente">Pendiente: Modelo J</p></section>
+        <section><h3>02 · Serie de diferencias nocturna 2001–2019</h3><p>Sector menos desierto · 2020–2025 punteado, fuera del cálculo primario.</p><div id="serie-anual"></div></section>
+        <section><h3>03 · Curva de variantes</h3><p class="pendiente">Pendiente</p></section>
+        <section><h3>04 · Lectura del sector</h3><div id="lectura"></div></section>
+        <section><h3>05 · Zoom ECOSTRESS</h3><p class="pendiente">Solo en el sector prioritario. Pendiente</p></section>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
