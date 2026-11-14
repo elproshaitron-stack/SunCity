@@ -113,7 +113,7 @@ Las variantes no son pruebas independientes: repiten el cálculo sobre datos que
 Ajustes al Modelo J:
 
 - En los pasos de Terra (10:30 y 22:30) se reporta rango MOD11-MOD21.
-- En los pasos de Aqua (13:30 y 1:30) se reporta solo MOD11, salvo que Ángel Díaz confirme y exporte MYD21. Se decide antes del commit.
+- En los pasos de Aqua (13:30 y 1:30) se reporta solo MOD11, salvo que Navarrete confirme y exporte MYD21. Se decide antes del commit.
 
 ## 5.9 Función de referencia
 
@@ -125,24 +125,34 @@ from scipy.stats import theilslopes
 import pymannkendall as mk
 from statsmodels.stats.multitest import multipletests
 
+
 def tendencia(anios, delta, min_anios=15):
+    """min_anios=15 es un marcador: el mínimo real se fija en docs/DECISIONES.md."""
     a = np.asarray(anios, float); d = np.asarray(delta, float)
     ok = ~np.isnan(d); a, d = a[ok], d[ok]
     n = len(d)
     if n < min_anios:
         return dict(n_anios=n, pendiente_c_decada=np.nan, ic95_inf=np.nan,
-                    ic95_sup=np.nan, p_mk=np.nan, p_hamed_rao=np.nan, p=np.nan)
+                    ic95_sup=np.nan, p_mk=np.nan, p_hamed_rao=np.nan, p=np.nan,
+                    hamed_rao_valido=False)
     pend, _, lo, hi = theilslopes(d, a, alpha=0.95)
     p_mk = mk.original_test(d).p
-    p_hr = mk.hamed_rao_modification_test(d).p
+    with np.errstate(invalid="ignore"):
+        p_hr = mk.hamed_rao_modification_test(d).p
+    # D13: Hamed-Rao puede dar varianza negativa y p = NaN; max(p_mk, nan) lo ocultaría
+    hr_ok = bool(np.isfinite(p_hr))
     return dict(n_anios=n, pendiente_c_decada=pend*10, ic95_inf=lo*10,
-                ic95_sup=hi*10, p_mk=p_mk, p_hamed_rao=p_hr, p=max(p_mk, p_hr))
+                ic95_sup=hi*10, p_mk=p_mk, p_hamed_rao=p_hr,
+                p=max(p_mk, p_hr) if hr_ok else p_mk, hamed_rao_valido=hr_ok)
+
 
 def ajustar_fdr(ps):
     return multipletests(ps, alpha=0.05, method="fdr_bh")[1]
 ```
 
-`min_anios=15` es un marcador: el mínimo real lo fija Carlos en `DECISIONES.md`.
+`min_anios=15` es un marcador: el mínimo real lo fija Navarrete en `DECISIONES.md` (D08).
+
+Si Hamed-Rao no se puede calcular (varianza negativa con tendencias fuertes), `p` es el de Mann-Kendall original y `hamed_rao_valido` vale `False` (D13).
 
 ## 5.10 Cálculo en la Vía A
 

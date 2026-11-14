@@ -43,10 +43,10 @@ gantt
 Comprobaciones de la primera hora:
 
 - [ ] **Navarrete:** la llamada de POWER responde desde el navegador.
-- [ ] **Ángel Díaz:** contar escenas de ECOSTRESS sobre Hermosillo en Earth Engine. La solicitud de AppEEARS se lanza de todos modos.
-- [ ] **Ángel Díaz:** contar noches válidas de `MOD21A1N` en la temporada de un año, y confirmar si existe MYD21 en Earth Engine.
-- [ ] **Emilio:** qué años cubre la estación de Hermosillo en SMN y en Climate Data Online.
-- [ ] **Carlos:** correr la función de referencia con una serie inventada (`python compartido/tendencia.py`).
+- [ ] **Navarrete:** contar escenas de ECOSTRESS sobre Hermosillo en Earth Engine. La solicitud de AppEEARS se lanza de todos modos.
+- [ ] **Navarrete:** contar noches válidas de `MOD21A1N` en la temporada de un año, y confirmar si existe MYD21 en Earth Engine.
+- [ ] **Navarrete:** qué años cubre la estación de Hermosillo en SMN y en Climate Data Online.
+- [ ] **Navarrete:** correr la función de referencia con una serie inventada (`python compartido/tendencia.py`).
 
 Se registra en `DECISIONES.md` **antes de la primera tendencia**:
 
@@ -54,7 +54,7 @@ Se registra en `DECISIONES.md` **antes de la primera tendencia**:
 - [ ] Cómo se promedia MOD21 diario en la temporada y el mínimo de noches válidas.
 - [ ] Si el ciclo diario usa MYD21 o solo MOD11 en los pasos de Aqua.
 - [ ] En la Vía A: lista de variables, regla de año completo o mes fijo, y que el p se muestra sin ajuste.
-- [ ] El mínimo real de años (`min_anios`), que fija Carlos.
+- [ ] El mínimo real de años (`min_anios`), que fija Navarrete.
 
 **Criterio de salida.** Cada comprobación tiene respuesta escrita (sí, no, o plan B activado) y las cinco decisiones están registradas.
 
@@ -92,7 +92,7 @@ Se confirma en la primera respuesta de POWER cómo vienen las llaves de mes y de
 | Entregable | Resultado numérico junto a la serie | Expediente con datos reales y ciclo diario |
 | Puerta | JavaScript y Python coinciden en la serie de prueba, a tres decimales | La interfaz lee `serie.csv` real y dibuja las cuatro barras |
 
-Depende de la Fase 0: Carlos ya probó la función de referencia y Ángel Díaz ya entregó el primer `serie.csv`.
+Depende de la Fase 0: Navarrete ya probó la función de referencia y Navarrete ya entregó el primer `serie.csv`.
 
 ## Fase 3. Integración (puerta: sábado 22:00)
 

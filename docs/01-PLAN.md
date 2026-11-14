@@ -45,7 +45,7 @@ Salida en lenguaje llano: qué cambia, dónde, cuánto por década con su rango,
 
 Límite que se dice en pantalla: MERRA-2 trabaja en celdas de unas decenas de kilómetros. Una celda cubre Hermosillo y su desierto juntos, así que la Vía A no puede ver la ciudad. Ese límite es el puente a la Vía B: "para ver dentro de la ciudad hace falta otro satélite".
 
-Demostraciones grabadas: Hermosillo con `T2M_MIN`, y la segunda ciudad árida que elija Emilio.
+Demostraciones grabadas: Hermosillo con `T2M_MIN`, y Mexicali, la segunda ciudad árida (D12).
 
 ### Vía B en detalle
 
@@ -86,20 +86,19 @@ Según López González y otros (2021), de El Colegio de Sonora:
 
 | Persona | Responsabilidad | Primera tarea |
 |---|---|---|
-| Navarrete | Vía A | Probar la llamada de POWER desde el navegador |
+| Navarrete | Vía A (terminada); estadística y `DECISIONES.md`; datos de la Vía B en Earth Engine y AppEEARS; estación de aire | Contar escenas de ECOSTRESS y noches válidas de `MOD21A1N`; confirmar MYD21; revisar los años de la estación de Hermosillo |
 | Mario | Vía B; componente de serie anual compartido | Mapa y expediente con datos de prueba en el formato fijo |
-| Carlos | Estadística y `DECISIONES.md` | Correr la función de referencia con una serie inventada |
-| Ángel Díaz | Earth Engine y AppEEARS | Contar escenas de ECOSTRESS y noches válidas de `MOD21A1N`; confirmar MYD21 |
-| Emilio | Estación de aire y segunda ciudad | Revisar qué años cubre la estación de Hermosillo en SMN y en Climate Data Online |
+
+El equipo son dos personas. Los roles que v5 daba a Navarrete, Navarrete y Navarrete pasan a Navarrete.
 
 ## 6. Riesgos y plan B
 
 | Riesgo | Cómo se detecta | Plan B |
 |---|---|---|
 | El navegador bloquea la llamada a POWER | Primera comprobación de Navarrete | Descargar una vez los JSON de las ciudades de demostración y servirlos como archivos |
-| ECOSTRESS no cubre Hermosillo en Earth Engine | Conteo de escenas de Ángel Díaz | AppEEARS, cuya solicitud se lanza de todos modos |
-| MYD21 no existe en Earth Engine o no se exporta a tiempo | Comprobación de Ángel Díaz | En los pasos de Aqua (13:30 y 1:30) se reporta solo MOD11 |
-| La estación de Hermosillo no cubre 2001-2019 | Revisión de Emilio. Un listado muestra sus dos registros terminando en octubre de 2013 | Modelo G con `T2M_MIN` de POWER. No se promete la gráfica de aire antes de confirmar |
+| ECOSTRESS no cubre Hermosillo en Earth Engine | Conteo de escenas de Navarrete | AppEEARS, cuya solicitud se lanza de todos modos |
+| MYD21 no existe en Earth Engine o no se exporta a tiempo | Comprobación de Navarrete | En los pasos de Aqua (13:30 y 1:30) se reporta solo MOD11 |
+| La estación de Hermosillo no cubre 2001-2019 | Revisión de Navarrete. Un listado muestra sus dos registros terminando en octubre de 2013 | Modelo G con `T2M_MIN` de POWER. No se promete la gráfica de aire antes de confirmar |
 | No aparece el oasis diurno en el Modelo J | Barras de 10:30 y 13:30 | Se reporta así y el pitch no usa la frase |
 | Pendientes chicas no detectables en 19 años | Tabla de potencia de [05-MODELOS.md](05-MODELOS.md) con el ruido real | Sector en gris con pendiente e intervalo; se explica que gris no significa "sin tendencia" |
 | Falta de tiempo | Puertas de [02-FASES.md](02-FASES.md) | Orden de recorte: segunda ciudad de la Vía A, luego su selector de temporada |

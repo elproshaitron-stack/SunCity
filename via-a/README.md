@@ -44,8 +44,8 @@ node via-a/pruebas/probar_tendencia.cjs  # compara JavaScript contra Python a tr
 
 ## Pendiente
 
-- [ ] Guardar los respaldos `datos/hermosillo.json` y `datos/mexicali.json`: correr `python via-a/datos/descargar.py` en una máquina con internet.
-- [ ] Confirmar con Emilio la segunda ciudad (D12). Mexicali está como provisional; cambiarla es una línea en `CIUDADES` de `js/app.js` y otra en `datos/descargar.py`.
+- [x] Respaldos guardados: `datos/hermosillo.json` y `datos/mexicali.json` (POWER, 14 nov 2026). Para volver a bajarlos: `python via-a/datos/descargar.py`.
+- [x] Segunda ciudad: Mexicali (D12, cerrada).
 - [ ] Cambiar `js/grafica.js` por el componente compartido de Mario cuando exista.
-- [ ] Que Carlos confirme D07 (p sin ajuste, umbral 0.05).
+- [x] D07 cerrada: p sin ajuste, umbral 0.05.
 - [ ] La página de la Vía B debe existir en `via-b/index.html` para que funcione el enlace "Ver dentro de Hermosillo".

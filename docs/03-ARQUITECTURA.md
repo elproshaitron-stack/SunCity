@@ -72,7 +72,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    subgraph EX["1. Export · Ángel Díaz"]
+    subgraph EX["1. Export · Navarrete"]
         E1["MOD11A2 y MYD11A2<br/>8 días, 1 km"]
         E2["MOD21A1N diario<br/>promedio de temporada"]
         E3["Filtro de calidad por bits"]
@@ -84,7 +84,7 @@ flowchart TD
         S2["serie.csv<br/>diferencia sector − desierto"]
         S1 --> S2
     end
-    subgraph ES["3. Estadística · Carlos"]
+    subgraph ES["3. Estadística · Navarrete"]
         T1["tendencia: Theil-Sen,<br/>Mann-Kendall, Hamed-Rao"]
         T2["Cinco variantes"]
         T3["FDR entre sectores"]
@@ -212,14 +212,20 @@ Las columnas de `serie.csv` y `resultados.csv` están definidas en v4. Conviene 
 
 ```mermaid
 flowchart LR
-    AD["Ángel Díaz<br/>export y conteos"] -->|serie.csv| CA["Carlos<br/>tendencia y variantes"]
-    AD -->|serie.csv| MA["Mario<br/>interfaz Vía B"]
-    CA -->|resultados.csv| MA
-    CA -->|"función de referencia y serie de prueba"| NA["Navarrete<br/>Vía A"]
-    MA -->|"componente de serie anual"| NA
-    EM["Emilio<br/>estación y segunda ciudad"] -->|"años de la estación"| CA
-    EM -->|"segunda ciudad"| NA
-    NA -->|"enlace hacia Hermosillo"| MA
+    subgraph NA["Navarrete"]
+        N1["Vía A<br/>terminada"]
+        N2["Export en Earth Engine<br/>y AppEEARS"]
+        N3["Tendencia, variantes<br/>y FDR"]
+        N2 -->|serie.csv| N3
+    end
+    subgraph MA["Mario"]
+        M1["Interfaz de la Vía B<br/>mapa, expediente, semáforo"]
+        M2["Componente de<br/>serie anual"]
+    end
+    N2 -->|serie.csv| M1
+    N3 -->|resultados.csv| M1
+    M2 -->|"reemplaza la gráfica provisional"| N1
+    N1 -->|"enlace: ver dentro de Hermosillo"| M1
 ```
 
-Mientras llegan los datos reales, Mario y Navarrete trabajan con datos de prueba en el formato fijo, así que ninguna flecha bloquea las puertas del sábado a las 13:00.
+Mientras llegan los datos reales, Mario trabaja con datos de prueba en el formato fijo de v4, así que ninguna flecha lo bloquea.

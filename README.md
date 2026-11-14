@@ -74,13 +74,10 @@ python compartido/tendencia.py
 
 | Persona | Responsabilidad |
 |---|---|
-| Navarrete | Vía A: interfaz en navegador, llamada a POWER, Theil-Sen y Mann-Kendall en JavaScript |
-| Mario | Vía B: mapa, expediente por sector, componente de serie anual compartido |
-| Carlos | Estadística: función de referencia y `DECISIONES.md` (mínimo de años, semáforo) |
-| Ángel Díaz | Datos: Earth Engine y AppEEARS (MOD21, MYD21, ECOSTRESS) |
-| Emilio | Estación de Hermosillo (SMN, Climate Data Online) y segunda ciudad árida |
+| Navarrete | Vía A (terminada); estadística y `DECISIONES.md`; datos de la Vía B en Earth Engine y AppEEARS; estación de aire |
+| Mario | Vía B: mapa, expediente por sector, semáforo y componente de serie anual compartido |
 
-Si el reparto de personas es otro, solo cambia el nombre.
+El equipo son dos personas. Los roles que el plan v5 daba a Carlos (estadística), Ángel Díaz (datos) y Emilio (estación y segunda ciudad) pasan a Navarrete, porque la Vía A ya está lista.
 
 ## Puertas
 

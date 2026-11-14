@@ -18,12 +18,17 @@ def tendencia(anios, delta, min_anios=15):
     n = len(d)
     if n < min_anios:
         return dict(n_anios=n, pendiente_c_decada=np.nan, ic95_inf=np.nan,
-                    ic95_sup=np.nan, p_mk=np.nan, p_hamed_rao=np.nan, p=np.nan)
+                    ic95_sup=np.nan, p_mk=np.nan, p_hamed_rao=np.nan, p=np.nan,
+                    hamed_rao_valido=False)
     pend, _, lo, hi = theilslopes(d, a, alpha=0.95)
     p_mk = mk.original_test(d).p
-    p_hr = mk.hamed_rao_modification_test(d).p
+    with np.errstate(invalid="ignore"):
+        p_hr = mk.hamed_rao_modification_test(d).p
+    # D13: Hamed-Rao puede dar varianza negativa y p = NaN; max(p_mk, nan) lo ocultaría
+    hr_ok = bool(np.isfinite(p_hr))
     return dict(n_anios=n, pendiente_c_decada=pend*10, ic95_inf=lo*10,
-                ic95_sup=hi*10, p_mk=p_mk, p_hamed_rao=p_hr, p=max(p_mk, p_hr))
+                ic95_sup=hi*10, p_mk=p_mk, p_hamed_rao=p_hr,
+                p=max(p_mk, p_hr) if hr_ok else p_mk, hamed_rao_valido=hr_ok)
 
 
 def ajustar_fdr(ps):

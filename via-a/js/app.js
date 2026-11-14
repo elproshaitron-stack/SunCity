@@ -6,7 +6,7 @@
   "use strict";
 
   // Ciudades de demostración. respaldo: archivo guardado con via-a/datos/descargar.py.
-  // Mexicali es PROVISIONAL: la segunda ciudad árida la elige Emilio (DECISIONES.md, D12).
+  // Segunda ciudad árida: Mexicali (DECISIONES.md, D12).
   var CIUDADES = [
     { id: "hermosillo", nombre: "Hermosillo, Sonora", lat: 29.07, lon: -110.97,
       respaldo: "datos/hermosillo.json", viaB: true },

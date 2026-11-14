@@ -9,7 +9,7 @@ import json, pathlib, urllib.request
 
 CIUDADES = {
     "hermosillo": (29.07, -110.97),
-    "mexicali": (32.62, -115.45),  # provisional: la segunda ciudad la elige Emilio (D12)
+    "mexicali": (32.62, -115.45),  # segunda ciudad (D12)
 }
 PARAMS = "T2M_MIN,T2M_MAX,T2M,TS,PRECTOTCORR"
 URL = ("https://power.larc.nasa.gov/api/temporal/monthly/point?parameters={p}"
