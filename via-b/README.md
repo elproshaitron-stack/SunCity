@@ -30,6 +30,7 @@ lo cierra. En celular aparece como hoja inferior y en escritorio como panel late
   y variantes admitidas. Cambiar los valores del mapa al recibir v4; conservar
   las claves internas. Mantener el objeto como JSON válido: también lo lee Python.
 - `semaforo.js`: regla provisional de color con p ajustado por FDR.
+- `variantes.js`: curva SVG de pendientes, intervalos y p FDR por variante.
 - `datos/prueba/sectores.geojson`: seis polígonos urbanos y dos referencias esquemáticas.
 - `datos/prueba/generar_prueba.py`: semilla fija, cálculo compartido y FDR entre
   sectores para cada variante; genera `serie.csv` y `resultados.csv`.
@@ -57,6 +58,7 @@ valores). No es una banda de predicción. Incluye línea horizontal en cero.
 
 Esquema, semáforo, mínimo de años, geometrías, población y nivel (rango mínimo–máximo
 de la serie primaria) esperan las reglas y datos de v4 / `docs/DECISIONES.md`.
-El ciclo diario, la curva de variantes y el zoom ECOSTRESS son secciones pendientes.
+El ciclo diario y el zoom ECOSTRESS son secciones pendientes. La curva de
+variantes ya lee los seis resultados por sector, con nombres provisionales.
 Solo `con_deriva` incorpora 2020–2025; esos años quedan fuera del cálculo primario.
 Las recetas sintéticas no establecen decisiones para los datos reales.
