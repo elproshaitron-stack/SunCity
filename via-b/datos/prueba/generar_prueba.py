@@ -24,11 +24,16 @@ def escribir(nombre, esquema, filas):
 def generar():
     rng = np.random.default_rng(2027)
     anios = np.arange(2001, 2026)
-    series, resultados, datos, ciclo = [], [], {}, []
+    series, resultados, datos, ciclo, niveles = [], [], {}, [], []
     for i, (pendiente, ruido) in enumerate([(0.09, 0.12), (0, 0.55), (-0.08, 0.12), (0.035, 0.3), (0.005, 0.5), (0.065, 0.18)], 1):
         sector = f'S{i:02d}'
         valores = np.round(1 + i * 0.12 + pendiente * (anios - 2001) + rng.normal(0, ruido, len(anios)), 6)
         datos[sector] = valores
+        media_mod11 = round(float(np.mean(valores[anios <= 2019])), 6)
+        niveles.extend((
+            dict(sector=sector, producto='MOD11', nivel_c=media_mod11),
+            dict(sector=sector, producto='MOD21', nivel_c=round(media_mod11 * .95 + .1, 6)),
+        ))
         series.extend(dict(sector=sector, anio=int(a), valor=float(v)) for a, v in zip(anios, valores))
         # Medias 2003-2019 inventadas; cada fila representa un producto y hora.
         centros = [-0.35 + i * 0.055, -0.18 + i * 0.04, 1.10 + i * 0.11, 0.85 + i * 0.095]
@@ -62,10 +67,17 @@ def generar():
     assert all(np.isfinite(r[k]) for r in resultados for k in ('p', 'p_mk', 'p_hamed_rao', 'p_fdr', 'ic95_inf', 'ic95_sup'))
     assert any(r['p_fdr'] < .05 for r in primarios)
     assert any(r['p_fdr'] >= .05 for r in primarios)
+    prioritario = max((r for r in primarios if r['p_fdr'] < .05 and r['pendiente_c_decada'] > 0), key=lambda r: r['pendiente_c_decada'])['sector']
+    assert prioritario == 'S01', 'Actualizar sectorPrioritario en config.js si cambia la serie de prueba.'
     escribir('serie.csv', ESQUEMA['serie'], series)
     escribir('resultados.csv', ESQUEMA['resultados'], resultados)
     escribir('ciclo_diario.csv', ESQUEMA['ciclo_diario'], ciclo)
-    print(f'Generados {len(series)} registros anuales, {len(resultados)} resultados y {len(ciclo)} filas de ciclo diario inventados.')
+    escribir('nivel.csv', ESQUEMA['nivel'], niveles)
+    rejilla = [[round(28 + 3 * np.sin(x / 6) + 2 * np.cos(y / 7) + float(rng.normal(0, .45)), 2)
+                for x in range(40)] for y in range(40)]
+    zoom = dict(sector_id=prioritario, resolucion_m=70, filas=40, columnas=40, valores_c=rejilla, n_escenas=18)
+    (CARPETA / 'ecostress_zoom.json').write_text(json.dumps(zoom, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    print(f'Generados {len(series)} registros anuales, {len(resultados)} resultados, {len(ciclo)} filas de ciclo diario, {len(niveles)} niveles y zoom inventados.')
 
 
 if __name__ == '__main__':

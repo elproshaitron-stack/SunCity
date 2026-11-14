@@ -1,4 +1,4 @@
-# Vía B · Explorador de Hermosillo, fase 2
+# Vía B · Explorador de Hermosillo
 
 Datos inventados. No son resultados. HTML, CSS y módulos ES sin build.
 
@@ -26,13 +26,18 @@ lo cierra. En celular aparece como hoja inferior y en escritorio como panel late
 
 - `index.html`, `estilos.css`, `app.js`: interfaz, mapa, lectura CSV y expediente.
 - `config.js`: único lugar donde cambiar `RUTA_DATOS` (por defecto `datos/prueba/`).
-- `datos/esquema.js`: único lugar donde se definen las columnas de ambos CSV
+- `datos/esquema.js`: único lugar donde se definen las columnas de los CSV
   y variantes admitidas. Cambiar los valores del mapa al recibir v4; conservar
   las claves internas. Mantener el objeto como JSON válido: también lo lee Python.
 - `semaforo.js`: regla provisional de color con p ajustado por FDR.
 - `datos/prueba/sectores.geojson`: seis polígonos urbanos y dos referencias esquemáticas.
 - `datos/prueba/generar_prueba.py`: semilla fija, cálculo compartido y FDR entre
-  sectores para cada variante; genera `serie.csv`, `resultados.csv` y `ciclo_diario.csv`.
+  sectores para cada variante; genera `serie.csv`, `resultados.csv`,
+  `ciclo_diario.csv`, `nivel.csv` y `ecostress_zoom.json`.
+- `datos/validar.py`: valida los CSV contra `datos/esquema.js`:
+  `python via-b/datos/validar.py via-b/datos/prueba/`.
+- `zoom-ecostress.js`: rejilla SVG del sector definido en `config.js`.
+- `variantes.js`: pendientes e intervalos de las seis variantes en SVG.
 - `ciclo-diario.js`: cuatro barras SVG y cotejo del signo diurno de Yale.
 - `config.js`: `pasosAqua` conserva `solo_mod11` mientras D04 está abierta;
   `rango` usa MOD21 de Aqua si aparece en el CSV.
@@ -58,9 +63,15 @@ valores). No es una banda de predicción. Incluye línea horizontal en cero.
 
 ## Provisional
 
-Esquema, semáforo, mínimo de años, geometrías, población y nivel (rango mínimo–máximo
-de la serie primaria) esperan las reglas y datos de v4 / `docs/DECISIONES.md`.
-La curva de variantes y el zoom ECOSTRESS son secciones pendientes.
+Esquema, semáforo, mínimo de años, geometrías y población esperan las reglas
+y datos de v4 / `docs/DECISIONES.md`. Nivel y zoom usan valores inventados.
+La curva de variantes usa resultados sintéticos; sus reglas reales esperan v4.
 El ciclo diario usa medias y signos inventados; D04 sobre Aqua sigue abierta.
 Solo `con_deriva` incorpora 2020–2025; esos años quedan fuera del cálculo primario.
 Las recetas sintéticas no establecen decisiones para los datos reales.
+
+## Enlace directo desde Vía A
+
+`/via-b/index.html?sector=S01` abre el expediente del sector con ese ID.
+También funciona `/via-b/?sector=S01`. Si el ID no existe, se abre el mapa.
+El enlace usa el ID, no el nombre editable del sector.

@@ -1,10 +1,11 @@
 import {dibujarSerieAnual} from '../compartido/serie-anual.js';
 import {ESQUEMA} from './datos/esquema.js';
-import {RUTA_DATOS} from './config.js';
+import {RUTA_DATOS, pasosAqua, sectorPrioritario} from './config.js';
 import {semaforo} from './semaforo.js';
 import {nombreSector, guardarNombre, nombresPersonalizados} from './nombres.js';
 import {dibujarCicloDiario} from './ciclo-diario.js';
-import {pasosAqua} from './config.js';
+import {dibujarZoom} from './zoom-ecostress.js';
+import {dibujarVariantes} from './variantes.js';
 
 const $ = id => document.getElementById(id);
 const colores = {rojo:'#bd4b3e', azul:'#347baf', gris:'#8b9697'};
@@ -43,12 +44,13 @@ async function cargar(nombre, json = false) {
 
 async function iniciar() {
   if (!window.L) throw new Error('No se pudo cargar Leaflet. Revisa la conexión y vuelve a cargar.');
-  const [geojson, csvSerie, csvResultados, csvCiclo, nombres] = await Promise.all([cargar('sectores.geojson', true), cargar('serie.csv'), cargar('resultados.csv'), cargar('ciclo_diario.csv'), cargar('nombres.json', true).catch(() => null)]);
+  const [geojson, csvSerie, csvResultados, csvCiclo, csvNivel, zoom, nombres] = await Promise.all([cargar('sectores.geojson', true), cargar('serie.csv'), cargar('resultados.csv'), cargar('ciclo_diario.csv'), cargar('nivel.csv'), sectorPrioritario ? cargar('ecostress_zoom.json', true).catch(() => null) : Promise.resolve(null), cargar('nombres.json', true).catch(() => null)]);
   const configNombres = nombres && Array.isArray(nombres.centro) && Number.isFinite(nombres.radio_centro_km) && typeof nombres.ciudad === 'string'
     ? nombres : {ciudad:'Hermosillo', centro:[29.0729, -110.9559], radio_centro_km:2, sectores:{}};
   const nombreDe = f => nombreSector(f, geojson.features, configNombres);
   const series = leerCSV(csvSerie, ESQUEMA.serie), resultados = leerCSV(csvResultados, ESQUEMA.resultados);
   const ciclo = leerCSV(csvCiclo, ESQUEMA.ciclo_diario);
+  const niveles = leerCSV(csvNivel, ESQUEMA.nivel);
   if (ciclo.some(f => !['terra_1030','aqua_1330','terra_2230','aqua_0130'].includes(f.paso) || !['MOD11','MOD21'].includes(f.producto) || !['','+','-'].includes(f.yale_signo))) throw new Error('Hay valores desconocidos en ciclo_diario.csv.');
   if (resultados.some(r => !ESQUEMA.variantes.includes(r.variante))) throw new Error('Hay variantes desconocidas en los datos.');
   const primarios = new Map(resultados.filter(r => r.variante === ESQUEMA.variantes[0]).map(r => [r.sector, r]));
@@ -125,23 +127,32 @@ async function iniciar() {
     $('expediente').hidden = false; $('expediente').scrollTop = 0; geometria.setStyle(estilo);
     dibujarSerieAnual($('serie-anual'), {anios:datos.map(d => d.anio), valores:datos.map(d => d.valor), resultado:r, unidad:'°C', aniosPunteados:datos.filter(d => d.anio > 2019).map(d => d.anio)});
     dibujarCicloDiario($('ciclo-diario'), ciclo.filter(fila => fila.sector === id), pasosAqua);
+    dibujarVariantes($('curva-variantes'), resultados.filter(fila => fila.sector === id), ESQUEMA.variantes);
     const lectura = $('lectura'); lectura.replaceChildren();
     const badge = document.createElement('span'); badge.className = `estado-sector ${color}`; badge.textContent = `Semáforo provisional: ${color}`;
-    const dl = document.createElement('dl'), nivel = principales.map(d => d.valor);
+    const dl = document.createElement('dl'), nivel = niveles.filter(d => d.sector === id);
+    const mod11 = nivel.find(d => d.producto === 'MOD11')?.nivel_c;
+    const mod21 = nivel.find(d => d.producto === 'MOD21')?.nivel_c;
+    const textoNivel = mod11 === undefined ? 'Sin datos' : mod21 === undefined ? `${mod11.toFixed(1)} °C (MOD11)` : `entre ${Math.min(mod11,mod21).toFixed(1)} y ${Math.max(mod11,mod21).toFixed(1)} °C`;
     for (const [titulo, texto] of [
-      ['Nivel de prueba', `${Math.min(...nivel).toFixed(2)} a ${Math.max(...nivel).toFixed(2)} °C`],
+      ['Nivel medio 2001–2019 (Modelo F)', textoNivel],
       ['Población inventada', new Intl.NumberFormat('es-MX').format(f.properties.poblacion)],
       ['p ajustado por FDR', r.p_fdr.toPrecision(3)]
     ]) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = titulo; dd.textContent = texto; dl.append(dt,dd); }
-    const descripcion = document.createElement('p'); descripcion.textContent = 'Nivel provisional: mínimo y máximo anual de la diferencia en 2001–2019; no es un intervalo de confianza.';
+    const descripcion = document.createElement('p'); descripcion.textContent = mod11 !== undefined && mod21 === undefined ? 'MOD21 pendiente. Población inventada.' : 'Rango entre medias MOD11 y MOD21. Población inventada.';
     const veredicto = document.createElement('p');
     veredicto.textContent = color === 'gris' ? 'En estos datos inventados no hay evidencia suficiente de un cambio con el criterio provisional.' : `En estos datos inventados, la diferencia nocturna entre sector y desierto ${color === 'rojo' ? 'aumenta' : 'disminuye'} de forma significativa con el criterio provisional.`;
     const pendiente = document.createElement('p'); pendiente.textContent = `${r.pendiente_c_decada.toFixed(2)} °C por década (IC 95 %: ${r.ic95_inf.toFixed(2)} a ${r.ic95_sup.toFixed(2)}).`;
     lectura.append(badge, dl, descripcion, veredicto, pendiente);
     if (color === 'gris') { const nota = document.createElement('p'); nota.className = 'nota'; nota.textContent = 'gris no significa sin tendencia: 19 años pueden no alcanzar para pendientes chicas'; lectura.append(nota); }
+    const zoomContenedor = $('zoom-ecostress'); zoomContenedor.replaceChildren();
+    if (id === sectorPrioritario && zoom?.sector_id === id) dibujarZoom(zoomContenedor, zoom);
+    else zoomContenedor.textContent = 'El zoom a 70 m solo se muestra en el sector prioritario.';
     $('titulo-sector').focus({preventScroll:true});
     requestAnimationFrame(() => { mapa.invalidateSize(); mapa.panTo(capas.get(id).getBounds().getCenter()); });
   }
   $('estado').textContent = `${sectores.length} sectores de prueba · Toca un polígono o usa el selector.`;
+  const idEnlace = new URLSearchParams(location.search).get('sector');
+  if (sectores.some(f => f.properties.id === idEnlace)) abrir(idEnlace);
 }
 iniciar().catch(error => { $('estado').textContent = `No se pudo abrir el explorador: ${error.message}`; });
