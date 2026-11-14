@@ -2,6 +2,7 @@ import {dibujarSerieAnual} from '../compartido/serie-anual.js';
 import {ESQUEMA} from './datos/esquema.js';
 import {RUTA_DATOS} from './config.js';
 import {semaforo} from './semaforo.js';
+import {dibujarVariantes} from './variantes.js';
 import {nombreSector, guardarNombre, nombresPersonalizados} from './nombres.js';
 import {dibujarCicloDiario} from './ciclo-diario.js';
 import {pasosAqua} from './config.js';
@@ -126,6 +127,7 @@ async function iniciar() {
     seleccionado = id; $('sector').value = id; editar(false); refrescarNombres();
     $('expediente').hidden = false; $('expediente').scrollTop = 0; geometria.setStyle(estilo);
     dibujarSerieAnual($('serie-anual'), {anios:datos.map(d => d.anio), valores:datos.map(d => d.valor), resultado:r, unidad:'°C', aniosPunteados:datos.filter(d => d.anio > 2019).map(d => d.anio)});
+    dibujarVariantes($('curva-variantes'), resultados.filter(fila => fila.sector === id), ESQUEMA.variantes);
     dibujarCicloDiario($('ciclo-diario'), ciclo.filter(fila => fila.sector === id), pasosAqua);
     const lectura = $('lectura'); lectura.replaceChildren();
     const badge = document.createElement('span'); badge.className = `estado-sector ${color}`; badge.textContent = `Semáforo provisional: ${color}`;
