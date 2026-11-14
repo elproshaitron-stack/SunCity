@@ -8,7 +8,7 @@ flowchart LR
     J -->|Code Editor de Earth Engine| D[(Google Drive<br/>3 CSV)]
     D -->|bajar a datos/reales/export/| P[procesar.py]
     W[via-a/datos/hermosillo.json] --> P
-    P --> R[datos/reales/<br/>serie, resultados, ciclo,<br/>sectores, yale, aire, resumen]
+    P --> R[datos/reales/<br/>serie, resultados, ciclo_diario,<br/>sectores, yale, aire, resumen]
     R -->|RUTA_DATOS en config.js| I[Interfaz Vía B]
 ```
 
@@ -63,7 +63,7 @@ Colecciones, bandas y bits verificados en el catálogo de Earth Engine el 14 nov
 |---|---|---|
 | `serie.csv` | Diferencia nocturna sector − RA, MOD11 Terra, 2001-2025 (esquema de `datos/esquema.js`) | A |
 | `resultados.csv` | Pendiente, intervalo, p de Mann-Kendall y Hamed-Rao, p y p FDR por sector y variante | B, C, D, E |
-| `ciclo.csv` | Media 2003-2019 de sector − RA en 10:30, 13:30, 22:30 y 01:30, con MOD11 y MOD21 | J |
+| `ciclo_diario.csv` | Media 2003-2019 de sector − RA en `terra_1030`, `aqua_1330`, `terra_2230` y `aqua_0130`, con MOD11 y MOD21, y el signo diurno de Yale (esquema de `datos/esquema.js`) | J |
 | `sectores.geojson` | Polígonos con población 2020, NDVI, área y nivel (MOD11 y MOD21) | F |
 | `yale.csv` | Diferencia nocturna propia junto a Yale día y noche, 2003-2018 | H |
 | `aire.csv` | LST nocturna media de los sectores junto a `T2M_MIN` de POWER, y correlación en `resumen.json` | G |

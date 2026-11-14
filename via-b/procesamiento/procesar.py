@@ -6,7 +6,7 @@ Salida (carpeta --salida, por defecto via-b/datos/reales/):
   sectores.geojson   polígonos con población 2020, NDVI y nivel (Modelo F)
   serie.csv          diferencia nocturna sector − referencia A, 2001-2025 (esquema de esquema.js)
   resultados.csv     tendencia por sector y variante, con FDR por variante (Modelos B-E)
-  ciclo.csv          ciclo diario 2003-2019 en cuatro pasos y dos algoritmos (Modelo J)
+  ciclo_diario.csv   ciclo diario 2003-2019, cuatro pasos y dos algoritmos, signo de Yale (Modelo J)
   yale.csv           cotejo con Yale por año (Modelo H)
   aire.csv           LST nocturna de la ciudad contra T2M_MIN de POWER (Modelo G)
   resumen.json       parámetros, validez y avisos
@@ -155,17 +155,31 @@ def main():
                  [{col: limpio(r[clave]) if clave not in ("sector", "variante") else r[clave]
                    for clave, col in E.items()} for r in resultados])
 
-    # ---- ciclo.csv: Modelo J ----
+    # ---- ciclo_diario.csv: Modelo J, con el esquema de esquema.js ----
+    yale = defaultdict(dict)
+    ruta_yale = a.export / "suncity_yale.csv"
+    if ruta_yale.exists():
+        for r in leer_csv(ruta_yale):
+            yale[r["poligono"]][int(float(r["anio"]))] = (num(r["yale_dia_c"]), num(r["yale_noche_c"]))
+    else:
+        avisos.append("Falta suncity_yale.csv: sin signo de Yale ni yale.csv")
+    E = ESQUEMA["ciclo_diario"]
     ciclo_anios = list(range(P.CICLO_ANIOS[0], P.CICLO_ANIOS[1] + 1))
     ciclo = []
     for s in sectores:
+        dias_yale = [v[0] for v in yale[s].values() if math.isfinite(v[0])]
+        signo = ("+" if np.mean(dias_yale) > 0 else "-") if dias_yale else ""
         for paso, sat, momento in P.CICLO_PASOS:
             for alg in ("MOD11", "MOD21"):
                 d = delta(lst, s, P.REFERENCIA_PRINCIPAL, f"{alg}_{sat}_{momento}", ciclo_anios)
                 d = d[~np.isnan(d)]
-                ciclo.append({"sector_id": s, "paso": paso, "satelite": sat, "momento": momento, "algoritmo": alg,
-                              "delta_c": round(float(d.mean()), 4) if len(d) else "", "n_anios": len(d)})
-    escribir_csv(a.salida / "ciclo.csv", list(ciclo[0].keys()), ciclo)
+                if not len(d):  # la interfaz avisa "Faltan datos" si falta MOD11 de un paso
+                    avisos.append(f"{s} {paso} {alg}: sin años válidos para el ciclo diario")
+                    continue
+                ciclo.append({E["sector"]: s, E["paso"]: paso, E["producto"]: alg,
+                              E["valor"]: round(float(d.mean()), 4),
+                              E["yale_signo"]: signo if momento == "dia" else ""})
+    escribir_csv(a.salida / "ciclo_diario.csv", list(E.values()), ciclo)
 
     # ---- sectores.geojson con población, NDVI y nivel (Modelo F) ----
     extra = {r["poligono"]: r for r in leer_csv(a.export / "suncity_extra.csv")}
@@ -196,11 +210,7 @@ def main():
 
     # ---- yale.csv: Modelo H (sector − nada: Yale ya es intensidad de isla de calor) ----
     filas_yale = []
-    ruta_yale = a.export / "suncity_yale.csv"
-    if ruta_yale.exists():
-        yale = defaultdict(dict)
-        for r in leer_csv(ruta_yale):
-            yale[r["poligono"]][int(float(r["anio"]))] = (num(r["yale_dia_c"]), num(r["yale_noche_c"]))
+    if yale:
         for s in sectores:
             for anio in range(2003, 2019):
                 dia, noche = yale[s].get(anio, (math.nan, math.nan))
@@ -208,8 +218,6 @@ def main():
                 filas_yale.append({"sector_id": s, "anio": anio, "suncity_noche_c": limpio(propia),
                                    "yale_noche_c": limpio(noche), "yale_dia_c": limpio(dia)})
         escribir_csv(a.salida / "yale.csv", list(filas_yale[0].keys()), filas_yale)
-    else:
-        avisos.append("Falta suncity_yale.csv: no se generó yale.csv")
 
     # ---- aire.csv: Modelo G con T2M_MIN de POWER (D11) ----
     aire = {}
@@ -249,7 +257,7 @@ def main():
     }
     (a.salida / "resumen.json").write_text(json.dumps(resumen, ensure_ascii=False, indent=1), encoding="utf-8")
 
-    print(f"Listo en {a.salida}: {len(serie)} filas de serie, {len(resultados)} resultados, {len(ciclo)} de ciclo.")
+    print(f"Listo en {a.salida}: {len(serie)} filas de serie, {len(resultados)} resultados, {len(ciclo)} de ciclo diario.")
     for r in prim_res:
         print(f"  {r['sector']} primario: {limpio(r['pendiente_c_decada'])} °C/década, p_fdr {limpio(r['p_fdr'])}, n {r['n_anios']}")
     for av in avisos:

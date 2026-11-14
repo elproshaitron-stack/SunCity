@@ -22,5 +22,6 @@ VARIANTES = {
 
 # Ciclo diario (Modelo J): media 2003-2019 de sector − referencia A
 CICLO_ANIOS = (2003, 2019)
-CICLO_PASOS = [("10:30", "Terra", "dia"), ("13:30", "Aqua", "dia"),
-               ("22:30", "Terra", "noche"), ("01:30", "Aqua", "noche")]
+# (id del paso en ciclo_diario.csv, satélite, momento): ids de via-b/ciclo-diario.js
+CICLO_PASOS = [("terra_1030", "Terra", "dia"), ("aqua_1330", "Aqua", "dia"),
+               ("terra_2230", "Terra", "noche"), ("aqua_0130", "Aqua", "noche")]

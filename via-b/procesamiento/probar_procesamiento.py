@@ -24,7 +24,7 @@ def main():
         correr(AQUI / "simular_export.py", tmp / "export", "--huecos")
         correr(AQUI / "procesar.py", "--export", tmp / "export", "--salida", tmp / "salida")
         s = tmp / "salida"
-        for nombre in ("serie.csv", "resultados.csv", "ciclo.csv", "sectores.geojson", "yale.csv", "aire.csv",
+        for nombre in ("serie.csv", "resultados.csv", "ciclo_diario.csv", "sectores.geojson", "yale.csv", "aire.csv",
                        "resumen.json", "nombres.json"):
             assert (s / nombre).exists(), f"falta {nombre}"
         res = list(csv.DictReader(open(s / "resultados.csv", encoding="utf-8")))
@@ -32,11 +32,14 @@ def main():
         assert {r["variante"] for r in res} == {"primario", "con_deriva", "aqua", "ref_b", "mod21", "sin_2001_2002"}
         s05 = [r for r in res if r["sector_id"] == "S05" and r["variante"] == "primario"][0]
         assert s05["pendiente_c_decada"] == "" and s05["p_fdr"] == "", "S05 con huecos debe quedar sin cálculo"
-        ciclo = list(csv.DictReader(open(s / "ciclo.csv", encoding="utf-8")))
-        assert len(ciclo) == 6 * 4 * 2
-        dia = [float(c["delta_c"]) for c in ciclo if c["momento"] == "dia" and c["delta_c"]]
-        noche = [float(c["delta_c"]) for c in ciclo if c["momento"] == "noche" and c["delta_c"]]
+        ciclo = list(csv.DictReader(open(s / "ciclo_diario.csv", encoding="utf-8")))
+        assert list(ciclo[0]) == ["sector_id", "paso", "producto", "delta_c", "yale_signo"], list(ciclo[0])
+        assert {c["paso"] for c in ciclo} == {"terra_1030", "aqua_1330", "terra_2230", "aqua_0130"}
+        dia = [float(c["delta_c"]) for c in ciclo if c["paso"] in ("terra_1030", "aqua_1330")]
+        noche = [float(c["delta_c"]) for c in ciclo if c["paso"] in ("terra_2230", "aqua_0130")]
         assert max(dia) < 0 < min(noche), "la simulación tiene oasis de día e isla de noche"
+        assert all(c["yale_signo"] in ("+", "-") for c in ciclo if c["paso"] in ("terra_1030", "aqua_1330"))
+        assert all(c["yale_signo"] == "" for c in ciclo if c["paso"] in ("terra_2230", "aqua_0130"))
         geo = json.load(open(s / "sectores.geojson", encoding="utf-8"))
         s01 = [f["properties"] for f in geo["features"] if f["properties"]["id"] == "S01"][0]
         # MOD21 llega sin escalar en la simulación: si la detección falla, el nivel sale en cientos de grados
