@@ -68,7 +68,7 @@
         </dl>
         <p class="exploratorio"><strong>Exploratorio.</strong> Tú eliges qué probar, así que el valor p no está ajustado por todas las combinaciones posibles.</p>
         <div id="grafica" class="grafica"></div>
-        <p class="leyenda"><span class="ley-serie"></span> valor de cada año <span class="ley-pend"></span> tendencia (Theil-Sen) <span class="ley-banda"></span> rango del 95 %</p>
+        <p class="leyenda" id="leyenda-provisional"><span class="ley-serie"></span> valor de cada año <span class="ley-pend"></span> tendencia (Theil-Sen) <span class="ley-banda"></span> rango del 95 %</p>
         <div class="acciones">
           <button id="csv" class="boton secundario" type="button">Descargar datos (CSV)</button>
           <button id="enlace" class="boton secundario" type="button">Copiar enlace</button>
@@ -105,5 +105,11 @@
   <script src="js/power.js"></script>
   <script src="js/grafica.js"></script>
   <script src="js/app.js"></script>
+  <script type="module">
+    // Componente compartido de la Vía B. Si no carga (servido solo desde via-a/), queda la gráfica provisional.
+    import {dibujarSerieAnual} from '../compartido/serie-anual.js';
+    window.dibujarSerieCompartida = dibujarSerieAnual;
+    window.dispatchEvent(new Event('grafica-compartida'));
+  </script>
 </body>
 </html>

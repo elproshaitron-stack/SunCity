@@ -6,7 +6,7 @@ const mediana = valores => {
 
 /** Dibuja el resultado ya calculado. El llamador debe excluir los años punteados
  * de resultado; aquí se excluyen del ancla, línea e intervalo. No recalcula p. */
-export function dibujarSerieAnual(contenedor, {anios, valores, resultado, unidad = '°C', aniosPunteados = []}) {
+export function dibujarSerieAnual(contenedor, {anios, valores, resultado, unidad = '°C', aniosPunteados = [], incluirCero = true}) {
   contenedor.replaceChildren();
   const punteados = new Set(aniosPunteados);
   const datos = anios.map((anio, i) => ({anio, valor: valores[i]}))
@@ -39,7 +39,8 @@ export function dibujarSerieAnual(contenedor, {anios, valores, resultado, unidad
     const a = estimar(d.anio, resultado.ic95_inf), b = estimar(d.anio, resultado.ic95_sup);
     return {anio: d.anio, bajo: Math.min(a, b), alto: Math.max(a, b)};
   });
-  const rango = [0, ...datos.map(d => d.valor), ...limites.flatMap(d => [d.bajo, d.alto])];
+  // incluirCero: true para diferencias (Vía B); false para valores absolutos (Vía A)
+  const rango = [...(incluirCero ? [0] : []), ...datos.map(d => d.valor), ...limites.flatMap(d => [d.bajo, d.alto])];
   let min = Math.min(...rango), max = Math.max(...rango);
   const margen = (max - min || 1) * .12; min -= margen; max += margen;
   const x = a => 58 + (a - datos[0].anio) / (datos.at(-1).anio - datos[0].anio || 1) * 342;
@@ -50,7 +51,7 @@ export function dibujarSerieAnual(contenedor, {anios, valores, resultado, unidad
     el('text', {x:50, y:y(v) + 5, 'text-anchor':'end', fill:'#465752'}, v.toFixed(1));
   }
   el('text', {x:58, y:18, fill:'#465752'}, unidad);
-  el('line', {x1:58, x2:400, y1:y(0), y2:y(0), stroke:'#667872', 'stroke-dasharray':'5 3'});
+  if (incluirCero) el('line', {x1:58, x2:400, y1:y(0), y2:y(0), stroke:'#667872', 'stroke-dasharray':'5 3'});
   const coords = d => `${x(d.anio)},${y(d.valor)}`;
   el('polygon', {points:[...limites.map(d => `${x(d.anio)},${y(d.alto)}`), ...[...limites].reverse().map(d => `${x(d.anio)},${y(d.bajo)}`)].join(' '), fill:'#197268', opacity:'.18'});
   for (let i = 1; i < datos.length; i++) {

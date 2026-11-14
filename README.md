@@ -55,19 +55,21 @@ SunCity/
 
 ## Primeros pasos
 
-**Vía A.** Probar la llamada de NASA POWER desde el navegador (Hermosillo, serie completa):
+Desde la raíz del repositorio:
 
-```text
-https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M_MIN,T2M_MAX,TS,PRECTOTCORR&community=AG&longitude=-110.97&latitude=29.07&format=JSON&start=1981&end=2025
+```bash
+python servir.py
 ```
 
-Anotar en `docs/DECISIONES.md` cómo vienen las llaves de mes y de promedio anual, y cuál es el valor de relleno.
+- Vía A: <http://localhost:8000/via-a/>
+- Vía B: <http://localhost:8000/via-b/>
 
-**Vía B y estadística.** Instalar dependencias y correr la función de referencia con una serie inventada:
+Pruebas de la estadística:
 
 ```bash
 pip install -r requirements.txt
-python compartido/tendencia.py
+python via-a/pruebas/generar_casos.py
+node via-a/pruebas/probar_tendencia.cjs
 ```
 
 ## Equipo
