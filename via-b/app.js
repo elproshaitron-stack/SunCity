@@ -2,6 +2,7 @@ import {dibujarSerieAnual} from '../compartido/serie-anual.js';
 import {ESQUEMA} from './datos/esquema.js';
 import {RUTA_DATOS, pasosAqua, sectorPrioritario} from './config.js';
 import {semaforo} from './semaforo.js';
+import {dibujarVariantes} from './variantes.js';
 import {nombreSector, guardarNombre, nombresPersonalizados} from './nombres.js';
 import {dibujarCicloDiario} from './ciclo-diario.js';
 import {dibujarZoom} from './zoom-ecostress.js';
@@ -31,7 +32,9 @@ function leerCSV(texto, esquema) {
   return filas.map(f => Object.fromEntries(Object.entries(esquema).map(([clave, nombre]) => {
     const valor = f[cabecera.indexOf(nombre)];
     if (['sector', 'variante', 'paso', 'producto', 'yale_signo'].includes(clave)) return [clave, valor];
-    if (valor === undefined || valor.trim() === '' || !Number.isFinite(Number(valor))) throw new Error(`Valor inválido en ${nombre}.`);
+    // Celda vacía = sin dato (sector con menos años válidos que el mínimo); texto no numérico = error
+    if (valor !== undefined && valor.trim() === '') return [clave, NaN];
+    if (valor === undefined || !Number.isFinite(Number(valor))) throw new Error(`Valor inválido en ${nombre}.`);
     return [clave, Number(valor)];
   })));
 }
@@ -126,6 +129,7 @@ async function iniciar() {
     seleccionado = id; $('sector').value = id; editar(false); refrescarNombres();
     $('expediente').hidden = false; $('expediente').scrollTop = 0; geometria.setStyle(estilo);
     dibujarSerieAnual($('serie-anual'), {anios:datos.map(d => d.anio), valores:datos.map(d => d.valor), resultado:r, unidad:'°C', aniosPunteados:datos.filter(d => d.anio > 2019).map(d => d.anio)});
+    dibujarVariantes($('curva-variantes'), resultados.filter(fila => fila.sector === id), ESQUEMA.variantes);
     dibujarCicloDiario($('ciclo-diario'), ciclo.filter(fila => fila.sector === id), pasosAqua);
     dibujarVariantes($('curva-variantes'), resultados.filter(fila => fila.sector === id), ESQUEMA.variantes);
     const lectura = $('lectura'); lectura.replaceChildren();
@@ -137,12 +141,14 @@ async function iniciar() {
     for (const [titulo, texto] of [
       ['Nivel medio 2001–2019 (Modelo F)', textoNivel],
       ['Población inventada', new Intl.NumberFormat('es-MX').format(f.properties.poblacion)],
-      ['p ajustado por FDR', r.p_fdr.toPrecision(3)]
+      ['p ajustado por FDR', Number.isFinite(r.p_fdr) ? r.p_fdr.toPrecision(3) : '—']
     ]) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = titulo; dd.textContent = texto; dl.append(dt,dd); }
     const descripcion = document.createElement('p'); descripcion.textContent = mod11 !== undefined && mod21 === undefined ? 'MOD21 pendiente. Población inventada.' : 'Rango entre medias MOD11 y MOD21. Población inventada.';
     const veredicto = document.createElement('p');
     veredicto.textContent = color === 'gris' ? 'En estos datos inventados no hay evidencia suficiente de un cambio con el criterio provisional.' : `En estos datos inventados, la diferencia nocturna entre sector y desierto ${color === 'rojo' ? 'aumenta' : 'disminuye'} de forma significativa con el criterio provisional.`;
-    const pendiente = document.createElement('p'); pendiente.textContent = `${r.pendiente_c_decada.toFixed(2)} °C por década (IC 95 %: ${r.ic95_inf.toFixed(2)} a ${r.ic95_sup.toFixed(2)}).`;
+    const pendiente = document.createElement('p'); pendiente.textContent = Number.isFinite(r.pendiente_c_decada)
+      ? `${r.pendiente_c_decada.toFixed(2)} °C por década (IC 95 %: ${r.ic95_inf.toFixed(2)} a ${r.ic95_sup.toFixed(2)}).`
+      : `Sin cálculo: solo ${r.n_anios} años válidos, menos que el mínimo.`;
     lectura.append(badge, dl, descripcion, veredicto, pendiente);
     if (color === 'gris') { const nota = document.createElement('p'); nota.className = 'nota'; nota.textContent = 'gris no significa sin tendencia: 19 años pueden no alcanzar para pendientes chicas'; lectura.append(nota); }
     const zoomContenedor = $('zoom-ecostress'); zoomContenedor.replaceChildren();

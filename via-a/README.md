@@ -4,14 +4,15 @@ El usuario elige lugar, variable y temporada; ve la serie 1981-2025, el cambio p
 
 ## Abrirla
 
+Desde la raíz del repositorio, con el servidor de Mario:
+
 ```bash
-cd via-a
-python -m http.server 8000
+python servir.py
 ```
 
-Luego abrir <http://localhost:8000>. Un enlace con `#lat=29.07&lon=-110.97&var=T2M_MIN&mes=7` abre directo en ese caso (sirve para las demos grabadas).
+Luego abrir <http://localhost:8000/via-a/>. Así carga el componente compartido de gráfica y funciona el enlace a la Vía B. Un enlace con `#lat=29.07&lon=-110.97&var=T2M_MIN&mes=7` abre directo en ese caso (sirve para las demos grabadas).
 
-Abrir `index.html` con doble clic también funciona con la API en vivo, pero el respaldo de datos guardados necesita el servidor.
+Si se sirve solo la carpeta `via-a/`, la página usa su gráfica provisional (`js/grafica.js`) y el enlace a la Vía B no abre.
 
 ## Archivos
 
@@ -20,7 +21,7 @@ Abrir `index.html` con doble clic también funciona con la API en vivo, pero el 
 | `index.html`, `css/estilos.css` | Página y estilos |
 | `js/tendencia.js` | Theil-Sen + intervalo del 95 % y Mann-Kendall. Réplica de scipy 1.18 y pymannkendall |
 | `js/power.js` | Llamada a POWER, definiciones de las cinco variables y armado de la serie anual |
-| `js/grafica.js` | Gráfica de serie anual. **Provisional** hasta que exista el componente compartido de Mario |
+| `js/grafica.js` | Gráfica de respaldo, solo si no carga `compartido/serie-anual.js` |
 | `js/app.js` | Flujo de tres preguntas, veredicto, CSV y enlace |
 | `datos/descargar.py` | Descarga una vez los JSON de las ciudades de demostración (respaldo sin conexión) |
 | `pruebas/` | Prueba de igualdad JavaScript contra Python |
@@ -46,6 +47,6 @@ node via-a/pruebas/probar_tendencia.cjs  # compara JavaScript contra Python a tr
 
 - [x] Respaldos guardados: `datos/hermosillo.json` y `datos/mexicali.json` (POWER, 14 nov 2026). Para volver a bajarlos: `python via-a/datos/descargar.py`.
 - [x] Segunda ciudad: Mexicali (D12, cerrada).
-- [ ] Cambiar `js/grafica.js` por el componente compartido de Mario cuando exista.
+- [x] Usa el componente compartido `compartido/serie-anual.js` (con `incluirCero: false`, porque grafica valores absolutos).
 - [x] D07 cerrada: p sin ajuste, umbral 0.05.
-- [ ] La página de la Vía B debe existir en `via-b/index.html` para que funcione el enlace "Ver dentro de Hermosillo".
+- [x] El enlace "Ver dentro de Hermosillo" abre `via-b/index.html`.

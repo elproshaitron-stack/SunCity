@@ -12,13 +12,8 @@ Cada decisión lleva: qué se decidió, quién, cuándo (fecha y hora) y por qu�
 
 | ID | Decisión | Opciones | Responsable | Estado | Elegido | Fecha y hora | Motivo |
 |---|---|---|---|---|---|---|---|
-| D01 | ¿La variante `sin_2001_2002` cuenta para el semáforo? | Cuenta / No cuenta | Navarrete | abierta | | | |
-| D02 | Cómo se promedia MOD21 diario en la temporada | Por definir | Navarrete | abierta | | | |
-| D03 | Mínimo de noches válidas de MOD21 por temporada | Número por definir, tras el conteo de un año | Navarrete | abierta | | | |
-| D04 | Ciclo diario en los pasos de Aqua (13:30 y 1:30) | MYD21 + MOD11 (rango) / Solo MOD11 | Navarrete | abierta | | | |
-| D08 | Mínimo real de años (`min_anios`; 15 es un marcador) | Número por definir | Navarrete | abierta | | | |
-| D10 | Zoom ECOSTRESS: origen | Earth Engine / AppEEARS | Navarrete | abierta | | | |
-| D11 | Modelo G: fuente de temperatura del aire | Estación (SMN o Climate Data Online) / `T2M_MIN` de POWER | Navarrete | abierta | | | |
+| D15 | Polígonos reales de sectores y referencias | Los esquemáticos de `via-b/datos/prueba/` u otros | Navarrete y Mario | abierta | | | Definen todo el resultado. Las referencias deben tener NDVI < 0.2 (`procesar.py` avisa) y cada sector 9 km² o más |
+| D16 | Regla real del semáforo | La provisional de `via-b/semaforo.js` (p FDR < 0.05 y signo de la pendiente) u otra | Mario | abierta | | | Venía en v4, que no tenemos |
 
 ## Hechos confirmados al probar
 
@@ -55,3 +50,12 @@ Se llenan con lo que respondan las comprobaciones de la primera hora.
 | D09 | Vía A: origen de los datos de POWER | API en vivo; si falla, JSON guardado de las ciudades de demostración | Navarrete y Mario | 14 nov 12:20 | La API responde desde el navegador; el respaldo cubre una caída del internet durante la demo |
 | D12 | Segunda ciudad árida de la Vía A | Mexicali, Baja California (32.62, −115.45) | Navarrete y Mario | 14 nov 12:20 | Árida, mexicana y con contraste: `T2M_MIN` anual +0.53 °C/década (p = 0.003) frente a +0.21 (p = 0.35) en Hermosillo |
 | D13 | Valor p de la Vía B cuando Hamed-Rao no se puede calcular (H01) | Si `p_hamed_rao` es `NaN`, se reporta `p_mk` y el resultado lleva `hamed_rao_valido = False` para que el expediente lo diga | Navarrete y Mario | 14 nov 12:25 | Evita que `max(p_mk, nan)` oculte el caso. Pasa con tendencias fuertes, donde `p_mk` ya es muy chico, así que no cambia un veredicto |
+| D01 | ¿La variante `sin_2001_2002` cuenta para el semáforo? | No. El semáforo usa solo la variante primaria; las otras cinco se muestran en la curva de variantes | Navarrete y Mario | 14 nov 12:50 | Las variantes no son pruebas independientes; sirven para ver si la tendencia depende de una elección |
+| D02 | Cómo se promedia MOD21 diario en la temporada | Media por píxel de las observaciones válidas de la temporada; luego media del polígono | Navarrete y Mario | 14 nov 12:50 | Igual que MOD11, que ya promedia días en sus compuestos de 8 días |
+| D03 | Cobertura mínima por polígono y año | Al menos 50 % de los píxeles del polígono con dato, y por píxel en promedio 3 compuestos (MOD11) o 10 noches (MOD21) | Navarrete y Mario | 14 nov 12:50 | Provisional hasta ver el conteo real en `resumen.json`; si descarta demasiados años, se baja antes de calcular tendencias y se registra aquí |
+| D04 | Ciclo diario en los pasos de Aqua | MOD11 y MOD21 en los cuatro pasos (rango) | Navarrete y Mario | 14 nov 12:50 | `MYD21A1D` y `MYD21A1N` existen en Earth Engine (verificado en el catálogo) |
+| D08 | Mínimo de años para calcular tendencia | 15 | Navarrete y Mario | 14 nov 12:50 | 15 de 19 en el primario y de 17 en `sin_2001_2002`; con menos, el sector queda "sin cálculo" |
+| D10 | Zoom ECOSTRESS: origen | AppEEARS | Navarrete y Mario | 14 nov 12:50 | La cobertura en Earth Engine es dudosa; en AppEEARS está confirmada |
+| D11 | Modelo G: fuente de temperatura del aire | `T2M_MIN` de POWER, promedio de los meses de la temporada | Navarrete y Mario | 14 nov 12:50 | La estación de Hermosillo parece terminar en 2013 y ya tenemos POWER guardado |
+| D14 | Temporada de la Vía B | Junio a agosto | Navarrete y Mario | 14 nov 12:50 | Las noches más cálidas; mismo periodo que el estudio de El Colegio de Sonora. Se cambia en `via-b/procesamiento/parametros.py` |
+| D17 | Sector sin años suficientes en la interfaz | Celdas vacías en `resultados.csv`; la interfaz lo muestra gris como "sin cálculo" | Navarrete y Mario | 14 nov 12:55 | Antes un solo sector incompleto impedía abrir toda la Vía B |

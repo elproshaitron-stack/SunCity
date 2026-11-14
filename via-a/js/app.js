@@ -198,11 +198,20 @@
     $("c-p").textContent = fmtP(r.p);
     $("c-n").textContent = r.n_anios + " de " + s.anios.length;
 
-    SerieAnual.dibujar($("grafica"), {
-      anios: s.anios, valores: s.valores, resultado: r, unidad: u,
-      titulo: v.nombre + textoTemporada(estado.mes) + " en " + lugarTxt + ", " + a0 + "-" + a1 +
-        ": " + conSigno(b, 2) + " " + u + " por década"
-    });
+    var compartida = typeof window.dibujarSerieCompartida === "function";
+    $("leyenda-provisional").hidden = compartida;
+    if (compartida) {
+      // Componente compartido con la Vía B (compartido/serie-anual.js)
+      window.dibujarSerieCompartida($("grafica"), {
+        anios: s.anios, valores: s.valores, resultado: r, unidad: u, incluirCero: false
+      });
+    } else {
+      SerieAnual.dibujar($("grafica"), {
+        anios: s.anios, valores: s.valores, resultado: r, unidad: u,
+        titulo: v.nombre + textoTemporada(estado.mes) + " en " + lugarTxt + ", " + a0 + "-" + a1 +
+          ": " + conSigno(b, 2) + " " + u + " por década"
+      });
+    }
     pintarEscala(l);
   }
 
@@ -276,6 +285,11 @@
   sincronizarControles();
   if (desdeURL) fijarLugar(desdeURL, true);
   else fijarLugar({ lat: HERMOSILLO.lat, lon: HERMOSILLO.lon, nombre: HERMOSILLO.nombre, ciudad: HERMOSILLO }, true);
+
+  // El componente compartido carga como módulo después de este archivo: se vuelve a dibujar
+  window.addEventListener("grafica-compartida", function () {
+    if (estado.serie) pintar(estado.serie, estado.res);
+  });
 
   var tAncho;
   window.addEventListener("resize", function () {
