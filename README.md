@@ -50,7 +50,7 @@ SunCity/
 ├── compartido/            Lo que usan las dos vías
 │   └── tendencia.py       Función de referencia (Theil-Sen, Mann-Kendall, FDR)
 ├── via-a/                 Herramienta a escala (navegador + NASA POWER)
-└── via-b/                 Hermosillo: export, series, resultados, interfaz
+└── via-b/                 Hermosillo: interfaz y procesamiento/ (Earth Engine → CSV)
 ```
 
 ## Primeros pasos

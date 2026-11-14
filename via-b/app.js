@@ -28,7 +28,9 @@ function leerCSV(texto, esquema) {
   return filas.map(f => Object.fromEntries(Object.entries(esquema).map(([clave, nombre]) => {
     const valor = f[cabecera.indexOf(nombre)];
     if (clave === 'sector' || clave === 'variante') return [clave, valor];
-    if (valor === undefined || valor.trim() === '' || !Number.isFinite(Number(valor))) throw new Error(`Valor inválido en ${nombre}.`);
+    // Celda vacía = sin dato (sector con menos años válidos que el mínimo); texto no numérico = error
+    if (valor !== undefined && valor.trim() === '') return [clave, NaN];
+    if (valor === undefined || !Number.isFinite(Number(valor))) throw new Error(`Valor inválido en ${nombre}.`);
     return [clave, Number(valor)];
   })));
 }
@@ -126,12 +128,14 @@ async function iniciar() {
     for (const [titulo, texto] of [
       ['Nivel de prueba', `${Math.min(...nivel).toFixed(2)} a ${Math.max(...nivel).toFixed(2)} °C`],
       ['Población inventada', new Intl.NumberFormat('es-MX').format(f.properties.poblacion)],
-      ['p ajustado por FDR', r.p_fdr.toPrecision(3)]
+      ['p ajustado por FDR', Number.isFinite(r.p_fdr) ? r.p_fdr.toPrecision(3) : '—']
     ]) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = titulo; dd.textContent = texto; dl.append(dt,dd); }
     const descripcion = document.createElement('p'); descripcion.textContent = 'Nivel provisional: mínimo y máximo anual de la diferencia en 2001–2019; no es un intervalo de confianza.';
     const veredicto = document.createElement('p');
     veredicto.textContent = color === 'gris' ? 'En estos datos inventados no hay evidencia suficiente de un cambio con el criterio provisional.' : `En estos datos inventados, la diferencia nocturna entre sector y desierto ${color === 'rojo' ? 'aumenta' : 'disminuye'} de forma significativa con el criterio provisional.`;
-    const pendiente = document.createElement('p'); pendiente.textContent = `${r.pendiente_c_decada.toFixed(2)} °C por década (IC 95 %: ${r.ic95_inf.toFixed(2)} a ${r.ic95_sup.toFixed(2)}).`;
+    const pendiente = document.createElement('p'); pendiente.textContent = Number.isFinite(r.pendiente_c_decada)
+      ? `${r.pendiente_c_decada.toFixed(2)} °C por década (IC 95 %: ${r.ic95_inf.toFixed(2)} a ${r.ic95_sup.toFixed(2)}).`
+      : `Sin cálculo: solo ${r.n_anios} años válidos, menos que el mínimo.`;
     lectura.append(badge, dl, descripcion, veredicto, pendiente);
     if (color === 'gris') { const nota = document.createElement('p'); nota.className = 'nota'; nota.textContent = 'gris no significa sin tendencia: 19 años pueden no alcanzar para pendientes chicas'; lectura.append(nota); }
     $('titulo-sector').focus({preventScroll:true});
