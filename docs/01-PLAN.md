@@ -35,8 +35,8 @@ Variables de arranque (parámetros de POWER, modelo MERRA-2):
 
 | Parámetro | Qué es |
 |---|---|
-| `T2M_MIN` | Temperatura mínima del aire a 2 m: qué tan fresca llega a estar la noche |
-| `T2M_MAX` | Temperatura máxima del aire a 2 m |
+| `T2M_MIN` | Temperatura mínima del aire a 2 m: qué tan fresca llega a estar la noche. En POWER mensual es el extremo del mes, no un promedio |
+| `T2M_MAX` | Temperatura máxima del aire a 2 m. En POWER mensual es el extremo del mes |
 | `T2M` | Temperatura media del aire a 2 m |
 | `TS` | Temperatura de la superficie del suelo |
 | `PRECTOTCORR` | Precipitación |
@@ -97,7 +97,6 @@ Según López González y otros (2021), de El Colegio de Sonora:
 | Riesgo | Cómo se detecta | Plan B |
 |---|---|---|
 | El navegador bloquea la llamada a POWER | Primera comprobación de Navarrete | Descargar una vez los JSON de las ciudades de demostración y servirlos como archivos |
-| `TS` o `PRECTOTCORR` no están en el servicio mensual de POWER | Primera respuesta real de la API | Sin definir en v5. Decidir y registrar en `DECISIONES.md` |
 | ECOSTRESS no cubre Hermosillo en Earth Engine | Conteo de escenas de Ángel Díaz | AppEEARS, cuya solicitud se lanza de todos modos |
 | MYD21 no existe en Earth Engine o no se exporta a tiempo | Comprobación de Ángel Díaz | En los pasos de Aqua (13:30 y 1:30) se reporta solo MOD11 |
 | La estación de Hermosillo no cubre 2001-2019 | Revisión de Emilio. Un listado muestra sus dos registros terminando en octubre de 2013 | Modelo G con `T2M_MIN` de POWER. No se promete la gráfica de aire antes de confirmar |
@@ -116,8 +115,6 @@ Según López González y otros (2021), de El Colegio de Sonora:
 ## 8. Lo que falta verificar
 
 - La página oficial del reto no abrió. La tabla de requisitos usa el texto pegado por Mario.
-- La llamada real a POWER: formato de las llaves, valor de relleno y si el navegador la permite.
-- Que `TS` y `PRECTOTCORR` estén en el servicio mensual.
 - La cobertura de ECOSTRESS sobre Hermosillo en Earth Engine.
 - Los identificadores marcados "sin verificar hoy" en [04-DATOS-Y-APIS.md](04-DATOS-Y-APIS.md).
 - Los años que cubre la estación de Hermosillo.

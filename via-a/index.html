@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SunCity · ¿Qué cambia en mi región?</title>
+  <meta name="description" content="Elige un lugar y una variable climática: ve cuánto cambia por década desde 1981 y si el cambio es significativo. Datos de NASA POWER (MERRA-2).">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="contenedor">
+      <p class="marca">SunCity · Sonora Calor</p>
+      <h1>¿Qué cambia en mi región?</h1>
+      <p class="bajada">Elige un lugar, una variable y una temporada. Verás cuánto cambia por década desde 1981 y si el cambio es significativo.</p>
+    </div>
+  </header>
+
+  <main class="contenedor rejilla">
+    <section class="panel preguntas" aria-label="Preguntas">
+      <fieldset class="pregunta">
+        <legend><span class="num">1</span> ¿Dónde?</legend>
+        <p class="ayuda">Haz clic en el mapa o elige una ciudad de ejemplo.</p>
+        <div id="mapa" class="mapa" role="application" aria-label="Mapa para elegir un punto"></div>
+        <div class="fila">
+          <label class="campo">Ciudad de ejemplo
+            <select id="ciudad"></select>
+          </label>
+        </div>
+        <div class="fila coords">
+          <label class="campo">Latitud
+            <input id="lat" type="number" step="0.01" min="-90" max="90" inputmode="decimal">
+          </label>
+          <label class="campo">Longitud
+            <input id="lon" type="number" step="0.01" min="-180" max="180" inputmode="decimal">
+          </label>
+          <button id="ir" class="boton secundario" type="button">Usar este punto</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="pregunta">
+        <legend><span class="num">2</span> ¿Qué variable?</legend>
+        <div id="variables" class="opciones" role="radiogroup"></div>
+        <p class="fuente">Fuente: modelo MERRA-2 de la NASA, vía NASA POWER.</p>
+      </fieldset>
+
+      <fieldset class="pregunta">
+        <legend><span class="num">3</span> ¿Qué temporada?</legend>
+        <p class="ayuda">Comparar siempre la misma época del año quita el ciclo de las estaciones.</p>
+        <label class="campo">Temporada
+          <select id="temporada"></select>
+        </label>
+      </fieldset>
+    </section>
+
+    <section class="panel resultado" aria-live="polite" aria-label="Resultado">
+      <div id="estado" class="estado">Elige un lugar para empezar.</div>
+      <article id="tarjeta" class="tarjeta" hidden>
+        <p id="sello" class="sello"></p>
+        <h2 id="titular"></h2>
+        <p id="frase" class="frase"></p>
+        <dl class="cifras">
+          <div><dt>Cambio por década</dt><dd id="c-pend"></dd></div>
+          <div><dt>Rango del 95 %</dt><dd id="c-rango"></dd></div>
+          <div><dt>Valor p (Mann-Kendall)</dt><dd id="c-p"></dd></div>
+          <div><dt>Años con datos</dt><dd id="c-n"></dd></div>
+        </dl>
+        <p class="exploratorio"><strong>Exploratorio.</strong> Tú eliges qué probar, así que el valor p no está ajustado por todas las combinaciones posibles.</p>
+        <div id="grafica" class="grafica"></div>
+        <p class="leyenda"><span class="ley-serie"></span> valor de cada año <span class="ley-pend"></span> tendencia (Theil-Sen) <span class="ley-banda"></span> rango del 95 %</p>
+        <div class="acciones">
+          <button id="csv" class="boton secundario" type="button">Descargar datos (CSV)</button>
+          <button id="enlace" class="boton secundario" type="button">Copiar enlace</button>
+        </div>
+      </article>
+
+      <aside id="escala" class="escala" hidden>
+        <h3>Lo que este dato no puede ver</h3>
+        <p>MERRA-2 trabaja en celdas de unas decenas de kilómetros. El punto elegido representa toda la región que lo rodea: una ciudad y su desierto quedan en la misma celda. Esta herramienta ve regiones, no ciudades.</p>
+        <p id="puente" hidden>Para ver dentro de la ciudad hace falta otro satélite. <a href="../via-b/index.html">Ver dentro de Hermosillo →</a></p>
+      </aside>
+
+      <details class="glosario">
+        <summary>¿Qué significa cada término?</summary>
+        <dl>
+          <dt>Cambio por década</dt><dd>Cuánto sube o baja la variable cada 10 años, según la tendencia de toda la serie.</dd>
+          <dt>Theil-Sen</dt><dd>Calcula la pendiente entre cada par de años y toma la mediana; un año raro no la mueve mucho.</dd>
+          <dt>Rango del 95 %</dt><dd>Los valores de pendiente compatibles con los datos. Si incluye el cero, el signo del cambio no es seguro.</dd>
+          <dt>Mann-Kendall</dt><dd>Cuenta cuántos pares de años suben y cuántos bajan para decidir si hay una tendencia.</dd>
+          <dt>Valor p</dt><dd>Qué tan probable sería ver una tendencia así si en realidad no hubiera ninguna. Menos de 0.05 se llama significativo.</dd>
+          <dt>MERRA-2</dt><dd>Un modelo de la NASA que reconstruye el clima de todo el planeta desde 1980 combinando observaciones.</dd>
+        </dl>
+      </details>
+    </section>
+  </main>
+
+  <footer class="pie contenedor">
+    <p>Datos: <a href="https://power.larc.nasa.gov/" rel="noopener">NASA POWER</a>, API mensual, modelo MERRA-2, 1981-2025. Cálculo en tu navegador: Theil-Sen e intervalo del 95 % (Sen, 1968) y Mann-Kendall.</p>
+    <p>Proyecto SunCity, NASA Space Apps Challenge 2026, Hermosillo.</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="js/tendencia.js"></script>
+  <script src="js/power.js"></script>
+  <script src="js/grafica.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

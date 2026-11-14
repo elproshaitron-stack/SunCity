@@ -14,7 +14,7 @@ Cada fila dice qué se comprobó el 14 de noviembre de 2026 contra la documentac
 | Zoom a 70 m | `ECO_L2T_LSTE` v002, vía AppEEARS | Desde 2018-07-09, 70 m, mosaicos MGRS | Verificado en AppEEARS |
 | Zoom en Earth Engine | `NASA/ECOSTRESS/L2T_LSTE/V2` | 70 m | Cobertura dudosa: una versión de la página dice que solo se cargaron mosaicos de Los Ángeles |
 | Cotejo externo | `YALE/YCEO/UHI/UHI_yearly_averaged/v4` (media por ciudad) y `UHI_yearly_pixel/v4` (300 m), bandas `Daytime` y `Nighttime` en °C | 2003-2018, CC-BY-4.0 | Verificado |
-| Vía A y respaldo de aire | NASA POWER, API mensual: `/api/temporal/monthly/point` | Meteorología MERRA-2 desde 1981; hasta 20 parámetros por punto; JSON o CSV; sin autenticación | Documentación verificada; llamada real pendiente |
+| Vía A y respaldo de aire | NASA POWER, API mensual: `/api/temporal/monthly/point` | Meteorología MERRA-2 desde 1981; hasta 20 parámetros por punto; JSON o CSV; sin autenticación | Verificado con llamada real desde el navegador (14 nov) |
 | Estación de aire | Hermosillo, WMO 76160, en SMN o en Climate Data Online | Por confirmar | Un listado muestra los dos registros de Hermosillo terminando en octubre de 2013 |
 | Población | GPW v4.11 | 1 km | Sin verificar |
 
@@ -34,14 +34,26 @@ https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M_MIN,T2M_MA
 | `format` | `JSON` | También admite CSV |
 | `start`, `end` | `1981`, `2025` | Años |
 
-Pendiente de confirmar con la primera respuesta real:
+Verificado con la primera respuesta real (14 nov, API v2.10.0, desde el navegador):
 
-- [ ] Formato de las llaves de mes y de promedio anual.
-- [ ] Valor de relleno para datos faltantes.
-- [ ] Que `TS` y `PRECTOTCORR` existan en el servicio mensual. Aparecen en ejemplos oficiales de otros servicios de POWER.
-- [ ] Que el navegador permita la llamada.
+- [x] Llaves `AAAAMM` con `MM` = 01 a 12, y `AAAA13` para el valor anual.
+- [x] Valor de relleno: `header.fill_value` = -999. Hermosillo 1981-2025 no trae ninguno.
+- [x] `T2M`, `TS` y `PRECTOTCORR` existen en el servicio mensual.
+- [x] El navegador permite la llamada desde otro origen (sin bloqueo CORS).
 
-El 14 de noviembre se intentó abrir esta URL desde una herramienta automática y el sitio la rechazó por su política para robots. Eso no dice nada sobre el navegador: la prueba de Navarrete sigue pendiente.
+Qué significa cada valor mensual:
+
+| Parámetro | Valor de cada mes | Llave 13 (anual) | Unidad |
+|---|---|---|---|
+| `T2M_MIN` | Mínimo del mes (extremo) | Mínimo del año | °C |
+| `T2M_MAX` | Máximo del mes (extremo) | Máximo del año | °C |
+| `T2M` | Promedio del mes | Promedio del año | °C |
+| `TS` | Promedio del mes | Promedio del año | °C |
+| `PRECTOTCORR` | Promedio diario del mes | Promedio diario del año | mm/día |
+
+Ejemplo, Hermosillo 1981: `T2M_MIN` de enero = 6.22 °C con `T2M` de enero = 16.94 °C; `T2M_MIN` anual = 3.81 °C, igual al de febrero, el mes más frío.
+
+Desde el workspace de Claude la API no es accesible (red restringida); desde un navegador normal sí.
 
 ## 4.3 Filtro de calidad de MOD11A2
 
