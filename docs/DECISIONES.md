@@ -23,7 +23,7 @@ Cada decisión lleva: qué se decidió, quién, cuándo (fecha y hora) y por qu�
 | D09 | Vía A: origen de los datos de POWER | API en vivo / JSON guardados | Navarrete | propuesta, implementada | API en vivo; si falla, JSON guardado de las ciudades de demostración | 14 nov 11:55 | La API responde desde el navegador. El respaldo cubre una caída durante la demo |
 | D10 | Zoom ECOSTRESS: origen | Earth Engine / AppEEARS | Ángel Díaz | abierta | | | |
 | D11 | Modelo G: fuente de temperatura del aire | Estación (SMN o Climate Data Online) / `T2M_MIN` de POWER | Emilio, Carlos | abierta | | | |
-| D12 | Segunda ciudad árida de la Vía A | Por definir | Emilio | abierta | | | |
+| D12 | Segunda ciudad árida de la Vía A | Por definir | Emilio | abierta, con provisional | Mexicali (32.62, −115.45), provisional | 14 nov 12:20 | Árida, mexicana y con contraste: `T2M_MIN` anual +0.53 °C/década (p = 0.003) frente a +0.21 (p = 0.35) en Hermosillo. Cambiarla es una línea en `via-a/js/app.js` y otra en `via-a/datos/descargar.py` |
 
 ## Hechos confirmados al probar
 
@@ -40,6 +40,7 @@ Se llenan con lo que respondan las comprobaciones de la primera hora.
 | Existe MYD21 en Earth Engine | Ángel Díaz | | |
 | Años que cubre la estación de Hermosillo (SMN y Climate Data Online) | Emilio | | |
 | La función de referencia corre con una serie inventada | Carlos | Sí (scipy 1.18.1). Ver hallazgo H01 | 14 nov 11:55 |
+| Vía A de punta a punta en un navegador real | Navarrete | Sí. `power.js` y `tendencia.js` en el navegador: POWER en vivo en 0.5 a 1.1 s para Hermosillo, Mexicali, Phoenix y un punto del Pacífico; Hermosillo julio `T2M_MIN` = +0.378 °C/década (igual que Python). Leaflet 1.9.4 y teselas de OpenStreetMap cargan | 14 nov 12:15 |
 | Theil-Sen y Mann-Kendall en JavaScript igualan a Python a tres decimales | Navarrete | Sí: 119 casos (15 series reales de Hermosillo y 104 sintéticas, con empates y años faltantes), 0 fallos, diferencia máxima 8e-8. `node via-a/pruebas/probar_tendencia.cjs` | 14 nov 11:55 |
 
 ## Hallazgos
