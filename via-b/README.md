@@ -34,6 +34,10 @@ lo cierra. En celular aparece como hoja inferior y en escritorio como panel late
 - `datos/prueba/generar_prueba.py`: semilla fija, cálculo compartido y FDR entre
   sectores para cada variante; genera `serie.csv` y `resultados.csv`.
 - `datos/prueba/README.md`: recetas exactas de las variantes inventadas.
+- `nombres.js`: nombre único para mapa, selector y expediente. Prioridad:
+  personalizado en `localStorage`, oficial en `datos/prueba/nombres.json`,
+  automático por rumbo del centroide. El botón del lápiz permite editar;
+  Restaurar quita el nombre personal. Exportar nombres descarga un JSON para el equipo.
 - `../compartido/serie-anual.js`: componente SVG independiente de Vía B.
 
 ## Componente compartido
