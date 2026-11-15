@@ -206,7 +206,7 @@ Vía B:
 ### Fase 6. Cierre
 
 - [ ] **C16 · C** `CHANGELOG.md` y etiqueta `v1.0.0`. *Depende:* todo lo anterior.
-- [ ] **A17 · C** Revisión final de documentación: ningún documento contradice al código.
+- [x] **A17 · C** Revisión final de documentación: ningún documento contradice al código.
 - [ ] **A18 · C** Las diez condiciones de la sección 1 marcadas, cada una con su evidencia.
 
 ## 7. Orden y dependencias
@@ -238,7 +238,7 @@ Carga por persona: A 18 tareas, B 11, C 16. Si A se atrasa, A5, A8 y A14 pueden 
 | Riesgo | Respuesta |
 |---|---|
 | Los componentes llegan tarde y B se queda esperando | A entrega A2 por partes: primero botón, campo, aviso e insignia, que es lo que pide B1 |
-| El cambio de mapa en la Vía B rompe algo que ya funciona | B2 va detrás de una opción en `config.js` hasta que pasen las pruebas; después se borra Leaflet |
+| El cambio de mapa en la Vía B rompe algo que ya funciona | Ya ocurrió el cambio (PR #20): Leaflet salió y `aceptacion.py` sigue en 7 PASA. El enlace `?sector=` se rompió y se arregló en el PR #23 |
 | Las pruebas de punta a punta fallan por el mapa | Las pruebas sirven mosaicos locales de `pruebas/e2e/`, no de internet |
 | Servir las fuentes y el mapa desde el sitio lo hace pesado | Fuentes en WOFF2 solo con los pesos usados; el mapa se carga después del primer dibujo |
 | Los datos observados no llegan | La 1.0 se publica con el aviso de datos de prueba visible y la condición 10 abierta; el resto del plan no depende de ella |

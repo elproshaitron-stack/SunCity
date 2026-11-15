@@ -189,21 +189,27 @@ Reglas del contrato:
 
 ```text
 SunCity/
-├── README.md
+├── index.html             Portada
+├── 404.html               Página no encontrada
+├── manifest.webmanifest
+├── servir.py              Servidor local (muestra 404.html en rutas que no existen)
 ├── requirements.txt
-├── docs/
-│   ├── 01-PLAN.md
-│   ├── 02-FASES.md
-│   ├── 03-ARQUITECTURA.md
-│   ├── 04-DATOS-Y-APIS.md
-│   ├── 05-MODELOS.md
-│   ├── DECISIONES.md
-│   ├── SunCity-Documentacion.pdf
-│   └── construir_pdf.py
-├── compartido/
-│   └── tendencia.py
-├── via-a/
-└── via-b/
+├── metodo/                Método, glosario y fuentes: muestra docs/METODO.md
+├── docs/                  Plan, fases, arquitectura, datos, modelos, decisiones, método y calidad
+│   └── calidad/           Evidencia ISO 9241-110, ISO/IEC 25010 y recorrido de accesibilidad
+├── compartido/            Lo que usan las dos vías
+│   ├── tokens.css         Colores, tipografía, espacio, radios y movimiento
+│   ├── componentes.css    Componentes sc- con todos sus estados
+│   ├── componentes.js     Hoja, diálogo, toast, barra, pie y demás comportamiento
+│   ├── catalogo.html      Cada componente y cada estado, en los dos temas
+│   ├── iconos.svg         Juego único de íconos
+│   ├── mapa-estilo.js     Estilo común de MapLibre
+│   ├── lst-noche.js       Temperatura de la superficie de noche (MODIS) desde NASA GIBS
+│   ├── serie-anual.js     Gráfica de la serie anual
+│   ├── tendencia.py       Función de referencia (Theil-Sen, Mann-Kendall, FDR)
+│   └── marca/             Logo e íconos (generar.py los produce desde logo-original.webp)
+├── via-a/                 Región: cualquier punto del planeta con NASA POWER
+└── via-b/                 Hermosillo: mapa, expediente y procesamiento/ (Earth Engine → CSV)
 ```
 
 Las columnas de `serie.csv` y `resultados.csv` están definidas en v4. Conviene copiar esa definición a `via-b/README.md` en cuanto el PDF de v4 esté a la mano.

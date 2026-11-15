@@ -17,6 +17,7 @@ Cada fila dice qué se comprobó el 14 de noviembre de 2026 contra la documentac
 | Vía A y respaldo de aire | NASA POWER, API mensual: `/api/temporal/monthly/point` | Meteorología MERRA-2 desde 1981; hasta 20 parámetros por punto; JSON o CSV; sin autenticación | Verificado con llamada real desde el navegador (14 nov) |
 | Estación de aire | Hermosillo, WMO 76160, en SMN o en Climate Data Online | Por confirmar | Un listado muestra los dos registros de Hermosillo terminando en octubre de 2013 |
 | Población | GPW v4.11 | 1 km | Sin verificar |
+| Mapa de la Vía B | NASA GIBS, capa `MODIS_Terra_L3_Land_Surface_Temp_8Day_Night` (MOD11A2 v6.1) y paleta `MODIS_Land_Surface_Temp.xml` | 8 días, nivel 7 (unos 1.1 km en Hermosillo) | Verificado en el navegador (15 nov): sin clave, con CORS, 252 colores de 0.6 K cada uno |
 
 ## 4.2 NASA POWER (Vía A)
 

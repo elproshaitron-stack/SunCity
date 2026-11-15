@@ -1,6 +1,18 @@
 # Vía B · Explorador de Hermosillo
 
-Datos inventados. No son resultados. HTML, CSS y módulos ES sin build.
+El mapa muestra temperatura real de MODIS; los sectores y sus resultados todavía son datos de prueba
+(ver "Qué es real y qué es de prueba"). HTML, CSS y módulos ES sin build.
+
+## Qué es real y qué es de prueba
+
+| Parte | Origen |
+|---|---|
+| Capa de temperatura de la superficie de noche del mapa | Real: MODIS Terra MOD11A2 desde NASA GIBS (`../compartido/lst-noche.js`) |
+| Lectura bajo el cursor y sección "00 · Este periodo en MODIS" del expediente | Real: los mismos píxeles de MODIS |
+| Polígonos de los seis sectores y de las dos referencias | De prueba: cuadros esquemáticos de 3.1 × 3.1 km (D15 abierta) |
+| Población de cada sector | De prueba |
+| Serie 2001-2025, pendiente, intervalo, p, FDR y semáforo | De prueba: `datos/prueba/generar_prueba.py` con semilla fija |
+| Ciclo diario, nivel, curva de variantes y zoom de ECOSTRESS | De prueba |
 
 Desde la raíz del repositorio:
 
@@ -17,14 +29,16 @@ Sirve siempre la raíz del repositorio, incluso al ejecutarlo desde otra carpeta
 con la ruta al script (por ejemplo, `python C:\dev\suncity\servir.py 8001`).
 Detenerlo con `Ctrl+C`.
 
-Se necesita conexión para Leaflet
-1.9.4 por CDN y OpenStreetMap. No abrir como `file://`.
+Se necesita conexión para MapLibre GL JS 5.24.1 (unpkg), los mosaicos vectoriales de OpenFreeMap
+y la capa de NASA GIBS. No abrir como `file://`. Si el mapa no carga, el selector sigue abriendo cada sector.
 Tocar un sector o elegirlo en el selector abre el expediente; Cerrar o Escape
 lo cierra. En celular aparece como hoja inferior y en escritorio como panel lateral.
 
 ## Archivos
 
 - `index.html`, `estilos.css`, `app.js`: interfaz, mapa, lectura CSV y expediente.
+- `../compartido/mapa-estilo.js`: estilo común de MapLibre (el mismo del globo de la Vía A).
+- `../compartido/lst-noche.js`: lee la capa de MODIS de NASA GIBS y traduce cada píxel a °C.
 - `config.js`: único lugar donde cambiar `RUTA_DATOS` (por defecto `datos/prueba/`).
 - `datos/esquema.js`: único lugar donde se definen las columnas de los CSV
   y variantes admitidas. Cambiar los valores del mapa al recibir v4; conservar
@@ -45,7 +59,8 @@ lo cierra. En celular aparece como hoja inferior y en escritorio como panel late
   personalizado en `localStorage`, oficial en `datos/prueba/nombres.json`,
   automático por rumbo del centroide. El botón del lápiz permite editar;
   Restaurar quita el nombre personal. Exportar nombres descarga un JSON para el equipo.
-- `../compartido/serie-anual.js`: componente SVG independiente de Vía B.
+- `../compartido/serie-anual.js`: gráfica de la serie anual, compartida con la Vía A. Se recorre con
+  las flechas y trae "Ver datos en tabla".
 
 ## Componente compartido
 

@@ -2,7 +2,10 @@
 
 Herramienta para responder **qué variable climática cambia en una región, cuánto por década y si el cambio es significativo**. Proyecto del equipo para NASA Space Apps Challenge 2026, sede Hermosillo (14 y 15 de noviembre de 2026).
 
-> **Estado al 14 de noviembre de 2026:** la Vía A consulta series regionales de NASA POWER. La Vía B incluye un expediente de demostración con datos sintéticos y un flujo de procesamiento probado con exportaciones simuladas. Siguen pendientes los resultados observados por sector.
+> **Estado al 15 de noviembre de 2026 (versión 0.9.0):**
+> - **Vía A, real.** Consulta en vivo NASA POWER (MERRA-2, 1981-2025) para cualquier punto del planeta, con copia guardada de Hermosillo y Mexicali.
+> - **Vía B, mapa real.** El mapa muestra la temperatura de la superficie de noche que midió MODIS (NASA GIBS), por año y periodo de 8 días.
+> - **Vía B, sectores de prueba.** Los polígonos de los sectores, su población, sus series 2001-2025, sus tendencias, el semáforo, el ciclo diario, las variantes y el zoom de ECOSTRESS son datos sintéticos de `via-b/datos/prueba/`, hechos para probar la interfaz. Se reemplazan al cerrar D15 y correr `via-b/procesamiento/` con las exportaciones de Earth Engine.
 
 ## Qué se entrega
 
@@ -47,13 +50,27 @@ flowchart LR
 
 ```text
 SunCity/
-├── README.md
+├── index.html             Portada
+├── 404.html               Página no encontrada
+├── manifest.webmanifest
+├── servir.py              Servidor local (muestra 404.html en rutas que no existen)
 ├── requirements.txt
-├── docs/                  Plan, fases, arquitectura, datos, modelos, decisiones, PDF
+├── metodo/                Método, glosario y fuentes: muestra docs/METODO.md
+├── docs/                  Plan, fases, arquitectura, datos, modelos, decisiones, método y calidad
+│   └── calidad/           Evidencia ISO 9241-110, ISO/IEC 25010 y recorrido de accesibilidad
 ├── compartido/            Lo que usan las dos vías
-│   └── tendencia.py       Función de referencia (Theil-Sen, Mann-Kendall, FDR)
-├── via-a/                 Herramienta a escala (navegador + NASA POWER)
-└── via-b/                 Hermosillo: interfaz y procesamiento/ (Earth Engine → CSV)
+│   ├── tokens.css         Colores, tipografía, espacio, radios y movimiento
+│   ├── componentes.css    Componentes sc- con todos sus estados
+│   ├── componentes.js     Hoja, diálogo, toast, barra, pie y demás comportamiento
+│   ├── catalogo.html      Cada componente y cada estado, en los dos temas
+│   ├── iconos.svg         Juego único de íconos
+│   ├── mapa-estilo.js     Estilo común de MapLibre
+│   ├── lst-noche.js       Temperatura de la superficie de noche (MODIS) desde NASA GIBS
+│   ├── serie-anual.js     Gráfica de la serie anual
+│   ├── tendencia.py       Función de referencia (Theil-Sen, Mann-Kendall, FDR)
+│   └── marca/             Logo e íconos (generar.py los produce desde logo-original.webp)
+├── via-a/                 Región: cualquier punto del planeta con NASA POWER
+└── via-b/                 Hermosillo: mapa, expediente y procesamiento/ (Earth Engine → CSV)
 ```
 
 ## Primeros pasos
@@ -64,8 +81,11 @@ Desde la raíz del repositorio:
 python servir.py
 ```
 
+- Portada: <http://localhost:8000/>
 - Vía A: <http://localhost:8000/via-a/>
 - Vía B: <http://localhost:8000/via-b/>
+- Método: <http://localhost:8000/metodo/>
+- Catálogo de componentes: <http://localhost:8000/compartido/catalogo.html>
 
 Pruebas de la estadística:
 
