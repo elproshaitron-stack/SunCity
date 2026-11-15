@@ -2,7 +2,7 @@
 
 Revisión de la sección 1 de `docs/07-PLAN-DE-CIERRE.md` al 15 de noviembre de 2026, versión 0.9.0.
 Cada condición tiene su estado y la evidencia que hay hoy en el repositorio. **La versión 1.0 todavía no
-existe:** 2 condiciones se cumplen, 4 en parte y 4 no. Lo que falta depende sobre todo del carril C
+existe:** 1 condición se cumple, 4 en parte y 5 no. Lo que falta depende sobre todo del carril C
 (calidad y publicación), del carril B (Vía B) y de cerrar D15.
 
 | # | Condición | Estado | Evidencia hoy | Qué falta y de quién |
