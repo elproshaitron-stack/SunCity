@@ -8,7 +8,8 @@ const ETIQUETAS_WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 
 // Cada ruta con la señal de que ya terminó de dibujarse
 const RUTAS = [
   { nombre: 'portada', url: '/', listo: (p) => p.getByRole('link', { name: 'Abrir Región' }) },
-  { nombre: 'vía A', url: '/via-a/', listo: (p) => p.getByRole('article').filter({ hasText: 'Cambio por década' }) },
+  // La gráfica compartida llega como módulo y vuelve a dibujar el veredicto: se espera a que esté
+  { nombre: 'vía A', url: '/via-a/', listo: (p) => p.getByRole('article').getByRole('button', { name: 'Ver datos en tabla' }) },
   { nombre: 'vía A con error de descarga', url: '/via-a/#lat=10.00&lon=10.00&var=T2M&mes=0', sinPower: true,
     listo: (p) => p.getByRole('button', { name: 'Reintentar descarga' }) },
   { nombre: 'vía B', url: '/via-b/', listo: (p) => p.getByRole('combobox', { name: 'Explorar un sector' }).and(p.locator(':enabled')) },
@@ -28,6 +29,8 @@ for (const ruta of RUTAS) {
     await page.goto(ruta.url);
     await expect(ruta.listo(page)).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
+    // Un cuadro más para que termine cualquier redibujo pendiente
+    await page.evaluate(() => new Promise((listo) => requestAnimationFrame(() => requestAnimationFrame(listo))));
 
     const { violations } = await new AxeBuilder({ page }).withTags(ETIQUETAS_WCAG).analyze();
     await info.attach('axe.json', { body: JSON.stringify(violations, null, 2), contentType: 'application/json' });
