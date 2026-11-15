@@ -75,3 +75,21 @@ Las recetas sintéticas no establecen decisiones para los datos reales.
 `/via-b/index.html?sector=S01` abre el expediente del sector con ese ID.
 También funciona `/via-b/?sector=S01`. Si el ID no existe, se abre el mapa.
 El enlace usa el ID, no el nombre editable del sector.
+
+## Pruebas de aceptación
+
+Desde la raíz del repositorio, con las dependencias de `requirements.txt` instaladas:
+
+```sh
+python via-b/pruebas/aceptacion.py
+```
+
+Por defecto usa `RUTA_DATOS` de `via-b/config.js`. Para elegir otra carpeta:
+
+```sh
+python via-b/pruebas/aceptacion.py via-b/datos/prueba/
+```
+
+Cada prueba muestra `PASA` o `FALLA` con el motivo; el resumen final y el código
+de salida 1 indican si hay fallos. Las coincidencias de texto se señalan para
+revisión manual.

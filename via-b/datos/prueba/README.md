@@ -4,9 +4,11 @@ Polígonos esquemáticos y población inventada; no son límites oficiales.
 Los seis sectores miden aproximadamente 3.1 × 3.1 km. Las referencias
 están al oeste de la ciudad; su idoneidad no ha sido evaluada.
 
-`generar_prueba.py` usa semilla 2027 y el esquema de `../esquema.js`.
+`generar_prueba.py` usa semillas fijas 2027 y 2028, el esquema de
+`../esquema.js` y `pasosAqua` de `../../config.js`.
 `ciclo_diario.csv` contiene medias 2003–2019 inventadas por hora y producto.
-Terra tiene MOD11 y MOD21; Aqua solo MOD11. Los signos diurnos de Yale
+Terra tiene MOD11 y MOD21; Aqua tiene ambos si `pasosAqua` es `rango`, o solo
+MOD11 si es `solo_mod11`. Los signos diurnos de Yale
 también son inventados y sirven únicamente para probar el marcador.
 `nivel.csv` contiene la media primaria de MOD11 y una transformación sintética
 para MOD21. `ecostress_zoom.json` es una rejilla 40 × 40 inventada del sector
