@@ -20,7 +20,7 @@ Norma de referencia: ISO/IEC 40500 (WCAG 2.2 AA). Esto es evidencia de revisión
 |---|---|---|---|---|---|
 | `/` | h1, h2 sin saltos | Sí, a `#contenido` | 0 | 0 | Pasa |
 | `/via-a/` | h1, h2, h3 sin saltos | Sí, a `#resultado` | 0 de 42 enfocables | 0 | Pasa tras las correcciones |
-| `/via-b/` | h1, h2, h3 sin saltos | **No** | 0 de 16 enfocables | 0 | Falta la barra común (B1) |
+| `/via-b/` | h1, h2, h3 sin saltos | Sí, a `#contenido` (desde B1) | 0 | 0 | Pasa tras B1 |
 | `/metodo/` | h1, h2, h3 sin saltos | Sí, a `#contenido` | 0 de 25 enfocables | 0 | Pasa |
 | `/404.html` | h1 | Sí, a `#contenido` | 0 | 0 | Pasa |
 
@@ -43,6 +43,5 @@ glosario → fuentes del pie. El foco se ve en todos.
 
 ## Pendiente
 
-- **Vía B**: barra común con "Saltar al contenido" (tarea B1, carril de B).
 - **Lector de pantalla real**: NVDA en Windows y VoiceOver en iPhone (C7 automatiza axe; lo manual
   queda para quien tenga los dispositivos).

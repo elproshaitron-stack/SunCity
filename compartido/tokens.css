@@ -186,6 +186,8 @@
   --graf-banda: var(--verde-700);
   --graf-rejilla: var(--arena-200);
   --graf-eje: var(--tinta-600);
+  --graf-dia: var(--brasa-700);           /* pasos de las 10:30 y 13:30 */
+  --graf-noche: var(--verde-700);         /* pasos de las 22:30 y 1:30 */
 
   /* Sombras: solo para lo que flota */
   --sombra-accion: 0 14px 30px -20px rgba(27, 23, 16, .7);
@@ -231,6 +233,8 @@
   --estado-neutro: var(--luz-300);
 
   --accion-presion: var(--luz-300);
+  --graf-dia: var(--brasa-300);
+  --graf-noche: var(--verde-300);
   --velo: rgba(6, 10, 24, .6);
 
   --sombra-1: 0 6px 20px -8px rgba(0, 0, 0, .6);

@@ -1,3 +1,5 @@
+import {ESCALA, colorPara} from '../compartido/lst-noche.js';
+
 const NS = 'http://www.w3.org/2000/svg';
 
 export function dibujarZoom(contenedor, datos, datosDePrueba) {
@@ -19,11 +21,12 @@ export function dibujarZoom(contenedor, datos, datosDePrueba) {
   datos.valores_c.forEach((fila, y) => fila.forEach((valor, x) => {
     const t = (valor - minimo) / (maximo - minimo || 1);
     const rect = document.createElementNS(NS, 'rect');
-    for (const [k,v] of Object.entries({x:x*celdaX,y:y*celdaY,width:celdaX+.2,height:celdaY+.2,fill:`hsl(${48 - 42*t} 76% ${84 - 40*t}%)`})) rect.setAttribute(k,v);
+    for (const [k,v] of Object.entries({x:x*celdaX,y:y*celdaY,width:celdaX+.2,height:celdaY+.2,fill:`rgb(${colorPara(t).join(',')})`})) rect.setAttribute(k,v);
     svg.append(rect);
   }));
   const leyenda = document.createElement('div'); leyenda.className = 'leyenda-calor';
   const barra = document.createElement('span'); barra.className = 'escala-calor';
+  barra.style.background = `linear-gradient(to right, ${ESCALA.join(', ')})`;
   const bajo = document.createElement('span'), altoLabel = document.createElement('span');
   bajo.textContent = `${minimo.toFixed(1)} °C`; altoLabel.textContent = `${maximo.toFixed(1)} °C`;
   leyenda.append(bajo,barra,altoLabel);
