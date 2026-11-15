@@ -78,6 +78,23 @@
 
       <section class="resultado" aria-live="polite" aria-label="Resultado">
         <div id="estado" class="estado">Elige un lugar para empezar.</div>
+        <div id="aviso" class="aviso-datos" hidden></div>
+
+        <!-- Mientras llegan los datos: la forma del veredicto, sin giro suelto -->
+        <div id="esqueleto" class="esqueleto-veredicto" aria-hidden="true" hidden>
+          <span class="sc-esqueleto sc-esqueleto--linea esq-insignia"></span>
+          <span class="sc-esqueleto sc-esqueleto--titulo"></span>
+          <span class="sc-esqueleto sc-esqueleto--linea"></span>
+          <span class="sc-esqueleto sc-esqueleto--linea"></span>
+          <span class="sc-esqueleto sc-esqueleto--linea"></span>
+          <div class="esq-cifras"><span class="sc-esqueleto sc-esqueleto--bloque"></span><span class="sc-esqueleto sc-esqueleto--bloque"></span></div>
+          <span class="sc-esqueleto sc-esqueleto--grafica"></span>
+        </div>
+
+        <div id="vacio" class="sc-vacio" hidden>
+          <p class="sc-vacio__titulo" id="vacio-titulo"></p>
+          <p class="sc-vacio__texto" id="vacio-texto"></p>
+        </div>
 
         <article id="tarjeta" class="veredicto" hidden>
           <p id="sello" class="sc-insignia"></p>

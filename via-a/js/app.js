@@ -72,7 +72,13 @@
 
     $("ir").addEventListener("click", function () {
       var lat = parseFloat($("lat").value), lon = parseFloat($("lon").value);
-      if (isNaN(lat) || isNaN(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) {
+      var malLat = isNaN(lat) || Math.abs(lat) > 90, malLon = isNaN(lon) || Math.abs(lon) > 180;
+      // El error va junto al campo que lo tiene (componentes.js); sin él, en la línea de estado
+      if (window.SC) {
+        SC.errorCampo("lat", malLat ? "Escribe una latitud entre −90 y 90." : null);
+        SC.errorCampo("lon", malLon ? "Escribe una longitud entre −180 y 180." : null);
+        if (malLat || malLon) { $(malLat ? "lat" : "lon").focus(); return; }
+      } else if (malLat || malLon) {
         mostrarEstado("Escribe una latitud entre −90 y 90 y una longitud entre −180 y 180.", "error");
         return;
       }
@@ -137,10 +143,8 @@
     estado.datos = null;
     estado.serie = null;
     estado.res = null;
-    $("tarjeta").hidden = true;
-    $("escala").hidden = true;
     guardarEnURL();
-    mostrarEstado("Descargando 45 años de NASA POWER para " + nombreLugar(lugar) + "…", "cargando");
+    mostrarCarga("Descargando 45 años de NASA POWER para " + nombreLugar(lugar) + "…");
     Power.cargar(lugar.lat, lugar.lon, lugar.ciudad && lugar.ciudad.respaldo)
       .then(function (r) {
         cache[clave] = r;
@@ -150,8 +154,7 @@
       })
       .catch(function (err) {
         if (mio !== pedido) return;
-        $("tarjeta").hidden = true;
-        mostrarEstado("No se pudieron obtener los datos (" + err.message + "). Revisa la conexión e inténtalo de nuevo.", "error");
+        mostrarErrorDescarga(lugar, err);
       });
   }
 
@@ -169,8 +172,26 @@
     var v = Power.VARIABLES[estado.variable], u = v.unidad, l = estado.lugar;
     var lugarTxt = nombreLugar(l), sujeto = v.corta + textoTemporada(estado.mes);
     var a0 = s.anios[0], a1 = s.anios[s.anios.length - 1];
+    terminarCarga();
     mostrarEstado("Datos de NASA POWER, " + a0 + "-" + a1 + ' <span class="sc-insignia sc-insignia--exploratorio origen">' +
-      (estado.origen === "en vivo" ? "descargados ahora" : "archivo guardado") + "</span>", "", true);
+      (estado.origen === "en vivo" ? "descargados ahora" : "copia guardada") + "</span>", "", true);
+    if (estado.origen === "guardado") {
+      var version = estado.datos.header && estado.datos.header.api ? " (API " + estado.datos.header.api.version + ")" : "";
+      mostrarAviso("advertencia", "Sin respuesta de NASA POWER",
+        "Se muestra la copia guardada de " + lugarTxt + version + ", con la misma serie 1981-2025. El cálculo es igual; solo cambia de dónde vienen los datos.",
+        { texto: "Intentar en vivo", alHacer: function () { delete cache[claveDe(l)]; fijarLugar(l, false); } });
+    }
+
+    // Punto sin ningún dato para esta variable y temporada
+    if (r.n_anios === 0) {
+      $("tarjeta").hidden = true;
+      $("vacio-titulo").textContent = "Sin datos para este punto";
+      $("vacio-texto").textContent = "NASA POWER no tiene valores de " + v.nombre.toLowerCase() + textoTemporada(estado.mes) +
+        " en " + lugarTxt + ". Prueba otra variable, otra temporada u otro punto.";
+      $("vacio").hidden = false;
+      pintarEscala(l);
+      return;
+    }
 
     var sello = $("sello"), tarjeta = $("tarjeta");
     tarjeta.hidden = false;
@@ -238,6 +259,57 @@
     $("puente").hidden = Math.sqrt(dLat * dLat + dLon * dLon) > 0.5; // ~55 km
   }
 
+  function claveDe(l) { return l.lat.toFixed(2) + "," + l.lon.toFixed(2); }
+
+  function ocultarResultado() {
+    $("tarjeta").hidden = true; $("escala").hidden = true; $("vacio").hidden = true; $("aviso").hidden = true;
+  }
+
+  // Mientras se descarga: el esqueleto ocupa el lugar del veredicto
+  function mostrarCarga(texto) {
+    ocultarResultado();
+    $("esqueleto").hidden = false;
+    document.querySelector(".resultado").setAttribute("aria-busy", "true");
+    mostrarEstado(texto);
+  }
+  function terminarCarga() {
+    $("esqueleto").hidden = true; $("vacio").hidden = true; $("aviso").hidden = true;
+    document.querySelector(".resultado").removeAttribute("aria-busy");
+  }
+
+  // Aviso junto al resultado: sc-aviso con título, texto y, si hay, una acción
+  function mostrarAviso(tipo, titulo, texto, accion) {
+    var caja = $("aviso");
+    caja.className = "aviso-datos sc-aviso sc-aviso--" + tipo;
+    if (tipo === "error") caja.setAttribute("role", "alert"); else caja.removeAttribute("role");
+    var partes = [
+      Object.assign(document.createElement("p"), { className: "sc-aviso__titulo", textContent: titulo }),
+      Object.assign(document.createElement("p"), { className: "sc-aviso__texto", textContent: texto })
+    ];
+    if (accion) {
+      var fila = Object.assign(document.createElement("div"), { className: "sc-aviso__acciones" });
+      var b = Object.assign(document.createElement("button"), { type: "button", className: "sc-boton sc-boton--secundario sc-boton--compacto" });
+      b.innerHTML = '<svg class="sc-icono sc-icono--chico" aria-hidden="true"><use href="../compartido/iconos.svg#reintentar"/></svg>';
+      b.appendChild(document.createTextNode(accion.texto));
+      b.addEventListener("click", accion.alHacer);
+      fila.appendChild(b); partes.push(fila);
+    }
+    caja.replaceChildren.apply(caja, partes);
+    caja.hidden = false;
+  }
+
+  function mostrarErrorDescarga(lugar, err) {
+    terminarCarga();
+    ocultarResultado();
+    var sinRed = navigator.onLine === false;
+    mostrarEstado("");
+    mostrarAviso("error", "No se pudo descargar la serie",
+      (sinRed ? "Parece que no hay conexión a internet. " : "NASA POWER no respondió (" + err.message + "). ") +
+      "Revisa la conexión y vuelve a intentarlo; el lugar y la variable se conservan.",
+      { texto: "Reintentar descarga", alHacer: function () { fijarLugar(lugar, false); } });
+    $("aviso").querySelector("button").focus({ preventScroll: true });
+  }
+
   function mostrarEstado(texto, clase, html) {
     var e = $("estado");
     if (clase === "error") {
@@ -296,10 +368,15 @@
   }
 
   function copiarEnlace() {
-    var b = $("enlace"), txt = location.href;
-    var listo = function () { b.textContent = "Enlace copiado"; setTimeout(function () { b.textContent = "Copiar enlace"; }, 2000); };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(listo, function () { b.textContent = "Copia la dirección del navegador"; });
-    else b.textContent = "Copia la dirección del navegador";
+    var avisar = function (texto, tipo) {
+      if (window.SC) SC.toast(texto, { tipo: tipo });
+      else mostrarEstado(texto);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(location.href).then(
+        function () { avisar("Enlace copiado. Quien lo abra verá este mismo lugar, variable y temporada."); },
+        function () { avisar("No se pudo copiar. Copia la dirección de la barra del navegador.", "error"); });
+    } else avisar("No se pudo copiar. Copia la dirección de la barra del navegador.", "error");
   }
 
   /* ---------- Inicio ---------- */
