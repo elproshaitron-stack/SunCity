@@ -114,7 +114,18 @@
       if (opciones && opciones.alElegir) opciones.alElegir(ll.lat, ll.lng);
     });
     mapa.getCanvas().style.cursor = "crosshair";
-    mapa.on("error", function (e) { console.warn("Globo:", e && e.error ? e.error.message : e); });
+    // Sin mapa base (sin red o OpenFreeMap caído): el globo queda de un color y se dice qué hacer
+    var avisado = false;
+    mapa.on("error", function (e) {
+      console.warn("Globo:", e && e.error ? e.error.message : e);
+      if (avisado || !e || !(e.sourceId === "omt" || /openfreemap/.test(String(e.error && (e.error.url || e.error.message))))) return;
+      avisado = true;
+      var aviso = document.createElement("p");
+      aviso.className = "aviso-mapa";
+      aviso.setAttribute("role", "status");
+      aviso.textContent = "El mapa base no cargó. Elige una ciudad o escribe la latitud y la longitud.";
+      cont.appendChild(aviso);
+    });
     raiz.Globo.mapa = mapa; // para depurar desde la consola
 
     return { mover: mover, mapa: mapa };
