@@ -1,6 +1,6 @@
 # Reglas para agentes (Codex, Antigravity, Claude)
 
-Este archivo manda sobre cualquier costumbre propia del agente. El plan de trabajo y el tablero de tareas están en [docs/06-PLAN-AGENTES.md](docs/06-PLAN-AGENTES.md).
+Este archivo manda sobre cualquier costumbre propia del agente. El tablero de tareas vigente está en [docs/07-PLAN-DE-CIERRE.md](docs/07-PLAN-DE-CIERRE.md); el contexto y la auditoría, en [docs/06-PLAN-AGENTES.md](docs/06-PLAN-AGENTES.md).
 
 ## Qué es el proyecto
 
@@ -14,11 +14,11 @@ Sin compilación ni empaquetador: HTML, CSS y JavaScript servidos tal cual con `
 
 ## Carriles: cada agente toca solo lo suyo
 
-| Carril | Agente | Puede editar | Rama |
-|---|---|---|---|
-| Datos y verificación | Codex | `via-b/procesamiento/**`, `via-b/datos/**` (menos `datos/reales/export/`), `via-b/pruebas/**`, `via-a/pruebas/**`, `compartido/tendencia.py`, `verificar.py`, `.github/**`, `requirements.txt` | `codex/<id>-<tema>` |
-| Interfaz de Hermosillo | Antigravity | `via-b/*.html`, `via-b/*.css`, `via-b/*.js` | `agy/<id>-<tema>` |
-| Vía A, sistema de diseño e integración | Claude | `via-a/**` (menos `via-a/pruebas/**`), `compartido/tokens.css`, `compartido/serie-anual.js`, `docs/**`, `README.md`, `AGENTS.md`, `CLAUDE.md`, `servir.py` | `claude/<id>-<tema>` |
+| Persona | Carril | Agente de apoyo | Puede editar | Rama |
+|---|---|---|---|---|
+| A | Sistema de diseño y Vía A | Claude | `compartido/tokens.css`, `compartido/componentes.*`, `compartido/catalogo.html`, `compartido/iconos.svg`, `compartido/serie-anual.js`, `compartido/mapa-estilo.js`, `via-a/**` (menos `via-a/pruebas/**`), `index.html`, `404.html`, `metodo/**`, `docs/**`, `README.md`, `AGENTS.md`, `CLAUDE.md`, `servir.py` | `claude/<id>-<tema>` |
+| B | Vía B: Hermosillo | Antigravity | `via-b/*.html`, `via-b/*.css`, `via-b/*.js` | `agy/<id>-<tema>` |
+| C | Calidad, datos y publicación | Codex | `verificar.py`, `pruebas/**`, `.github/**`, `compartido/vendor/**`, `compartido/tendencia.py`, `via-b/procesamiento/**`, `via-b/datos/**` (menos `datos/reales/export/`), `via-b/pruebas/**`, `via-a/pruebas/**`, `requirements.txt`, `CHANGELOG.md` | `codex/<id>-<tema>` |
 
 Si una tarea necesita un archivo de otro carril, no lo edites: abre un issue con la etiqueta del carril dueño y describe el cambio exacto. Mario es el dueño humano de `via-b/`; todo PR de Antigravity lo revisa él.
 
@@ -27,7 +27,7 @@ Si una tarea necesita un archivo de otro carril, no lo edites: abre un issue con
 1. Objeto de resultado de las dos vías: `n_anios`, `pendiente_c_decada`, `ic95_inf`, `ic95_sup`, `p`.
 2. Columnas y nombres de los CSV: `via-b/datos/esquema.js` es la única fuente.
 3. Firma de `dibujarSerieAnual(contenedor, {anios, valores, resultado, unidad, aniosPunteados, incluirCero})`.
-4. Tokens de diseño de `compartido/tokens.css`: se usan, no se redefinen en cada vía.
+4. Tokens de `compartido/tokens.css` y componentes `sc-` de `compartido/componentes.*`: se usan, no se redefinen en cada vía. Si falta un componente, se le pide a la persona A.
 
 ## Reglas de ciencia
 
@@ -50,10 +50,10 @@ Si una tarea necesita un archivo de otro carril, no lo edites: abre un issue con
    python via-b/procesamiento/probar_procesamiento.py
    python via-b/pruebas/aceptacion.py
    ```
-   Cuando exista `verificar.py` (tarea X1), basta con `python verificar.py`.
+   Cuando exista `verificar.py` (tarea C1), basta con `python verificar.py`.
 5. Si tocaste interfaz, pruébala en un navegador real a 375 px y a 1366 px, y dilo en el PR con lo que viste.
 6. Abre un PR hacia `main` con el ID de la tarea en el título. En el mismo PR marca la casilla de la tarea en el tablero.
-7. No fusiones tu propio PR. Claude revisa los de Codex y Antigravity; una persona revisa los de Claude.
+7. No fusiones tu propio PR. A revisa los de B y C; B revisa los de A; C revisa la parte de pruebas de todos.
 
 ## Cuándo detenerse y preguntar
 

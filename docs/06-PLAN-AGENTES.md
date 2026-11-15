@@ -85,6 +85,8 @@ En la fase 0 no entra ninguna función nueva: el plan de fases congela funciones
 
 ## 6. Tablero
 
+> **Sustituido.** El tablero vigente es el de [07-PLAN-DE-CIERRE.md](07-PLAN-DE-CIERRE.md). Lo de abajo queda como registro: X1 a X6 pasan a las tareas C, G1 a G6 a las tareas B, y las de Claude a las tareas A.
+
 ### Personas (H)
 
 - [x] **H1** Decidir si el rediseño de la Vía A entra antes del envío o después. Decidido el 15 de noviembre: entra antes del envío.
