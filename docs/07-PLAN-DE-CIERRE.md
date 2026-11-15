@@ -147,7 +147,7 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 - [x] **A2 · G** `compartido/componentes.css` con todos los componentes y estados de 4.2. *Depende:* A1.
 - [x] **A3 · M** `compartido/catalogo.html`: cada componente, cada estado, en los dos temas, con el código que lo produce. *Depende:* A2. *Acepta:* es la referencia que usan B y las pruebas de C.
 - [x] **A4 · M** `compartido/componentes.js`: hoja, diálogo, toast, segmento con flechas, barra y pie. *Depende:* A2. *Acepta:* cada uno se maneja completo con teclado.
-- [ ] **A5 · C** `compartido/iconos.svg` y su uso con `<use>`. *Acepta:* no queda un ícono dibujado en línea.
+- [x] **A5 · C** `compartido/iconos.svg` y su uso con `<use>`. *Acepta:* no queda un ícono dibujado en línea.
 - [ ] **C1 · M** `verificar.py`: todas las pruebas actuales, más la búsqueda de textos prohibidos y de colores fuera de los tokens. *Acepta:* código 0 en `main`; código 1 con cualquier fallo.
 - [ ] **C2 · C** Integración continua que corre `verificar.py` en cada PR. *Depende:* C1.
 - [ ] **C3 · M** Terceros servidos desde el sitio: MapLibre y las tres fuentes en `compartido/vendor/`, con su archivo de licencias. *Acepta:* cero peticiones a `unpkg.com` y a `fonts.googleapis.com`.
