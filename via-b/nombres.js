@@ -17,7 +17,8 @@ export function guardarNombre(id, nombre) {
   } catch { return false; }
 }
 
-function centroide(sector) {
+// [lat, lon] del centroide del primer anillo del polígono
+export function centroide(sector) {
   const anillo = sector.geometry.coordinates[0];
   let area = 0, x = 0, y = 0;
   for (let i = 0; i < anillo.length - 1; i++) {
