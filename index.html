@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SunCity · Qué cambia en el clima de tu región</title>
+  <meta name="description" content="Mira cuánto cambia por década una variable del clima en cualquier lugar desde 1981, y si el cambio es significativo. Y dentro de Hermosillo, qué sectores se calientan de noche más que su desierto.">
+  <meta name="theme-color" content="#fbf6ec">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a1024'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23dcc195'/%3E%3Ccircle cx='19' cy='13' r='3' fill='%23ff5a1f'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="compartido/tokens.css">
+  <link rel="stylesheet" href="compartido/componentes.css">
+  <script src="compartido/componentes.js" defer></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: var(--f-texto); font-size: var(--t-base); line-height: var(--lh-texto);
+      color: var(--texto); background: var(--superficie); font-synthesis: none;
+    }
+    main:focus { outline: none; }
+    .ancho { width: min(72rem, 100% - 2 * clamp(var(--e-4), 4vw, var(--e-7))); margin-inline: auto; }
+
+    /* Portada: el titular sobre la noche */
+    .portada { padding: var(--e-8) 0 var(--e-7); background: var(--fondo-escenario); color: var(--texto); }
+    .portada h1 {
+      margin: 0 0 var(--e-4); max-width: 18ch;
+      font-family: var(--f-titulo); font-weight: 500; font-size: var(--t-3xl);
+      line-height: var(--lh-titulo); letter-spacing: -.02em; text-wrap: balance;
+    }
+    .portada p { margin: 0 0 var(--e-3); max-width: 58ch; color: var(--texto-2); font-size: var(--t-lg); }
+    .portada .acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: var(--e-5); }
+
+    /* Las dos vías */
+    .vias { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-5); padding: var(--e-7) 0 var(--e-6); }
+    .via { display: grid; align-content: start; gap: var(--e-3); }
+    .via .sc-insignia { justify-self: start; }
+    .via h2 { margin: 0; font-family: var(--f-titulo); font-weight: 600; font-size: var(--t-xl); letter-spacing: -.01em; }
+    .via p { margin: 0; color: var(--texto-2); max-width: 52ch; }
+    .via .sc-cifras { margin: var(--e-2) 0; }
+    .via .sc-boton { justify-self: start; margin-top: var(--e-2); }
+
+    /* Límites */
+    .limites { padding: 0 0 var(--e-7); }
+    .limites h2 { margin: 0 0 var(--e-3); font-family: var(--f-titulo); font-weight: 600; font-size: var(--t-xl); letter-spacing: -.01em; }
+    .limites ul { margin: 0; padding-left: var(--e-5); display: grid; gap: var(--e-2); max-width: 62ch; color: var(--texto-2); }
+    .limites strong { color: var(--texto); }
+
+    @media (max-width: 760px) {
+      .portada { padding: var(--e-7) 0 var(--e-6); }
+      .vias { grid-template-columns: minmax(0, 1fr); padding-top: var(--e-6); }
+    }
+  </style>
+</head>
+<body>
+  <sc-barra raiz="./" contenido="contenido"><a href="./">SunCity</a></sc-barra>
+
+  <main id="contenido" tabindex="-1">
+    <section class="portada tema-noche" aria-labelledby="titulo">
+      <div class="ancho">
+        <h1 id="titulo">¿Qué cambia en el clima de tu región?</h1>
+        <p>Elige un lugar y una variable: SunCity calcula cuánto ha cambiado por década desde 1981 y si ese cambio es significativo.</p>
+        <p>En Hermosillo baja al detalle de la ciudad: qué sectores se calientan de noche más rápido que el desierto que los rodea.</p>
+        <p>Todo el cálculo es abierto y se explica paso a paso, con lo que el dato puede y no puede decir.</p>
+        <div class="acciones">
+          <a class="sc-boton sc-boton--primario" href="via-a/">Elegir un lugar
+            <svg class="sc-icono" aria-hidden="true"><use href="compartido/iconos.svg#flecha-derecha"/></svg>
+          </a>
+          <a class="sc-boton sc-boton--secundario" href="via-b/">Ver Hermosillo por sectores</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="ancho vias">
+      <section class="via sc-tarjeta" aria-labelledby="via-a-t">
+        <span class="sc-insignia sc-insignia--neutro">Cualquier lugar del planeta</span>
+        <h2 id="via-a-t">Región</h2>
+        <p>Una serie de 45 años de NASA POWER para el punto que elijas. Ves la tendencia por década, su rango del 95 % y si es significativa, y puedes descargar los datos.</p>
+        <dl class="sc-cifras">
+          <div class="sc-cifra"><dt>Datos</dt><dd>MERRA-2</dd></div>
+          <div class="sc-cifra"><dt>Periodo</dt><dd>1981-2025</dd></div>
+        </dl>
+        <a class="sc-boton sc-boton--secundario" href="via-a/">Abrir Región
+          <svg class="sc-icono" aria-hidden="true"><use href="compartido/iconos.svg#flecha-derecha"/></svg>
+        </a>
+      </section>
+
+      <section class="via sc-tarjeta" aria-labelledby="via-b-t">
+        <span class="sc-insignia sc-insignia--exploratorio">Datos de prueba por ahora</span>
+        <h2 id="via-b-t">Hermosillo</h2>
+        <p>Sectores de la ciudad comparados con su desierto, con temperatura de la superficie por satélite. Cada sector tiene su expediente: ciclo del día, serie de noches y qué tan sólido es el resultado.</p>
+        <dl class="sc-cifras">
+          <div class="sc-cifra"><dt>Datos</dt><dd>Satélite</dd></div>
+          <div class="sc-cifra"><dt>Detalle</dt><dd>1 km y 70 m</dd></div>
+        </dl>
+        <a class="sc-boton sc-boton--secundario" href="via-b/">Abrir Hermosillo
+          <svg class="sc-icono" aria-hidden="true"><use href="compartido/iconos.svg#flecha-derecha"/></svg>
+        </a>
+      </section>
+    </div>
+
+    <section class="ancho limites" aria-labelledby="limites-t">
+      <h2 id="limites-t">Lo que esta herramienta no puede ver</h2>
+      <ul>
+        <li><strong>Región no es ciudad.</strong> MERRA-2 trabaja en celdas de decenas de kilómetros: una ciudad y su desierto quedan en la misma celda.</li>
+        <li><strong>Tendencia no es causa.</strong> Un cambio significativo dice que algo cambió, no por qué.</li>
+        <li><strong>Exploratorio.</strong> Tú eliges qué probar, así que el valor p no está ajustado por todas las combinaciones posibles.</li>
+        <li><strong>Hermosillo aún usa datos de prueba.</strong> Los sectores y sus números son sintéticos hasta que se carguen los resultados observados.</li>
+      </ul>
+    </section>
+  </main>
+
+  <sc-pie raiz="./"></sc-pie>
+</body>
+</html>

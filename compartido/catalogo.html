@@ -70,7 +70,7 @@
     </main>
   </div>
 
-  <sc-pie raiz="../" software="catálogo A3"></sc-pie>
+  <sc-pie raiz="../"><p>Catálogo del sistema de diseño de SunCity.</p></sc-pie>
 
   <!--
     Cada <template> es una sección. data-titulo y data-clase dan el encabezado.
@@ -323,12 +323,15 @@ SC.toast("No se pudo copiar el enlace.", {tipo: "error"});</pre>
     <pre hidden data-codigo-js>&lt;sc-barra raiz="../" actual="via-a" contenido="resultado"&gt;&lt;a href="../"&gt;SunCity&lt;/a&gt;&lt;/sc-barra&gt;</pre>
   </template>
 
-  <template data-id="pie" data-titulo="Pie" data-clase="sc-pie" data-nota="Fuentes, versión de los datos y versión del software. Se escribe &lt;sc-pie raiz=&quot;../&quot; datos=&quot;…&quot; software=&quot;…&quot;&gt;; el de esta página es uno real.">
+  <template data-id="pie" data-titulo="Pie" data-clase="sc-pie" data-nota="Fuentes de la página, enlace a Método y versiones. Los párrafos que pongas dentro de &lt;sc-pie&gt; quedan como fuentes; la versión del software sale de SC.VERSION. El de esta página es uno real.">
     <footer class="sc-pie">
-      <p>Datos: NASA POWER (MERRA-2), MODIS y ECOSTRESS. <a href="../metodo/">Método, fuentes y límites</a>.</p>
-      <p class="sc-pie__versiones"><span>Datos: NASA POWER 2025</span><span>Software: 1.0.0</span></p>
+      <p>Datos: NASA POWER, API mensual, modelo MERRA-2. Cálculo en tu navegador.</p>
+      <p><a href="../metodo/">Método, fuentes y límites</a></p>
+      <p class="sc-pie__versiones"><span>Datos: NASA POWER, 1981-2025</span><span>Software: 0.9.0</span></p>
     </footer>
-    <pre hidden data-codigo-js>&lt;sc-pie raiz="../" datos="NASA POWER 2025" software="1.0.0"&gt;&lt;/sc-pie&gt;</pre>
+    <pre hidden data-codigo-js>&lt;sc-pie raiz="../" datos="NASA POWER, 1981-2025"&gt;
+  &lt;p&gt;Datos: NASA POWER, API mensual, modelo MERRA-2. Cálculo en tu navegador.&lt;/p&gt;
+&lt;/sc-pie&gt;</pre>
   </template>
 
   <template data-id="migas" data-titulo="Migas" data-clase="sc-migas" data-nota="Solo donde hay tres niveles o más.">

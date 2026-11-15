@@ -629,7 +629,7 @@ sc-barra, sc-pie { display: contents; }
 .sc-barra {
   position: sticky; top: 0; z-index: var(--z-barra);
   display: flex; align-items: center; gap: var(--e-4);
-  min-height: calc(var(--e-7) + var(--e-2)); padding: 0 clamp(var(--e-4), 3vw, var(--e-6));
+  min-height: var(--alto-barra); padding: 0 clamp(var(--e-4), 3vw, var(--e-6));
   border-bottom: 1px solid var(--linea);
   background: var(--superficie); color: var(--texto);
 }
