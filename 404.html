@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--
+    Esta página se muestra en cualquier ruta que no existe, así que sus enlaces no pueden ser
+    relativos a ella: todos salen de la raíz del sitio. Si el sitio se publica en una subcarpeta
+    (por ejemplo /SunCity/), cambia este href a esa carpeta (tarea C15).
+  -->
+  <base href="/">
+  <title>SunCity · Página no encontrada</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0a1024">
+  <link rel="icon" href="compartido/marca/icono.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="compartido/tokens.css">
+  <link rel="stylesheet" href="compartido/componentes.css">
+  <script src="compartido/componentes.js" defer></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100dvh; display: flex; flex-direction: column;
+      font-family: var(--f-texto); font-size: var(--t-base); line-height: var(--lh-texto);
+      color: var(--texto); background: var(--superficie); font-synthesis: none;
+    }
+    main { flex: 1; display: grid; place-items: center; padding: var(--e-7) clamp(var(--e-4), 4vw, var(--e-7)); background: var(--fondo-escenario); color: var(--texto); }
+    main:focus { outline: none; }
+    .caja { max-width: 34rem; }
+    .codigo { margin: 0 0 var(--e-3); font-family: var(--f-dato); font-size: var(--t-sm); letter-spacing: .08em; color: var(--texto-2); }
+    h1 { margin: 0 0 var(--e-3); font-family: var(--f-titulo); font-weight: 500; font-size: var(--t-3xl); line-height: var(--lh-titulo); letter-spacing: -.02em; text-wrap: balance; }
+    .caja > p { margin: 0 0 var(--e-3); color: var(--texto-2); }
+    .ruta { font-family: var(--f-dato); font-size: var(--t-sm); color: var(--texto); word-break: break-all; }
+    .acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: var(--e-5); }
+  </style>
+</head>
+<body>
+  <sc-barra raiz="./" contenido="contenido"><a href="./">SunCity</a></sc-barra>
+
+  <main id="contenido" class="tema-noche" tabindex="-1">
+    <div class="caja">
+      <p class="codigo">Error 404</p>
+      <h1>Esta página no existe</h1>
+      <p>No encontramos <span class="ruta" id="ruta">esa dirección</span>. Puede que el enlace esté incompleto o que la página haya cambiado de lugar.</p>
+      <div class="acciones">
+        <a class="sc-boton sc-boton--primario" href="./">Ir a la portada
+          <svg class="sc-icono" aria-hidden="true"><use href="compartido/iconos.svg#flecha-derecha"/></svg>
+        </a>
+        <a class="sc-boton sc-boton--secundario" href="via-a/">Elegir un lugar</a>
+      </div>
+    </div>
+  </main>
+
+  <sc-pie raiz="./"></sc-pie>
+
+  <script>
+    // Muestra la dirección pedida, como texto
+    document.getElementById("ruta").textContent = decodeURIComponent(location.pathname);
+  </script>
+</body>
+</html>
