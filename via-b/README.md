@@ -1,18 +1,21 @@
 # Vía B · Explorador de Hermosillo
 
-El mapa muestra temperatura real de MODIS; los sectores y sus resultados todavía son datos de prueba
-(ver "Qué es real y qué es de prueba"). HTML, CSS y módulos ES sin build.
+Datos reales de MODIS sobre polígonos esquemáticos (ver "Qué es real y qué es de prueba").
+HTML, CSS y módulos ES sin build.
 
 ## Qué es real y qué es de prueba
 
-| Parte | Origen |
+`config.js` elige la carpeta: `datos/reales/` (por defecto) o `datos/prueba/`.
+
+| Parte | Con `datos/reales/` |
 |---|---|
-| Capa de temperatura de la superficie de noche del mapa | Real: MODIS Terra MOD11A2 desde NASA GIBS (`../compartido/lst-noche.js`) |
-| Lectura bajo el cursor y sección "00 · Este periodo en MODIS" del expediente | Real: los mismos píxeles de MODIS |
-| Polígonos de los seis sectores y de las dos referencias | De prueba: cuadros esquemáticos de 3.1 × 3.1 km (D15 abierta) |
-| Población de cada sector | De prueba |
-| Serie 2001-2025, pendiente, intervalo, p, FDR y semáforo | De prueba: `datos/prueba/generar_prueba.py` con semilla fija |
-| Ciclo diario, nivel, curva de variantes y zoom de ECOSTRESS | De prueba |
+| Capa de temperatura del mapa, lectura bajo el cursor y sección 00 | Real: MODIS Terra MOD11A2 desde NASA GIBS |
+| Serie 2001-2025, pendiente, intervalo, p, FDR, semáforo y curva de variantes | Real: MOD11 Terra y Aqua de NASA GIBS (D18), procesado con `procesamiento/procesar.py` |
+| Ciclo diario y nivel | Real, solo MOD11 |
+| Polígonos de los seis sectores y de las dos referencias | **Esquemáticos**: cuadros de 3.1 × 3.1 km (D15 abierta). Los resultados cambiarán con los definitivos |
+| MOD21, población, NDVI, cotejo de Yale y zoom de ECOSTRESS | Sin dato: GIBS no los publica. Llegan con el export de Earth Engine y AppEEARS |
+
+Para regenerar: `python via-b/procesamiento/exportar_gibs.py` y luego `python via-b/procesamiento/procesar.py`.
 
 Desde la raíz del repositorio:
 

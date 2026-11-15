@@ -12,7 +12,20 @@ flowchart LR
     R -->|RUTA_DATOS en config.js| I[Interfaz Vía B]
 ```
 
-## Pasos con datos reales
+## Ruta rápida sin cuenta: NASA GIBS (D18)
+
+```bash
+pip install -r requirements.txt                       # incluye Pillow para leer los mosaicos
+python via-b/procesamiento/exportar_gibs.py          # escribe datos/reales/export/suncity_lst.csv y suncity_extra.csv
+python via-b/procesamiento/procesar.py
+python via-b/datos/validar.py via-b/datos/reales/
+```
+
+Baja de NASA GIBS los compuestos de 8 días de MOD11A2 y MYD11A2 (día y noche, junio a agosto de cada
+año) y escribe el mismo formato que el export de Earth Engine. Tarda alrededor de un minuto. Límites:
+sin MOD21, sin filtro de bits de calidad, resolución de 0.6 K, sin población, NDVI ni Yale. Ver D18.
+
+## Pasos con datos reales (Earth Engine)
 
 1. **Generar el script** con los polígonos que se van a usar:
    ```bash
@@ -39,6 +52,7 @@ flowchart LR
 | `generar_script_ee.py` | Inserta polígonos y parámetros en la plantilla y escribe `exportar_ee.js` |
 | `exportar_ee.js` | Listo para pegar en el Code Editor (generado; no editar a mano) |
 | `procesar.py` | Export de Earth Engine → archivos de la interfaz |
+| `exportar_gibs.py` | Export desde NASA GIBS, sin cuenta (D18). Mismo formato que el de Earth Engine, solo MOD11 |
 | `simular_export.py` | Export **simulado** con las columnas exactas, para probar sin cuenta de Earth Engine |
 | `probar_procesamiento.py` | Prueba de punta a punta: simulación → procesamiento → comprobaciones |
 

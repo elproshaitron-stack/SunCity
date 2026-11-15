@@ -1,0 +1,24 @@
+{
+ "fuente": "NASA GIBS, capas MODIS L3 Land Surface Temperature 8-Day (MOD11A2 y MYD11A2 v6.1)",
+ "paleta": "https://gibs.earthdata.nasa.gov/colormaps/v1.3/MODIS_Land_Surface_Temp.xml",
+ "nivel_mosaico": 7,
+ "temporada_meses": [
+  6,
+  8
+ ],
+ "anios": [
+  2001,
+  2025
+ ],
+ "geojson": "via-b/datos/prueba/sectores.geojson",
+ "mosaicos_leidos": 1150,
+ "mosaicos_pedidos": 1152,
+ "coincidencia_paleta": 1.0,
+ "generado": "2026-11-15",
+ "limites": [
+  "sin MOD21",
+  "sin filtro de bits QC (D03 solo por cobertura y observaciones)",
+  "resolución de 0.6 K por la paleta",
+  "sin población, NDVI ni Yale"
+ ]
+}

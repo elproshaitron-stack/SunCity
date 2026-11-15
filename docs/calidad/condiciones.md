@@ -2,7 +2,7 @@
 
 Revisión de la sección 1 de `docs/07-PLAN-DE-CIERRE.md` al 15 de noviembre de 2026, versión 0.9.0.
 Cada condición tiene su estado y la evidencia que hay hoy en el repositorio. **La versión 1.0 todavía no
-existe:** 1 condición se cumple, 4 en parte y 5 no. Lo que falta depende sobre todo del carril C
+existe:** 1 condición se cumple, 5 en parte y 4 no. Lo que falta depende sobre todo del carril C
 (calidad y publicación), del carril B (Vía B) y de cerrar D15.
 
 | # | Condición | Estado | Evidencia hoy | Qué falta y de quién |
@@ -16,7 +16,7 @@ existe:** 1 condición se cumple, 4 en parte y 5 no. Lo que falta depende sobre 
 | 7 | No depende de terceros para abrir | No | Si NASA POWER falla, la Vía A usa la copia guardada. Pero MapLibre viene de unpkg y las fuentes de Google Fonts | C3 (terceros servidos desde el sitio); C10 (prueba sin red) |
 | 8 | Segura como sitio estático | No | Ningún dato de una API entra por `innerHTML` (`25010.md`). No hay política de seguridad de contenido y hay scripts en línea | C9 |
 | 9 | Publicada y versionada | No | Sin dirección pública, sin etiqueta `v1.0.0` y sin `CHANGELOG.md`. El sitio está listo para servirse desde la raíz del repositorio, sin compilación | Despliegue (Navarrete); C15; C16 |
-| 10 | La Vía B muestra datos observados | No | El mapa de la Vía B ya es real (MODIS MOD11A2 desde NASA GIBS), pero los sectores, sus series y sus tendencias son de prueba (`via-b/README.md`) | D15 (Navarrete y Mario); C13 |
+| 10 | La Vía B muestra datos observados | Parcial | Desde D18 la Vía B calcula con MODIS MOD11 real (NASA GIBS) y lo muestra por defecto. `aceptacion.py` sobre `datos/reales/`: 4 PASA y 3 FALLA, porque faltan MOD21, Yale y ECOSTRESS. Los polígonos siguen siendo esquemáticos | D15 (Navarrete y Mario); export de Earth Engine y AppEEARS para MOD21, Yale y ECOSTRESS (C13) |
 
 ## Cómo se cierra cada condición
 

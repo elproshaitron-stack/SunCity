@@ -4,8 +4,8 @@ Herramienta para responder **qué variable climática cambia en una región, cu�
 
 > **Estado al 15 de noviembre de 2026 (versión 0.9.0):**
 > - **Vía A, real.** Consulta en vivo NASA POWER (MERRA-2, 1981-2025) para cualquier punto del planeta, con copia guardada de Hermosillo y Mexicali.
-> - **Vía B, mapa real.** El mapa muestra la temperatura de la superficie de noche que midió MODIS (NASA GIBS), por año y periodo de 8 días.
-> - **Vía B, sectores de prueba.** Los polígonos de los sectores, su población, sus series 2001-2025, sus tendencias, el semáforo, el ciclo diario, las variantes y el zoom de ECOSTRESS son datos sintéticos de `via-b/datos/prueba/`, hechos para probar la interfaz. Se reemplazan al cerrar D15 y correr `via-b/procesamiento/` con las exportaciones de Earth Engine.
+> - **Vía B, datos reales de MODIS.** El mapa y, desde D18, las series, las tendencias, el semáforo y el ciclo diario salen de MODIS MOD11 (NASA GIBS), procesado con `via-b/procesamiento/`.
+> - **Vía B, lo que sigue pendiente.** Los polígonos de los sectores y de las referencias de desierto todavía son los esquemáticos (D15); los resultados cambiarán con los definitivos. Faltan MOD21, población, Yale y el acercamiento de ECOSTRESS, que GIBS no publica.
 
 ## Qué se entrega
 
