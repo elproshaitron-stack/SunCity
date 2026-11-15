@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' data: https://power.larc.nasa.gov https://gibs.earthdata.nasa.gov https://tiles.openfreemap.org; worker-src 'self' blob:; child-src blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!--
     Esta página se muestra en cualquier ruta que no existe, así que sus enlaces no pueden ser
@@ -13,9 +14,7 @@
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#0a1024">
   <link rel="icon" href="compartido/marca/icono-48.png" type="image/png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="compartido/vendor/fuentes/fuentes.css">
   <link rel="stylesheet" href="compartido/tokens.css">
   <link rel="stylesheet" href="compartido/componentes.css">
   <script src="compartido/componentes.js" defer></script>
@@ -56,9 +55,6 @@
 
   <sc-pie raiz="./"></sc-pie>
 
-  <script>
-    // Muestra la dirección pedida, como texto
-    document.getElementById("ruta").textContent = decodeURIComponent(location.pathname);
-  </script>
+  <script src="compartido/pagina-404.js"></script>
 </body>
 </html>
