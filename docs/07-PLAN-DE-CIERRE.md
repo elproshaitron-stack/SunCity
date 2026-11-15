@@ -191,7 +191,7 @@ Vía B:
 - [ ] **C9 · M** Seguridad: política de seguridad de contenido, el script en línea de `via-a/index.html` pasa a un archivo, y se revisan los nueve usos de `innerHTML`; los que reciben texto de la dirección, de un CSV o de un nombre editable pasan a `textContent`. *Acepta:* una prueba inyecta HTML en un nombre de sector y no se ejecuta.
 - [ ] **C10 · M** Sin red: con los dominios externos bloqueados, cada ruta abre, usa los respaldos y lo dice.
 - [x] **A15 · M** Recorrido manual con teclado y lector de pantalla en las cinco rutas; correcciones. *Depende:* A11, B5.
-- [ ] **A16 · M** `docs/calidad/9241-110.md` y `docs/calidad/25010.md` llenos, con enlace a la evidencia de cada fila. *Depende:* C7, C8.
+- [x] **A16 · M** `docs/calidad/9241-110.md` y `docs/calidad/25010.md` llenos, con enlace a la evidencia de cada fila. *Depende:* C7, C8. *Nota:* llenos con lo medido hoy; las filas de compatibilidad y Lighthouse se completan cuando lleguen C5, C7 y C8.
 - [ ] **B10 · M** Revisión de la Vía B en celular real: hoja inferior, alcance del pulgar, objetivos de 44 px. *Depende:* B4.
 
 ### Fase 5. Datos y publicación
