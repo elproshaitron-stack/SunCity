@@ -9,7 +9,9 @@ import {dibujarZoom} from './zoom-ecostress.js';
 import * as LST from '../compartido/lst-noche.js';
 
 const $ = id => document.getElementById(id);
-const colores = {rojo:'#bd4b3e', azul:'#347baf', gris:'#8b9697'};
+// Los colores salen de compartido/tokens.css (MapLibre necesita el valor, no var())
+const token = nombre => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+const colores = () => ({rojo:token('--estado-sube'), azul:token('--estado-baja'), gris:token('--estado-neutro')});
 const base = new URL(RUTA_DATOS, import.meta.url);
 const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmtC = v => `${v.toFixed(1)} °C`;
@@ -67,7 +69,8 @@ async function iniciar() {
   const sectores = geojson.features.filter(f => f.properties.tipo === 'sector');
   for (const f of sectores) if (!primarios.has(f.properties.id)) throw new Error(`Falta el resultado primario del sector ${f.properties.id}.`);
   // Color del semáforo como propiedad, para que el mapa lo lea
-  for (const f of sectores) f.properties.color = colores[semaforo(primarios.get(f.properties.id))];
+  const paleta = colores();
+  for (const f of sectores) f.properties.color = paleta[semaforo(primarios.get(f.properties.id))];
   const referencias = geojson.features.filter(f => f.properties.tipo === 'referencia');
   let seleccionado = null;
 
@@ -113,11 +116,11 @@ async function iniciar() {
       {id:'lst', type:'raster', source:'lst', paint:{'raster-opacity':.8, 'raster-resampling':'nearest', 'raster-fade-duration':0}}
     ]);
     MapaEstilo.insertarAntes(estilo, MapaEstilo.PRIMER_NOMBRE, [
-      {id:'referencias', type:'fill', source:'zonas', filter:esReferencia, paint:{'fill-color':'#f4ecd7', 'fill-opacity':.18}},
-      {id:'referencias-borde', type:'line', source:'zonas', filter:esReferencia, paint:{'line-color':'#3a2a18', 'line-width':2, 'line-dasharray':[3, 2]}},
-      {id:'sectores', type:'fill', source:'zonas', filter:esSector, paint:{'fill-color':'#fffef9', 'fill-opacity':['case', elegido, .22, 0]}},
-      {id:'sectores-contorno', type:'line', source:'zonas', filter:esSector, paint:{'line-color':'#fffef9', 'line-width':['case', elegido, 7, 5]}},
-      {id:'sectores-borde', type:'line', source:'zonas', filter:esSector, paint:{'line-color':['case', elegido, '#10251f', ['get', 'color']], 'line-width':['case', elegido, 3.5, 2.5]}}
+      {id:'referencias', type:'fill', source:'zonas', filter:esReferencia, paint:{'fill-color':token('--superficie-2'), 'fill-opacity':.5}},
+      {id:'referencias-borde', type:'line', source:'zonas', filter:esReferencia, paint:{'line-color':token('--texto'), 'line-width':2, 'line-dasharray':[3, 2]}},
+      {id:'sectores', type:'fill', source:'zonas', filter:esSector, paint:{'fill-color':token('--superficie'), 'fill-opacity':['case', elegido, .22, 0]}},
+      {id:'sectores-contorno', type:'line', source:'zonas', filter:esSector, paint:{'line-color':token('--superficie'), 'line-width':['case', elegido, 7, 5]}},
+      {id:'sectores-borde', type:'line', source:'zonas', filter:esSector, paint:{'line-color':['case', elegido, token('--texto'), ['get', 'color']], 'line-width':['case', elegido, 3.5, 2.5]}}
     ]);
     const angosto = matchMedia('(max-width: 900px)').matches;
     mapa = new maplibregl.Map({
@@ -280,26 +283,40 @@ async function iniciar() {
     editar(false); refrescarNombres();
   });
   $('sector').addEventListener('change', e => e.target.value ? abrir(e.target.value) : cerrar());
-  $('cerrar').addEventListener('click', cerrar);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('expediente').hidden) cerrar(); });
-  function cerrar() {
-    $('expediente').hidden = true; editar(false); seleccionado = null; $('sector').value = '';
-    marcarElegido(null);
-    $('sector').focus();
+  // El expediente es una sc-hoja: panel fijo al lado del mapa en pantallas anchas (sin velo, el mapa sigue
+  // activo) y hoja modal en las angostas, donde el foco queda dentro y Escape la cierra.
+  const hoja = $('expediente');
+  const ancha = () => matchMedia('(min-width: 900px)').matches;
+  function abrirHoja() {
+    if (!hoja.open) {
+      document.body.classList.toggle('con-expediente', ancha());
+      if (ancha()) hoja.show(); else if (window.SC) SC.abrir(hoja, $('sector')); else hoja.showModal();
+    }
+    hoja.querySelector('.sc-hoja__cuerpo').scrollTop = 0;
   }
+  hoja.addEventListener('close', () => {
+    document.body.classList.remove('con-expediente');
+    editar(false); seleccionado = null; $('sector').value = ''; marcarElegido(null);
+    $('sector').focus();
+  });
+  $('cerrar').addEventListener('click', cerrar);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && hoja.open) cerrar(); });
+  function cerrar() { if (hoja.open) hoja.close(); }
   function abrir(id) {
     const f = sectores.find(f => f.properties.id === id), r = primarios.get(id);
     const datos = series.filter(s => s.sector === id).sort((a,b) => a.anio - b.anio);
     const color = semaforo(r);
     seleccionado = id; $('sector').value = id; editar(false); refrescarNombres();
-    $('expediente').hidden = false; $('expediente').scrollTop = 0;
+    abrirHoja();
     marcarElegido(id);
     leerSector(id);
     dibujarSerieAnual($('serie-anual'), {anios:datos.map(d => d.anio), valores:datos.map(d => d.valor), resultado:r, unidad:'°C', aniosPunteados:datos.filter(d => d.anio > 2019).map(d => d.anio)});
     dibujarVariantes($('curva-variantes'), resultados.filter(fila => fila.sector === id), ESQUEMA.variantes);
     dibujarCicloDiario($('ciclo-diario'), ciclo.filter(fila => fila.sector === id), pasosAqua);
     const lectura = $('lectura'); lectura.replaceChildren();
-    const badge = document.createElement('span'); badge.className = `estado-sector ${color}`; badge.textContent = `Semáforo: ${color}`;
+    const badge = document.createElement('span');
+    badge.className = `sc-insignia ${{rojo:'sc-insignia--sube', azul:'sc-insignia--baja', gris:'sc-insignia--neutro'}[color]}`;
+    badge.textContent = `Semáforo: ${color}`;
     const dl = document.createElement('dl'), nivel = niveles.filter(d => d.sector === id);
     const medias = nivel.filter(d => Number.isFinite(d.nivel_c));
     const valoresNivel = medias.map(d => d.nivel_c);

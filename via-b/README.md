@@ -36,7 +36,9 @@ lo cierra. En celular aparece como hoja inferior y en escritorio como panel late
 
 ## Archivos
 
-- `index.html`, `estilos.css`, `app.js`: interfaz, mapa, lectura CSV y expediente.
+- `index.html`, `estilos.css`, `app.js`: interfaz, mapa, lectura CSV y expediente. La página usa los tokens y
+  componentes de `../compartido/` (barra, pie, avisos, campos, botones) y el expediente es una `sc-hoja`: panel
+  fijo al lado del mapa en pantallas anchas y hoja inferior modal en celular.
 - `../compartido/mapa-estilo.js`: estilo común de MapLibre (el mismo del globo de la Vía A).
 - `../compartido/lst-noche.js`: lee la capa de MODIS de NASA GIBS y traduce cada píxel a °C.
 - `config.js`: único lugar donde cambiar `RUTA_DATOS` (por defecto `datos/prueba/`).
