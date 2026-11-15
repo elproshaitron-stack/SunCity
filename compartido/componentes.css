@@ -617,6 +617,8 @@ textarea.sc-campo__control { min-height: calc(var(--tactil) * 2); padding: var(-
 .sc-mapa .maplibregl-ctrl-group button { width: var(--control-mapa); height: var(--control-mapa); }
 .sc-mapa .maplibregl-ctrl-group button + button { border-top: 1px solid var(--linea); }
 .sc-mapa .maplibregl-ctrl-group button:hover { background: var(--superficie-2); }
+.sc-mapa .maplibregl-ctrl-group button:focus-visible { outline: 2px solid var(--foco); outline-offset: -3px; box-shadow: none; }
+.sc-mapa .maplibregl-canvas:focus-visible { outline: 3px solid var(--foco); outline-offset: -3px; }
 .sc-mapa .maplibregl-ctrl-attrib { font-size: var(--t-2xs); }
 .tema-noche .sc-mapa .maplibregl-ctrl-group button .maplibregl-ctrl-icon,
 .sc-mapa.tema-noche .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1) brightness(1.6); }

@@ -124,7 +124,7 @@ async function iniciar() {
       container:'mapa', style:estilo, bounds:caja, fitBoundsOptions:{padding:32}, maxZoom:14, minZoom:8,
       maxBounds:[[AREA[0] - .25, AREA[1] - .25], [AREA[2] + .25, AREA[3] + .25]],
       attributionControl:false, cooperativeGestures:angosto, dragRotate:false,
-      locale:{'NavigationControl.ZoomIn':'Acercar', 'NavigationControl.ZoomOut':'Alejar', 'AttributionControl.ToggleAttribution':'Créditos del mapa',
+      locale:{'Map.Title':'Mapa de sectores de Hermosillo. Con el foco aquí, las flechas lo mueven y + y − lo acercan. El selector Explorar un sector abre cada expediente', 'NavigationControl.ZoomIn':'Acercar', 'NavigationControl.ZoomOut':'Alejar', 'AttributionControl.ToggleAttribution':'Créditos del mapa',
         'CooperativeGesturesHandler.WindowsHelpText':'Usa Ctrl + rueda para acercar el mapa', 'CooperativeGesturesHandler.MacHelpText':'Usa ⌘ + rueda para acercar el mapa',
         'CooperativeGesturesHandler.MobileHelpText':'Usa dos dedos para mover el mapa'}
     });
