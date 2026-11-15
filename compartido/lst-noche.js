@@ -112,6 +112,8 @@ export async function valorEn(fecha, lon, lat) {
 export const ESCALA = ['#253a7a', '#4a6fb0', '#9bbad1', '#f1e6c2', '#f3b166', '#de6a35', '#a5261b'];
 const rgbDe = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 const PARADAS = ESCALA.map(rgbDe);
+// El mismo color como texto CSS, para quien pinta con atributos (SVG del zoom de ECOSTRESS)
+export const colorCss = t => `rgb(${colorPara(t).join(',')})`;
 export function colorPara(t) {
   const x = Math.min(1, Math.max(0, t)) * (PARADAS.length - 1), i = Math.min(PARADAS.length - 2, Math.floor(x)), f = x - i;
   return PARADAS[i].map((v, k) => Math.round(v + (PARADAS[i + 1][k] - v) * f));

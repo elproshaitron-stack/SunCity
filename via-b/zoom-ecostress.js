@@ -1,4 +1,4 @@
-import {ESCALA, colorPara} from '../compartido/lst-noche.js';
+import {ESCALA, colorCss} from '../compartido/lst-noche.js';
 
 import {tablaAlternativa, cifra, vacio} from './tabla-datos.js';
 
@@ -23,7 +23,7 @@ export function dibujarZoom(contenedor, datos, datosDePrueba) {
   datos.valores_c.forEach((fila, y) => fila.forEach((valor, x) => {
     const t = (valor - minimo) / (maximo - minimo || 1);
     const rect = document.createElementNS(NS, 'rect');
-    for (const [k,v] of Object.entries({x:x*celdaX,y:y*celdaY,width:celdaX+.2,height:celdaY+.2,fill:`rgb(${colorPara(t).join(',')})`})) rect.setAttribute(k,v);
+    for (const [k,v] of Object.entries({x:x*celdaX,y:y*celdaY,width:celdaX+.2,height:celdaY+.2,fill:colorCss(t)})) rect.setAttribute(k,v);
     svg.append(rect);
   }));
   const leyenda = document.createElement('div'); leyenda.className = 'leyenda-calor';

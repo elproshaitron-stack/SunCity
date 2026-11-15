@@ -41,9 +41,9 @@
     e.sources.celda = { type: "geojson", data: { type: "FeatureCollection", features: [] } };
     return MapaEstilo.insertarAntes(e, MapaEstilo.PRIMER_NOMBRE, [
       { id: "celda-relleno", type: "fill", source: "celda",
-        paint: { "fill-color": "#ff5a1f", "fill-opacity": 0.16 } },
+        paint: { "fill-color": MapaEstilo.COLOR.celda, "fill-opacity": 0.16 } },
       { id: "celda-borde", type: "line", source: "celda",
-        paint: { "line-color": "#d63f0c", "line-width": 2, "line-dasharray": [2, 1.5] } }
+        paint: { "line-color": MapaEstilo.COLOR.celdaBorde, "line-width": 2, "line-dasharray": [2, 1.5] } }
     ]);
   }
 
