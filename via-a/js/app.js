@@ -225,6 +225,7 @@
       $("vacio-texto").textContent = "NASA POWER no tiene valores de " + v.nombre.toLowerCase() + textoTemporada(estado.mes) +
         " en " + lugarTxt + ". Prueba otra variable, otra temporada u otro punto.";
       $("vacio").hidden = false;
+      anunciar($("vacio-titulo").textContent + ". " + $("vacio-texto").textContent);
       pintarEscala(l);
       return;
     }
@@ -238,6 +239,7 @@
       $("frase").textContent = "Solo hay " + r.n_anios + " años válidos para " + sujeto + " en " + lugarTxt + ".";
       ["c-pend", "c-rango", "c-p"].forEach(function (id) { $(id).textContent = "—"; });
       $("c-n").textContent = r.n_anios;
+      anunciar("Sin cálculo: solo hay " + r.n_anios + " años válidos.");
       $("grafica").innerHTML = "";
       pintarEscala(l);
       return;
@@ -267,6 +269,7 @@
         fmtP(r.p) + "). Que no sea significativa también es un resultado: todavía no hay evidencia suficiente de cambio.";
     }
     $("frase").textContent = frase;
+    anunciar(sello.textContent + ". " + $("titular").textContent + ", " + lugarTxt + ", " + sujeto + ".");
     $("c-pend").textContent = conSigno(b, 2) + " " + u;
     $("c-rango").textContent = rangoTxt;
     $("c-p").textContent = fmtP(r.p);
@@ -302,7 +305,10 @@
   }
 
   // Mientras se descarga: el esqueleto ocupa el lugar del veredicto
+  function anunciar(texto) { $("anuncio").textContent = texto; }
+
   function mostrarCarga(texto) {
+    anunciar(texto);
     ocultarResultado();
     $("esqueleto").hidden = false;
     document.querySelector(".resultado").setAttribute("aria-busy", "true");
@@ -337,6 +343,7 @@
   function mostrarErrorDescarga(lugar, err) {
     terminarCarga();
     ocultarResultado();
+    anunciar("");
     var sinRed = navigator.onLine === false;
     mostrarEstado("");
     mostrarAviso("error", "No se pudo descargar la serie",

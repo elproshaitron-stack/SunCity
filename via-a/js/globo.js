@@ -67,6 +67,7 @@
         // En el celular el globo vive dentro de la página: un dedo desplaza, dos mueven el globo
         cooperativeGestures: angosto,
         locale: {
+          "Map.Title": "Globo para elegir un punto. Con el foco aquí, las flechas lo mueven y + y − lo acercan",
           "NavigationControl.ZoomIn": "Acercar", "NavigationControl.ZoomOut": "Alejar",
           "NavigationControl.ResetBearing": "Orientar al norte",
           "AttributionControl.ToggleAttribution": "Créditos del mapa",

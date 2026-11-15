@@ -43,6 +43,7 @@ code, .dato { font-family: var(--f-dato); font-variant-numeric: tabular-nums; }
   overflow: hidden;
   color: var(--texto);
   background: var(--fondo-escenario);
+  background-color: var(--superficie);
 }
 
 .mapa { position: absolute; inset: 0; background: transparent; font-family: var(--f-texto); }
@@ -119,6 +120,8 @@ legend {
 .mapa .maplibregl-ctrl-group button + button { border-top: 1px solid var(--linea); }
 .mapa .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1) brightness(1.6); }
 .mapa .maplibregl-ctrl-group button:hover { background: var(--superficie-2); }
+.mapa .maplibregl-ctrl-group button:focus-visible { outline: 2px solid var(--foco); outline-offset: -3px; box-shadow: none; }
+.mapa .maplibregl-canvas:focus-visible { outline: 3px solid var(--foco); outline-offset: -3px; }
 .mapa .maplibregl-ctrl-top-right { top: var(--e-3); right: var(--e-3); z-index: var(--z-mapa-ctrl); }
 .mapa .maplibregl-ctrl-attrib { font-size: var(--t-2xs); }
 
