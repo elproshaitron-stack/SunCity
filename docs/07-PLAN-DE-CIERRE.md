@@ -170,7 +170,7 @@ Vía A:
 - [x] **A11 · M** Todos los estados: esqueleto del veredicto y de la gráfica, error con botón "Reintentar descarga", sin red con el respaldo anunciado, punto sin datos. *Depende:* A10.
 - [x] **A12 · G** Gráfica compartida 2: colores por tokens, ancho adaptable, punto enfocable, valor al pasar y "Ver datos en tabla". La firma de `dibujarSerieAnual` no cambia. *Depende:* A1.
 - [x] **A13 · C** "Usar mi ubicación"; la ubicación no sale del navegador. *Acepta:* probado aceptando y negando el permiso.
-- [ ] **A14 · C** Resultado imprimible en una página.
+- [x] **A14 · C** Resultado imprimible en una página.
 
 Vía B:
 

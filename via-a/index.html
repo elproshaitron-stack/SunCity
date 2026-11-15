@@ -69,6 +69,15 @@
 
     <!-- Panel: preguntas 2 y 3, y el resultado -->
     <main class="panel" id="resultado" tabindex="-1">
+      <!-- Encabezado que solo sale en papel: qué se consultó, cuándo y dónde volver a verlo -->
+      <header class="impresion">
+        <img src="../compartido/marca/logo-96.png" alt="" width="44" height="44">
+        <div>
+          <p class="impresion-marca">SunCity · ¿Qué cambia en mi región?</p>
+          <p id="imp-contexto" class="impresion-contexto"></p>
+          <p id="imp-origen" class="impresion-origen"></p>
+        </div>
+      </header>
       <section class="preguntas" aria-label="Preguntas">
         <fieldset class="pregunta">
           <legend><span class="num">2</span> ¿Qué variable?</legend>
@@ -134,6 +143,10 @@
             <button id="enlace" class="sc-boton sc-boton--texto" type="button">
               <svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#enlace"/></svg>
               Copiar enlace
+            </button>
+            <button id="imprimir" class="sc-boton sc-boton--texto" type="button">
+              <svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#imprimir"/></svg>
+              Imprimir resultado
             </button>
           </div>
         </article>
