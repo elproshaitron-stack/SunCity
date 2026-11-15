@@ -366,11 +366,16 @@
   }
 
   /* ---------- Compartir ---------- */
+  // Cada consulta nueva es una entrada del historial: Atrás vuelve a la anterior.
+  // La primera reemplaza (abrir la página no debe dejar una entrada vacía detrás).
+  var primeraEntrada = true;
   function guardarEnURL() {
     if (!estado.lugar) return;
     var h = "lat=" + estado.lugar.lat.toFixed(2) + "&lon=" + estado.lugar.lon.toFixed(2) +
       "&var=" + estado.variable + "&mes=" + estado.mes;
-    try { history.replaceState(null, "", "#" + h); } catch (e) { /* vista previa sin historial */ }
+    if (location.hash === "#" + h) { primeraEntrada = false; return; }
+    try { history[primeraEntrada ? "replaceState" : "pushState"](null, "", "#" + h); } catch (e) { /* vista previa sin historial */ }
+    primeraEntrada = false;
   }
 
   function leerURL() {
