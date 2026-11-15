@@ -289,7 +289,9 @@
         var barra = crear("header", "sc-barra");
         var marca = crear("a", "sc-barra__marca");
         marca.href = base;
-        marca.appendChild(crear("span", "sc-barra__sol")).setAttribute("aria-hidden", "true");
+        var logo = crear("img", "sc-barra__logo");
+        logo.src = base + "compartido/marca/logo-96.png"; logo.alt = ""; logo.width = 30; logo.height = 30;
+        marca.appendChild(logo);
         marca.appendChild(doc.createTextNode("SunCity"));
         var nav = crear("nav"); nav.setAttribute("aria-label", "Secciones");
         var lista = crear("ul", "sc-barra__nav");

@@ -1,99 +1,82 @@
-"""Genera los PNG de la marca a partir de las mismas formas que icono.svg.
+"""Genera los archivos de la marca a partir de logo-original.webp.
 
     python compartido/marca/generar.py
 
-Sin dependencias: dibuja con supermuestreo y escribe PNG con zlib. Los colores son los
-primitivos de compartido/tokens.css (noche-900, arena del globo, brasa-500, luz-50).
+Necesita Pillow (solo para generar; el sitio no lo usa). El original trae fondo
+transparente: el pin (sol, saguaro y ciudad) arriba y la palabra SunCity en blanco abajo.
+
+Salidas:
+  logo-96.png, logo-512.png   el pin solo, transparente: barra y portada
+  icono-48.png                ícono de pestaña
+  icono-180.png               ícono de Apple, con fondo de papel
+  icono-192.png, icono-512.png   íconos del manifest, transparentes
+  icono-adaptable-512.png     ícono adaptable: el pin dentro de la zona segura, fondo de papel
+  compartir.png               1200 × 630 para enlaces compartidos: logo completo sobre la noche
 """
 from pathlib import Path
-import math
-import struct
-import zlib
+
+from PIL import Image
 
 AQUI = Path(__file__).resolve().parent
-
-NOCHE = (10, 16, 36)        # --noche-900
-NOCHE_700 = (28, 42, 85)    # --noche-700
-ARENA = (220, 193, 149)     # tierra del globo (#dcc195)
-BRASA = (255, 90, 31)       # --brasa-500
-HORIZONTE = (242, 178, 122)  # horizonte del globo (#f2b27a)
+PAPEL = (251, 246, 236, 255)    # --arena-50
+NOCHE = (10, 16, 36)            # --noche-900
+NOCHE_700 = (28, 42, 85)        # --noche-700
 
 
-def png(ruta, ancho, alto, pixeles):
-    filas = b''.join(b'\x00' + bytes(pixeles[y * ancho * 4:(y + 1) * ancho * 4]) for y in range(alto))
-    def bloque(tipo, datos):
-        return struct.pack('>I', len(datos)) + tipo + datos + struct.pack('>I', zlib.crc32(tipo + datos) & 0xffffffff)
-    contenido = (b'\x89PNG\r\n\x1a\n' + bloque(b'IHDR', struct.pack('>IIBBBBB', ancho, alto, 8, 6, 0, 0, 0))
-                 + bloque(b'IDAT', zlib.compress(filas, 9)) + bloque(b'IEND', b''))
-    Path(ruta).write_bytes(contenido)
+def recortar(img, umbral=40):
+    """Recorta a los píxeles con alfa mayor que el umbral (el original tiene polvo casi transparente)."""
+    caja = img.getchannel('A').point(lambda a: 255 if a > umbral else 0).getbbox()
+    return img.crop(caja)
 
 
-def dibujar(ancho, alto, color_en, muestras=3):
-    """color_en(x, y) -> (r, g, b, a) en coordenadas de píxel; promedia muestras² por píxel."""
-    pix = bytearray(ancho * alto * 4)
-    paso = 1 / muestras
-    for y in range(alto):
-        for x in range(ancho):
-            r = g = b = a = 0.0
-            for j in range(muestras):
-                for i in range(muestras):
-                    cr, cg, cb, ca = color_en(x + (i + .5) * paso, y + (j + .5) * paso)
-                    r += cr * ca; g += cg * ca; b += cb * ca; a += ca
-            n = muestras * muestras
-            k = (y * ancho + x) * 4
-            if a:
-                pix[k:k + 4] = bytes((round(r / a), round(g / a), round(b / a), round(255 * a / n)))
-    return pix
+def en_cuadro(img, lado, relleno=0.0, fondo=(0, 0, 0, 0)):
+    """Centra la imagen en un cuadro de lado × lado, dejando `relleno` (fracción) de margen."""
+    util = round(lado * (1 - 2 * relleno))
+    escala = min(util / img.width, util / img.height)
+    chica = img.resize((max(1, round(img.width * escala)), max(1, round(img.height * escala))), Image.LANCZOS)
+    lienzo = Image.new('RGBA', (lado, lado), fondo)
+    lienzo.alpha_composite(chica, ((lado - chica.width) // 2, (lado - chica.height) // 2))
+    return lienzo
 
 
-def dentro_redondeado(x, y, w, h, radio):
-    cx = min(max(x, radio), w - radio)
-    cy = min(max(y, radio), h - radio)
-    return (x - cx) ** 2 + (y - cy) ** 2 <= radio ** 2
+def fondo_noche(ancho, alto):
+    """Degradado radial de la noche, como el escenario del sitio."""
+    chico = Image.new('RGB', (ancho // 8, alto // 8))
+    px = chico.load()
+    cx, cy = chico.width * .5, chico.height * .46
+    radio = max(chico.width, chico.height) * .75
+    for y in range(chico.height):
+        for x in range(chico.width):
+            t = min(1, ((x - cx) ** 2 + (y - cy) ** 2) ** .5 / radio)
+            px[x, y] = tuple(round(a * (1 - t) + b * t) for a, b in zip(NOCHE_700, NOCHE))
+    return chico.resize((ancho, alto), Image.BICUBIC).convert('RGBA')
 
 
-def icono(lado, redondo=True):
-    """La marca en una rejilla de 32: fondo noche, globo de arena (r 9) y punto brasa (r 3 en 19,13).
-    Con redondo=False el fondo llena el cuadro y la figura se encoge a la zona segura de un ícono adaptable."""
-    escala = lado / 32
-    figura = 1.0 if redondo else 0.78
-    def color(x, y):
-        u, v = x / escala, y / escala
-        if redondo and not dentro_redondeado(u, v, 32, 32, 8):
-            return (0, 0, 0, 0)
-        u = 16 + (u - 16) / figura; v = 16 + (v - 16) / figura
-        if (u - 19) ** 2 + (v - 13) ** 2 <= 9:
-            return BRASA + (1,)
-        if (u - 16) ** 2 + (v - 16) ** 2 <= 81:
-            return ARENA + (1,)
-        return NOCHE + (1,)
-    return dibujar(lado, lado, color)
+def main():
+    original = Image.open(AQUI / 'logo-original.webp').convert('RGBA')
+    # El pin es la parte con color; la palabra es blanca y queda debajo
+    alto_pin = next(y for y in range(original.height - 1, 0, -1)
+                    if any(a > 128 and max(r, g, b) - min(r, g, b) > 60
+                           for r, g, b, a in (original.getpixel((x, y)) for x in range(0, original.width, 4))))
+    pin = recortar(original.crop((0, 0, original.width, alto_pin + 12)))
+    completo = recortar(original)
 
+    en_cuadro(pin, 96).save(AQUI / 'logo-96.png')
+    en_cuadro(pin, 512).save(AQUI / 'logo-512.png')
+    en_cuadro(pin, 48).save(AQUI / 'icono-48.png')
+    en_cuadro(pin, 192, relleno=.04).save(AQUI / 'icono-192.png')
+    en_cuadro(pin, 512, relleno=.04).save(AQUI / 'icono-512.png')
+    en_cuadro(pin, 180, relleno=.12, fondo=PAPEL).convert('RGB').save(AQUI / 'icono-180.png')
+    en_cuadro(pin, 512, relleno=.2, fondo=PAPEL).convert('RGB').save(AQUI / 'icono-adaptable-512.png')
 
-def compartir(ancho=1200, alto=630):
-    """Imagen para enlaces compartidos: el globo de la marca sobre el cielo nocturno, con halo de horizonte."""
-    cx, cy, r = 860, 315, 230
-    estrellas = [(120, 90), (260, 470), (430, 140), (90, 330), (560, 560), (640, 70), (1130, 120), (1110, 540), (330, 300), (520, 380)]
-    def color(x, y):
-        d = math.hypot(x - cx, y - cy)
-        if (x - (cx + 75)) ** 2 + (y - (cy - 75)) ** 2 <= 46 ** 2:
-            return BRASA + (1,)
-        if d <= r:
-            return ARENA + (1,)
-        if d <= r + 10:
-            t = (d - r) / 10
-            return tuple(round(h * (1 - t) + n * t) for h, n in zip(HORIZONTE, NOCHE_700)) + (1,)
-        for ex, ey in estrellas:
-            if (x - ex) ** 2 + (y - ey) ** 2 <= 4:
-                return (245, 236, 217, 1)
-        t = min(1, d / 900)
-        return tuple(round(a * (1 - t) + b * t) for a, b in zip(NOCHE_700, NOCHE)) + (1,)
-    return dibujar(ancho, alto, color, muestras=2)
+    tarjeta = fondo_noche(1200, 630)
+    escala = 540 / completo.height
+    logo = completo.resize((round(completo.width * escala), 540), Image.LANCZOS)
+    tarjeta.alpha_composite(logo, ((1200 - logo.width) // 2, (630 - logo.height) // 2))
+    tarjeta.convert('RGB').save(AQUI / 'compartir.png', optimize=True)
+
+    print('Listo:', ', '.join(sorted(p.name for p in AQUI.glob('*.png'))))
 
 
 if __name__ == '__main__':
-    for lado in (180, 192, 512):
-        png(AQUI / f'icono-{lado}.png', lado, lado, icono(lado))
-    png(AQUI / 'icono-adaptable-512.png', 512, 512, icono(512, redondo=False))
-    png(AQUI / 'compartir.png', 1200, 630, compartir())
-    print('Listo:', ', '.join(sorted(p.name for p in AQUI.glob('*.png'))))
+    main()

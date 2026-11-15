@@ -85,6 +85,7 @@
       fijarLugar({ lat: lat, lon: lon }, true);
     });
 
+    $("ubicar").addEventListener("click", usarUbicacion);
     $("csv").addEventListener("click", descargarCSV);
     $("enlace").addEventListener("click", copiarEnlace);
   }
@@ -108,6 +109,35 @@
   function pintarDefinicion() {
     var v = Power.VARIABLES[estado.variable];
     $("definicion").innerHTML = "<strong>" + v.nombre + "</strong> <code>" + estado.variable + "</code> " + v.definicion;
+  }
+
+  /* ---------- Mi ubicación ----------
+     El navegador pide permiso. La posición se redondea a una décima de grado (unos 10 km) antes
+     de usarla: es lo único que viaja, como coordenadas de la consulta a NASA POWER, y no se guarda. */
+  var NOTA_UBICACION = "Se redondea a unos 10 km y solo se usa para pedir la serie a NASA POWER. SunCity no la guarda.";
+  function usarUbicacion() {
+    var b = $("ubicar"), nota = $("ubicar-nota");
+    var ocupado = function (si) { if (window.SC) SC.cargando(b, si); else b.disabled = si; };
+    var decir = function (texto, error) { nota.textContent = texto; nota.classList.toggle("ubicar-nota--error", !!error); };
+    if (!navigator.geolocation) {
+      decir("Este navegador no puede dar tu ubicación. Elige un punto en el globo o escribe la latitud y la longitud.", true);
+      return;
+    }
+    ocupado(true);
+    decir("Esperando tu permiso y la posición…");
+    navigator.geolocation.getCurrentPosition(function (p) {
+      ocupado(false);
+      var lat = Math.round(p.coords.latitude * 10) / 10, lon = Math.round(p.coords.longitude * 10) / 10;
+      decir("Usando tu zona: " + num(lat, 1) + ", " + num(lon, 1) + ". " + NOTA_UBICACION);
+      fijarLugar({ lat: lat, lon: lon, nombre: "tu zona" }, true);
+    }, function (err) {
+      ocupado(false);
+      decir(err && err.code === 1
+        ? "No diste permiso para usar tu ubicación. Puedes elegir un punto en el globo, una ciudad o escribir las coordenadas."
+        : err && err.code === 3
+          ? "La ubicación tardó demasiado. Inténtalo de nuevo o elige un punto en el globo."
+          : "No se pudo determinar tu ubicación. Elige un punto en el globo o escribe las coordenadas.", true);
+    }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 600000 });
   }
 
   /* ---------- Globo ---------- */
