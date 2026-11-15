@@ -16,10 +16,26 @@ export function dibujarZoom(contenedor, datos, datosDePrueba) {
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', `Rejilla de temperatura superficial nocturna de ${datos.filas} por ${datos.columnas} píxeles, entre ${minimo.toFixed(1)} y ${maximo.toFixed(1)} °C.`);
   svg.style.cssText = 'display:block;width:100%;height:auto;max-width:420px';
+
+  const estilo = getComputedStyle(document.documentElement);
+  const h0 = parseFloat(estilo.getPropertyValue('--calor-h0')) || 48;
+  const dh = parseFloat(estilo.getPropertyValue('--calor-dh')) || 42;
+  const s = estilo.getPropertyValue('--calor-s').trim() || '76%';
+  const l0 = parseFloat(estilo.getPropertyValue('--calor-l0')) || 84;
+  const dl = parseFloat(estilo.getPropertyValue('--calor-dl')) || 40;
+
   datos.valores_c.forEach((fila, y) => fila.forEach((valor, x) => {
     const t = (valor - minimo) / (maximo - minimo || 1);
     const rect = document.createElementNS(NS, 'rect');
-    for (const [k,v] of Object.entries({x:x*celdaX,y:y*celdaY,width:celdaX+.2,height:celdaY+.2,fill:`hsl(${48 - 42*t} 76% ${84 - 40*t}%)`})) rect.setAttribute(k,v);
+    const h = h0 - dh * t;
+    const l = l0 - dl * t;
+    for (const [k, v] of Object.entries({
+      x: x * celdaX,
+      y: y * celdaY,
+      width: celdaX + .2,
+      height: celdaY + .2,
+      fill: `hsl(${h} ${s} ${l}%)`
+    })) rect.setAttribute(k, v);
     svg.append(rect);
   }));
   const leyenda = document.createElement('div'); leyenda.className = 'leyenda-calor';

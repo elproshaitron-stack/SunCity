@@ -8,8 +8,74 @@ import {dibujarCicloDiario} from './ciclo-diario.js';
 import {dibujarZoom} from './zoom-ecostress.js';
 
 const $ = id => document.getElementById(id);
-const colores = {rojo:'#bd4b3e', azul:'#347baf', gris:'#8b9697'};
 const base = new URL(RUTA_DATOS, import.meta.url);
+
+function obtenerToken(nombre, elemento = document.documentElement) {
+  return getComputedStyle(elemento).getPropertyValue(nombre).trim();
+}
+
+function obtenerColoresMapa() {
+  return {
+    rojo: obtenerToken('--semaforo-rojo'),
+    azul: obtenerToken('--semaforo-azul'),
+    gris: obtenerToken('--semaforo-gris'),
+    refBorde: obtenerToken('--mapa-ref-borde'),
+    refFondo: obtenerToken('--mapa-ref-fondo'),
+    seleccionado: obtenerToken('--mapa-seleccionado'),
+    noSeleccionado: obtenerToken('--mapa-no-seleccionado')
+  };
+}
+
+function normalizarVariante(variante) {
+  if (typeof variante === 'string' && ESQUEMA.variantes.includes(variante.trim())) {
+    return variante.trim();
+  }
+  return ESQUEMA.variantes[0];
+}
+
+function actualizarURL(sectorId, varianteId, reemplazar = false) {
+  try {
+    const url = new URL(window.location.href);
+    if (sectorId) {
+      url.searchParams.set('sector', sectorId);
+      if (varianteId && varianteId !== 'primario') {
+        url.searchParams.set('variante', varianteId);
+      } else {
+        url.searchParams.delete('variante');
+      }
+    } else {
+      url.searchParams.delete('sector');
+      url.searchParams.delete('variante');
+    }
+    const nueva = url.pathname + (url.search ? url.search : '') + url.hash;
+    const actual = window.location.pathname + window.location.search + window.location.hash;
+    if (reemplazar) {
+      window.history.replaceState({sector: sectorId, variante: varianteId}, '', nueva);
+    } else if (nueva !== actual) {
+      window.history.pushState({sector: sectorId, variante: varianteId}, '', nueva);
+    }
+  } catch {
+    // Entornos sin soporte de API History o restricciones locales
+  }
+}
+
+function sincronizarAvisoPrueba() {
+  const aviso = $('aviso-prueba');
+  if (!aviso) return;
+  if (datosDePrueba) {
+    aviso.hidden = false;
+    document.body.classList.add('con-aviso');
+  } else {
+    aviso.hidden = true;
+    document.body.classList.remove('con-aviso');
+    const serieDesc = $('serie-descripcion');
+    if (serieDesc) serieDesc.textContent = 'Diferencia de temperatura superficial nocturna entre sector y desierto. MOD11 Terra.';
+    const expEtiq = $('expediente-etiqueta');
+    if (expEtiq) expEtiq.textContent = 'EXPEDIENTE';
+    const mapaDesc = $('mapa-descripcion');
+    if (mapaDesc) mapaDesc.textContent = 'Color: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente.';
+  }
+}
 
 function leerCSV(texto, esquema) {
   const filas = []; let fila = [], campo = '', comillas = false;
@@ -63,9 +129,70 @@ async function iniciar() {
   const mosaicos = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(mapa);
   mosaicos.on('tileerror', () => { $('estado').textContent = 'El mapa base no está disponible; los sectores siguen siendo seleccionables.'; });
   let seleccionado = null;
-  const estilo = f => f.properties.tipo === 'referencia'
-    ? {color:'#7a693c', fillColor:'#e2c987', fillOpacity:.15, weight:2, dashArray:'6 5'}
-    : {color:f.properties.id === seleccionado ? '#183f31' : '#fffef9', weight:f.properties.id === seleccionado ? 4 : 2, fillColor:colores[semaforo(primarios.get(f.properties.id))], fillOpacity:.45};
+  let varianteSeleccionada = 'primario';
+
+  function resolverSector(idOParam) {
+    if (!idOParam || typeof idOParam !== 'string') return null;
+    const param = idOParam.trim();
+    if (!param) return null;
+
+    // 1. Coincidencia exacta por ID (ej. S01, S04)
+    const porId = sectores.find(f => f.properties.id === param);
+    if (porId) return porId;
+
+    // 2. Coincidencia insensible a mayúsculas y con o sin cero inicial (ej. s01 -> S01, s1 -> S01)
+    const paramMin = param.toLowerCase();
+    const porIdMin = sectores.find(f => f.properties.id.toLowerCase() === paramMin);
+    if (porIdMin) return porIdMin;
+    const normalizarId = id => id.toLowerCase().replace(/^s0?(\d+)$/, 's$1');
+    const porIdNorm = sectores.find(f => normalizarId(f.properties.id) === normalizarId(paramMin));
+    if (porIdNorm) return porIdNorm;
+
+    // Normalizador de texto para slug
+    const limpiar = s => (s || '')
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+    const slugParam = limpiar(param);
+    if (!slugParam) return null;
+
+    // 3. Coincidencia por nombre completo normalizado
+    for (const f of sectores) {
+      const nom = limpiar(nombreDe(f).nombre);
+      if (nom === slugParam) return f;
+      if (f.properties.nombre && limpiar(f.properties.nombre) === slugParam) return f;
+    }
+
+    // 4. Coincidencia por palabra exacta dentro del nombre (ej. "centro" -> Hermosillo Centro, "norte" -> Hermosillo Norte)
+    for (const f of sectores) {
+      const nom = limpiar(nombreDe(f).nombre);
+      const palabras = nom.split(' ');
+      if (palabras.includes(slugParam)) return f;
+    }
+
+    // 5. Coincidencia si el nombre termina con el término buscado
+    for (const f of sectores) {
+      const nom = limpiar(nombreDe(f).nombre);
+      if (nom.endsWith(' ' + slugParam)) return f;
+    }
+
+    return null;
+  }
+  const estilo = f => {
+    const paleta = obtenerColoresMapa();
+    return f.properties.tipo === 'referencia'
+      ? {color: paleta.refBorde, fillColor: paleta.refFondo, fillOpacity: .15, weight: 2, dashArray: '6 5'}
+      : {
+          color: f.properties.id === seleccionado ? paleta.seleccionado : paleta.noSeleccionado,
+          weight: f.properties.id === seleccionado ? 4 : 2,
+          fillColor: paleta[semaforo(primarios.get(f.properties.id))],
+          fillOpacity: .45
+        };
+  };
   const capas = new Map();
   const geometria = L.geoJSON(geojson, {style:estilo, onEachFeature(f, capa) {
     const etiqueta = document.createElement('span'); etiqueta.textContent = f.properties.tipo === 'sector' ? nombreDe(f).nombre : f.properties.nombre; capa.bindTooltip(etiqueta);
@@ -116,24 +243,65 @@ async function iniciar() {
     editar(false); refrescarNombres();
   });
   $('sector').addEventListener('change', e => e.target.value ? abrir(e.target.value) : cerrar());
-  $('cerrar').addEventListener('click', cerrar);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('expediente').hidden) cerrar(); });
-  function cerrar() {
-    $('expediente').hidden = true; editar(false); seleccionado = null; $('sector').value = '';
-    geometria.setStyle(estilo); $('sector').focus();
+  $('cerrar').addEventListener('click', () => cerrar(true));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('expediente').hidden) cerrar(true); });
+  window.addEventListener('popstate', () => {
+    const params = new URLSearchParams(window.location.search);
+    const secParam = params.get('sector');
+    const varParam = params.get('variante');
+    const encontrado = resolverSector(secParam);
+    if (encontrado) {
+      abrir(encontrado.properties.id, normalizarVariante(varParam), false);
+    } else {
+      cerrar(false);
+    }
+  });
+  function cerrar(actualizarHistorial = true) {
+    $('expediente').hidden = true;
+    editar(false);
+    seleccionado = null;
+    varianteSeleccionada = 'primario';
+    $('sector').value = '';
+    geometria.setStyle(estilo);
+    $('sector').focus();
+    if (actualizarHistorial) {
+      actualizarURL(null, null, false);
+    }
   }
-  function abrir(id) {
-    const f = sectores.find(f => f.properties.id === id), r = primarios.get(id);
+  function abrir(id, variante = 'primario', actualizarHistorial = true, reemplazar = false) {
+    const f = sectores.find(f => f.properties.id === id);
+    if (!f) return;
+    const r = primarios.get(id);
+    const varNorm = normalizarVariante(variante);
     const datos = series.filter(s => s.sector === id).sort((a,b) => a.anio - b.anio);
     const color = semaforo(r);
-    seleccionado = id; $('sector').value = id; editar(false); refrescarNombres();
-    $('expediente').hidden = false; $('expediente').scrollTop = 0; geometria.setStyle(estilo);
+    seleccionado = id;
+    varianteSeleccionada = varNorm;
+    if (actualizarHistorial) {
+      actualizarURL(id, varNorm, reemplazar);
+    }
+    $('sector').value = id;
+    editar(false);
+    refrescarNombres();
+    $('expediente').hidden = false;
+    $('expediente').scrollTop = 0;
+    geometria.setStyle(estilo);
     dibujarSerieAnual($('serie-anual'), {anios:datos.map(d => d.anio), valores:datos.map(d => d.valor), resultado:r, unidad:'°C', aniosPunteados:datos.filter(d => d.anio > 2019).map(d => d.anio)});
-    dibujarVariantes($('curva-variantes'), resultados.filter(fila => fila.sector === id), ESQUEMA.variantes);
+    dibujarVariantes(
+      $('curva-variantes'),
+      resultados.filter(fila => fila.sector === id),
+      ESQUEMA.variantes,
+      varianteSeleccionada,
+      nuevaVar => {
+        if (nuevaVar !== varianteSeleccionada) {
+          abrir(id, nuevaVar, true, false);
+        }
+      }
+    );
     dibujarCicloDiario($('ciclo-diario'), ciclo.filter(fila => fila.sector === id), pasosAqua);
     const lectura = $('lectura'); lectura.replaceChildren();
-    const badge = document.createElement('span'); badge.className = `estado-sector ${color}`; badge.textContent = `Semáforo: ${color}`;
-    const dl = document.createElement('dl'), nivel = niveles.filter(d => d.sector === id);
+    const badge = document.createElement('span'); badge.className = `estado-sector ${color} sc-insignia sc-insignia--${color}`; badge.textContent = `Semáforo: ${color}`;
+    const dl = document.createElement('dl'); dl.className = 'sc-cifra'; const nivel = niveles.filter(d => d.sector === id);
     const medias = nivel.filter(d => Number.isFinite(d.nivel_c));
     const valoresNivel = medias.map(d => d.nivel_c);
     const textoNivel = medias.length === 0 ? 'Sin datos' : medias.length === 1
@@ -170,13 +338,13 @@ async function iniciar() {
     requestAnimationFrame(() => { mapa.invalidateSize(); mapa.panTo(capas.get(id).getBounds().getCenter()); });
   }
   $('estado').textContent = `${sectores.length} sectores${datosDePrueba ? ' de prueba' : ''} · Toca un polígono o usa el selector.`;
-  const idEnlace = new URLSearchParams(location.search).get('sector');
-  if (sectores.some(f => f.properties.id === idEnlace)) abrir(idEnlace);
+  const paramsIniciales = new URLSearchParams(window.location.search);
+  const secInicial = paramsIniciales.get('sector');
+  const varInicial = paramsIniciales.get('variante');
+  const inicialEncontrado = resolverSector(secInicial);
+  if (inicialEncontrado) {
+    abrir(inicialEncontrado.properties.id, normalizarVariante(varInicial), true, true);
+  }
 }
-if (!datosDePrueba) {
-  $('aviso-prueba').hidden = true;
-  $('serie-descripcion').textContent = 'Diferencia de temperatura superficial nocturna entre sector y desierto. MOD11 Terra.';
-  $('expediente-etiqueta').textContent = 'EXPEDIENTE';
-  $('mapa-descripcion').textContent = 'Color: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente.';
-}
+sincronizarAvisoPrueba();
 iniciar().catch(error => { $('estado').textContent = `No se pudo abrir el explorador: ${error.message}`; });
