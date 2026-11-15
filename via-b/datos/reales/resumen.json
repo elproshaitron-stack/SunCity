@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-15T12:14:53",
+ "generado": "2026-11-15T12:56:13",
  "parametros": {
   "temporada_meses": [
    6,
@@ -65,19 +65,73 @@
  "validez_por_producto": {
   "MOD11_Terra_noche": {
    "validos": 200,
-   "descartados": 0
+   "descartados": 0,
+   "motivos": {},
+   "anios_descartados": {}
   },
   "MOD11_Terra_dia": {
    "validos": 200,
-   "descartados": 0
+   "descartados": 0,
+   "motivos": {},
+   "anios_descartados": {}
   },
   "MOD11_Aqua_noche": {
    "validos": 184,
-   "descartados": 16
+   "descartados": 16,
+   "motivos": {
+    "sin_dato": 16
+   },
+   "anios_descartados": {
+    "2001": [
+     "RA",
+     "RB",
+     "S01",
+     "S02",
+     "S03",
+     "S04",
+     "S05",
+     "S06"
+    ],
+    "2002": [
+     "RA",
+     "RB",
+     "S01",
+     "S02",
+     "S03",
+     "S04",
+     "S05",
+     "S06"
+    ]
+   }
   },
   "MOD11_Aqua_dia": {
    "validos": 184,
-   "descartados": 16
+   "descartados": 16,
+   "motivos": {
+    "sin_dato": 16
+   },
+   "anios_descartados": {
+    "2001": [
+     "RA",
+     "RB",
+     "S01",
+     "S02",
+     "S03",
+     "S04",
+     "S05",
+     "S06"
+    ],
+    "2002": [
+     "RA",
+     "RB",
+     "S01",
+     "S02",
+     "S03",
+     "S04",
+     "S05",
+     "S06"
+    ]
+   }
   }
  },
  "primario": [
@@ -85,39 +139,60 @@
    "sector": "S01",
    "pendiente_c_decada": 0.6502941176470625,
    "p_fdr": 9.885135818388235e-05,
-   "n_anios": 19
+   "n_anios": 19,
+   "ruido_c": 0.2132,
+   "pendiente_min_detectable_c_decada": 0.377
   },
   {
    "sector": "S02",
    "pendiente_c_decada": 0.42220000000008895,
    "p_fdr": 0.014124197413252215,
-   "n_anios": 19
+   "n_anios": 19,
+   "ruido_c": 0.3127,
+   "pendiente_min_detectable_c_decada": 0.553
   },
   {
    "sector": "S03",
    "pendiente_c_decada": 0.8236000000000179,
    "p_fdr": 3.247570132547395e-05,
-   "n_anios": 19
+   "n_anios": 19,
+   "ruido_c": 0.2001,
+   "pendiente_min_detectable_c_decada": 0.354
   },
   {
    "sector": "S04",
    "pendiente_c_decada": 0.48733333333340545,
    "p_fdr": 0.007692845408549198,
-   "n_anios": 19
+   "n_anios": 19,
+   "ruido_c": 0.328,
+   "pendiente_min_detectable_c_decada": 0.58
   },
   {
    "sector": "S05",
    "pendiente_c_decada": 0.6154999999999892,
    "p_fdr": 9.885135818388235e-05,
-   "n_anios": 19
+   "n_anios": 19,
+   "ruido_c": 0.2417,
+   "pendiente_min_detectable_c_decada": 0.428
   },
   {
    "sector": "S06",
    "pendiente_c_decada": 0.16266666666668544,
    "p_fdr": 0.29391717025195696,
-   "n_anios": 19
+   "n_anios": 19,
+   "ruido_c": 0.3662,
+   "pendiente_min_detectable_c_decada": 0.648
   }
  ],
+ "potencia": {
+  "metodo": "05-MODELOS.md 5.6: ruido = desviación estándar de los residuos de Theil-Sen de la serie primaria (n − 2); series simuladas con los mismos años válidos, ruido gaussiano sin autocorrelación y Mann-Kendall sin corrección; la pendiente mínima detectable es la más chica que da p < alfa con el signo correcto en al menos el objetivo de las simulaciones",
+  "objetivo_potencia": 0.8,
+  "alfa_fdr_mas_estricto": 0.008333333333333333,
+  "sectores_en_fdr": 6,
+  "simulaciones": 20000,
+  "semilla": 2026,
+  "nota": "Cota optimista: el semáforo usa p = máx(Mann-Kendall, Hamed-Rao) y pide IC 95 % sin cruzar cero (D16). Un sector gris con pendiente menor que esta cifra puede tener tendencia real"
+ },
  "aire": {
   "r_pearson": 0.114,
   "n_anios": 19,

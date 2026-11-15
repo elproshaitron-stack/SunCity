@@ -196,10 +196,10 @@ Vía B:
 
 ### Fase 5. Datos y publicación
 
-- [ ] **C11 · M** `revisar_poligonos.py`: identificadores, tipos, referencias, área mínima y traslapes.
-- [ ] **C12 · M** `metadatos.json` por conjunto de datos: fuente, producto, fecha ISO 8601, versión y completitud. La barra o el pie lo muestran.
+- [x] **C11 · M** `revisar_poligonos.py`: identificadores, tipos, referencias, área mínima y traslapes.
+- [ ] **C12 · M** `metadatos.json` por conjunto de datos: fuente, producto, fecha ISO 8601, versión y completitud. La barra o el pie lo muestran. *Avance:* los tres `metadatos.json` existen (`via-b/datos/reales/`, `via-b/datos/prueba/`, `via-a/datos/`); falta que la interfaz los muestre.
 - [ ] **C13 · M** Corrida con datos observados y pruebas de aceptación sobre `datos/reales/`. *Depende:* D15 cerrada y la exportación disponible.
-- [ ] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13.
+- [x] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13. Calculada sobre el export de GIBS con los polígonos esquemáticos; `procesar.py` la rehace cuando cierre D15.
 - [ ] **B11 · C** El aviso de datos de prueba aparece solo con `datos/prueba/`. *Depende:* C13.
 - [ ] **C15 · M** Publicación desde `main` con página 404 y caché correcta. *Depende:* C2, A6.
 
