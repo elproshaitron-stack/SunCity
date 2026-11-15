@@ -5,105 +5,128 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SunCity · ¿Qué cambia en mi región?</title>
   <meta name="description" content="Elige un lugar y una variable climática: ve cuánto cambia por década desde 1981 y si el cambio es significativo. Datos de NASA POWER (MERRA-2).">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <meta name="theme-color" content="#0a1024">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a1024'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23dcc195'/%3E%3Ccircle cx='19' cy='13' r='3' fill='%23ff5a1f'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.1/dist/maplibre-gl.css" crossorigin="">
   <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
-  <header class="cabecera">
-    <div class="contenedor">
-      <p class="marca">SunCity · Sonora Calor</p>
-      <h1>¿Qué cambia en mi región?</h1>
-      <p class="bajada">Elige un lugar, una variable y una temporada. Verás cuánto cambia por década desde 1981 y si el cambio es significativo.</p>
-    </div>
-  </header>
+  <a class="saltar" href="#resultado">Saltar al resultado</a>
 
-  <main class="contenedor rejilla">
-    <section class="panel preguntas" aria-label="Preguntas">
-      <fieldset class="pregunta">
+  <div class="app">
+    <!-- Escenario: el globo y la primera pregunta -->
+    <section class="escenario" aria-label="Elegir un lugar">
+      <div id="mapa" class="mapa" role="application" aria-label="Globo para elegir un punto. Las casillas de latitud y longitud hacen lo mismo."></div>
+
+      <header class="cabecera">
+        <p class="marca"><span class="marca-sol" aria-hidden="true"></span>SunCity <span class="marca-sub">Sonora Calor</span></p>
+        <h1>¿Qué cambia en mi región?</h1>
+        <p class="bajada">Elige un lugar, una variable y una temporada. Verás cuánto cambia por década desde 1981 y si el cambio es significativo.</p>
+      </header>
+
+      <fieldset class="donde">
         <legend><span class="num">1</span> ¿Dónde?</legend>
-        <p class="ayuda">Haz clic en el mapa o elige una ciudad de ejemplo.</p>
-        <div id="mapa" class="mapa" role="application" aria-label="Mapa para elegir un punto"></div>
-        <div class="fila">
-          <label class="campo">Ciudad de ejemplo
-            <select id="ciudad"></select>
-          </label>
-        </div>
-        <div class="fila coords">
+        <p class="ayuda">Gira el globo y haz clic en un punto, o elige una ciudad de ejemplo.</p>
+        <div id="ciudades" class="chips" role="group" aria-label="Ciudades de ejemplo"></div>
+        <div class="coords">
           <label class="campo">Latitud
             <input id="lat" type="number" step="0.01" min="-90" max="90" inputmode="decimal">
           </label>
           <label class="campo">Longitud
             <input id="lon" type="number" step="0.01" min="-180" max="180" inputmode="decimal">
           </label>
-          <button id="ir" class="boton secundario" type="button">Usar este punto</button>
+          <button id="ir" class="boton boton--secundario" type="button">Usar este punto</button>
         </div>
-      </fieldset>
-
-      <fieldset class="pregunta">
-        <legend><span class="num">2</span> ¿Qué variable?</legend>
-        <div id="variables" class="opciones" role="radiogroup"></div>
-        <p class="fuente">Fuente: modelo MERRA-2 de la NASA, vía NASA POWER.</p>
-      </fieldset>
-
-      <fieldset class="pregunta">
-        <legend><span class="num">3</span> ¿Qué temporada?</legend>
-        <p class="ayuda">Comparar siempre la misma época del año quita el ciclo de las estaciones.</p>
-        <label class="campo">Temporada
-          <select id="temporada"></select>
-        </label>
+        <p class="celda-nota"><span class="celda-muestra" aria-hidden="true"></span><span id="celda-texto">El recuadro marca la celda aproximada de MERRA-2.</span></p>
       </fieldset>
     </section>
 
-    <section class="panel resultado" aria-live="polite" aria-label="Resultado">
-      <div id="estado" class="estado">Elige un lugar para empezar.</div>
-      <article id="tarjeta" class="tarjeta" hidden>
-        <p id="sello" class="sello"></p>
-        <h2 id="titular"></h2>
-        <p id="frase" class="frase"></p>
-        <dl class="cifras">
-          <div><dt>Cambio por década</dt><dd id="c-pend"></dd></div>
-          <div><dt>Rango del 95 %</dt><dd id="c-rango"></dd></div>
-          <div><dt>Valor p (Mann-Kendall)</dt><dd id="c-p"></dd></div>
-          <div><dt>Años con datos</dt><dd id="c-n"></dd></div>
-        </dl>
-        <p class="exploratorio"><strong>Exploratorio.</strong> Tú eliges qué probar, así que el valor p no está ajustado por todas las combinaciones posibles.</p>
-        <div id="grafica" class="grafica"></div>
-        <p class="leyenda" id="leyenda-provisional"><span class="ley-serie"></span> valor de cada año <span class="ley-pend"></span> tendencia (Theil-Sen) <span class="ley-banda"></span> rango del 95 %</p>
-        <div class="acciones">
-          <button id="csv" class="boton secundario" type="button">Descargar datos (CSV)</button>
-          <button id="enlace" class="boton secundario" type="button">Copiar enlace</button>
-        </div>
-      </article>
+    <!-- Panel: preguntas 2 y 3, y el resultado -->
+    <main class="panel" id="resultado" tabindex="-1">
+      <section class="preguntas" aria-label="Preguntas">
+        <fieldset class="pregunta">
+          <legend><span class="num">2</span> ¿Qué variable?</legend>
+          <div id="variables" class="chips" role="radiogroup" aria-label="Variable"></div>
+          <p id="definicion" class="definicion" aria-live="polite"></p>
+        </fieldset>
 
-      <aside id="escala" class="escala" hidden>
-        <h3>Lo que este dato no puede ver</h3>
-        <p>MERRA-2 trabaja en celdas de unas decenas de kilómetros. El punto elegido representa toda la región que lo rodea: una ciudad y su desierto quedan en la misma celda. Esta herramienta ve regiones, no ciudades.</p>
-        <p id="puente" hidden>Para ver dentro de la ciudad hace falta otro satélite. <a href="../via-b/index.html">Ver dentro de Hermosillo →</a></p>
-      </aside>
+        <fieldset class="pregunta">
+          <legend><span class="num">3</span> ¿Qué temporada?</legend>
+          <div id="temporada" class="meses" role="radiogroup" aria-label="Temporada"></div>
+          <p class="ayuda">Comparar siempre la misma época del año quita el ciclo de las estaciones.</p>
+        </fieldset>
+      </section>
 
-      <details class="glosario">
-        <summary>¿Qué significa cada término?</summary>
-        <dl>
-          <dt>Cambio por década</dt><dd>Cuánto sube o baja la variable cada 10 años, según la tendencia de toda la serie.</dd>
-          <dt>Theil-Sen</dt><dd>Calcula la pendiente entre cada par de años y toma la mediana; un año raro no la mueve mucho.</dd>
-          <dt>Rango del 95 %</dt><dd>Los valores de pendiente compatibles con los datos. Si incluye el cero, el signo del cambio no es seguro.</dd>
-          <dt>Mann-Kendall</dt><dd>Cuenta cuántos pares de años suben y cuántos bajan para decidir si hay una tendencia.</dd>
-          <dt>Valor p</dt><dd>Qué tan probable sería ver una tendencia así si en realidad no hubiera ninguna. Menos de 0.05 se llama significativo.</dd>
-          <dt>MERRA-2</dt><dd>Un modelo de la NASA que reconstruye el clima de todo el planeta desde 1980 combinando observaciones.</dd>
-        </dl>
-      </details>
-    </section>
-  </main>
+      <section class="resultado" aria-live="polite" aria-label="Resultado">
+        <div id="estado" class="estado">Elige un lugar para empezar.</div>
 
-  <footer class="pie contenedor">
-    <p>Datos: <a href="https://power.larc.nasa.gov/" rel="noopener">NASA POWER</a>, API mensual, modelo MERRA-2, 1981-2025. Cálculo en tu navegador: Theil-Sen e intervalo del 95 % (Sen, 1968) y Mann-Kendall.</p>
-    <p>Proyecto SunCity, NASA Space Apps Challenge 2026, Hermosillo.</p>
-  </footer>
+        <article id="tarjeta" class="veredicto" hidden>
+          <p id="sello" class="sello"></p>
+          <h2 id="titular"></h2>
+          <p id="frase" class="frase"></p>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+          <dl class="cifras">
+            <div><dt>Cambio por década</dt><dd id="c-pend"></dd></div>
+            <div><dt>Rango del 95 %</dt><dd id="c-rango"></dd></div>
+            <div><dt>Valor p <span class="dt-sub">Mann-Kendall</span></dt><dd id="c-p"></dd></div>
+            <div><dt>Años con datos</dt><dd id="c-n"></dd></div>
+          </dl>
+
+          <p class="exploratorio"><strong>Exploratorio.</strong> Tú eliges qué probar, así que el valor p no está ajustado por todas las combinaciones posibles.</p>
+
+          <figure class="figura">
+            <div id="grafica" class="grafica"></div>
+            <figcaption class="leyenda" id="leyenda-provisional"><span class="ley ley-serie"></span>valor de cada año <span class="ley ley-pend"></span>tendencia (Theil-Sen) <span class="ley ley-banda"></span>rango del 95 %</figcaption>
+          </figure>
+
+          <div class="acciones">
+            <button id="csv" class="boton boton--secundario" type="button">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>
+              Descargar datos (CSV)
+            </button>
+            <button id="enlace" class="boton boton--texto" type="button">Copiar enlace</button>
+          </div>
+        </article>
+
+        <aside id="escala" class="escala" hidden>
+          <h3>Lo que este dato no puede ver</h3>
+          <p>MERRA-2 trabaja en celdas de unas decenas de kilómetros. El punto elegido representa toda la región que lo rodea: una ciudad y su desierto quedan en la misma celda. Esta herramienta ve regiones, no ciudades.</p>
+          <div id="puente" class="puente" hidden>
+            <p>Para ver dentro de la ciudad hace falta otro satélite.</p>
+            <a class="boton boton--primario" href="../via-b/index.html">Ver dentro de Hermosillo
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg>
+            </a>
+          </div>
+        </aside>
+
+        <details class="glosario">
+          <summary>¿Qué significa cada término?</summary>
+          <dl>
+            <dt>Cambio por década</dt><dd>Cuánto sube o baja la variable cada 10 años, según la tendencia de toda la serie.</dd>
+            <dt>Theil-Sen</dt><dd>Calcula la pendiente entre cada par de años y toma la mediana; un año raro no la mueve mucho.</dd>
+            <dt>Rango del 95 %</dt><dd>Los valores de pendiente compatibles con los datos. Si incluye el cero, el signo del cambio no es seguro.</dd>
+            <dt>Mann-Kendall</dt><dd>Cuenta cuántos pares de años suben y cuántos bajan para decidir si hay una tendencia.</dd>
+            <dt>Valor p</dt><dd>Qué tan probable sería ver una tendencia así si en realidad no hubiera ninguna. Menos de 0.05 se llama significativo.</dd>
+            <dt>MERRA-2</dt><dd>Un modelo de la NASA que reconstruye el clima de todo el planeta desde 1980 combinando observaciones.</dd>
+          </dl>
+        </details>
+      </section>
+
+      <footer class="pie">
+        <p>Datos: <a href="https://power.larc.nasa.gov/" rel="noopener">NASA POWER</a>, API mensual, modelo MERRA-2, 1981-2025. Cálculo en tu navegador: Theil-Sen e intervalo del 95 % (Sen, 1968) y Mann-Kendall.</p>
+        <p>Proyecto SunCity, NASA Space Apps Challenge 2026, Hermosillo.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@5.24.1/dist/maplibre-gl.js" crossorigin=""></script>
   <script src="js/tendencia.js"></script>
   <script src="js/power.js"></script>
   <script src="js/grafica.js"></script>
+  <script src="js/globo.js"></script>
   <script src="js/app.js"></script>
   <script type="module">
     // Componente compartido de la Vía B. Si no carga (servido solo desde via-a/), queda la gráfica provisional.

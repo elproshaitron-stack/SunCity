@@ -31,6 +31,7 @@ Se llenan con lo que respondan las comprobaciones de la primera hora.
 | La función de referencia corre con una serie inventada | Navarrete | Sí (scipy 1.18.1). Ver hallazgo H01 | 14 nov 11:55 |
 | Vía A de punta a punta en un navegador real | Navarrete | Sí. `power.js` y `tendencia.js` en el navegador: POWER en vivo en 0.5 a 1.1 s para Hermosillo, Mexicali, Phoenix y un punto del Pacífico; Hermosillo julio `T2M_MIN` = +0.378 °C/década (igual que Python). Leaflet 1.9.4 y teselas de OpenStreetMap cargan | 14 nov 12:15 |
 | Theil-Sen y Mann-Kendall en JavaScript igualan a Python a tres decimales | Navarrete | Sí: 119 casos (15 series reales de Hermosillo y 104 sintéticas, con empates y años faltantes), 0 fallos, diferencia máxima 8e-8. `node via-a/pruebas/probar_tendencia.cjs` | 14 nov 11:55 |
+| Rediseño de la Vía A con globo 3D | Claude (agente), a pedido de Navarrete | Sí. MapLibre GL JS 5.24.1 con proyección de globo y mosaicos vectoriales de OpenFreeMap, sin clave, reemplazan a Leaflet y OpenStreetMap en la Vía A. Probado en navegador a 1366 px y 375 px: vuelo a Hermosillo, clic en el globo, ciudades, variable, mes, enlace compartible y puente a la Vía B. El recuadro de la celda asume la rejilla nativa de MERRA-2 (0.5° × 0.625°) y se rotula como aproximado. Sin mapa siguen funcionando las casillas de latitud y longitud | 15 nov |
 
 ## Hallazgos
 

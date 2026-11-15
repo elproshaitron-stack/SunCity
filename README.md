@@ -37,6 +37,7 @@ flowchart LR
 | [docs/03-ARQUITECTURA.md](docs/03-ARQUITECTURA.md) | Diagramas: componentes, flujos, contrato entre vías, carpetas |
 | [docs/04-DATOS-Y-APIS.md](docs/04-DATOS-Y-APIS.md) | Productos, identificadores, filtros de calidad, estado de verificación |
 | [docs/05-MODELOS.md](docs/05-MODELOS.md) | Modelos A a J, fórmulas, potencia estadística, variantes |
+| [docs/06-PLAN-AGENTES.md](docs/06-PLAN-AGENTES.md) | Auditoría, plan de tres agentes (Codex, Antigravity, Claude) y tablero de tareas. Reglas en [AGENTS.md](AGENTS.md) |
 | [docs/DECISIONES.md](docs/DECISIONES.md) | Registro de decisiones. **Se llena antes de calcular la primera tendencia** |
 | [docs/SunCity-Documentacion.pdf](docs/SunCity-Documentacion.pdf) | Todo lo anterior en un solo PDF |
 
