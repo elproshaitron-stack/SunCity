@@ -38,6 +38,7 @@ flowchart LR
 | [docs/04-DATOS-Y-APIS.md](docs/04-DATOS-Y-APIS.md) | Productos, identificadores, filtros de calidad, estado de verificación |
 | [docs/05-MODELOS.md](docs/05-MODELOS.md) | Modelos A a J, fórmulas, potencia estadística, variantes |
 | [docs/06-PLAN-AGENTES.md](docs/06-PLAN-AGENTES.md) | Auditoría, plan de tres agentes (Codex, Antigravity, Claude) y tablero de tareas. Reglas en [AGENTS.md](AGENTS.md) |
+| [docs/07-PLAN-DE-CIERRE.md](docs/07-PLAN-DE-CIERRE.md) | Plan para terminar la versión 1.0: sistema de diseño, normas ISO y tablero para tres personas (A, B, C) |
 | [docs/DECISIONES.md](docs/DECISIONES.md) | Registro de decisiones. **Se llena antes de calcular la primera tendencia** |
 | [docs/SunCity-Documentacion.pdf](docs/SunCity-Documentacion.pdf) | Todo lo anterior en un solo PDF |
 
