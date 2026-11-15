@@ -194,6 +194,13 @@ async function iniciar() {
     });
   }
 
+  // El estado del mapa solo se puede tocar cuando su estilo ya cargó (p. ej., al abrir con ?sector=)
+  function marcarElegido(id) {
+    if (!mapa) return;
+    const aplicar = () => sectores.forEach(s => mapa.setFeatureState({source:'zonas', id:s.properties.id}, {elegido:s.properties.id === id}));
+    if (mapaListo) aplicar(); else mapa.once('load', aplicar);
+  }
+
   function cambiarPeriodo() {
     periodo = {inicio: $('lst-periodo').value, fin: $('lst-periodo').selectedOptions[0].dataset.fin};
     pintarCapa();
@@ -277,7 +284,7 @@ async function iniciar() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('expediente').hidden) cerrar(); });
   function cerrar() {
     $('expediente').hidden = true; editar(false); seleccionado = null; $('sector').value = '';
-    if (mapa) sectores.forEach(f => mapa.setFeatureState({source:'zonas', id:f.properties.id}, {elegido:false}));
+    marcarElegido(null);
     $('sector').focus();
   }
   function abrir(id) {
@@ -286,7 +293,7 @@ async function iniciar() {
     const color = semaforo(r);
     seleccionado = id; $('sector').value = id; editar(false); refrescarNombres();
     $('expediente').hidden = false; $('expediente').scrollTop = 0;
-    if (mapa) sectores.forEach(s => mapa.setFeatureState({source:'zonas', id:s.properties.id}, {elegido:s.properties.id === id}));
+    marcarElegido(id);
     leerSector(id);
     dibujarSerieAnual($('serie-anual'), {anios:datos.map(d => d.anio), valores:datos.map(d => d.valor), resultado:r, unidad:'°C', aniosPunteados:datos.filter(d => d.anio > 2019).map(d => d.anio)});
     dibujarVariantes($('curva-variantes'), resultados.filter(fila => fila.sector === id), ESQUEMA.variantes);
