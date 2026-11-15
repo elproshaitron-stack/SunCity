@@ -1,7 +1,8 @@
-import {semaforo} from './semaforo.js';
+import {semaforo, estadoSector, ESTADOS} from './semaforo.js';
+import {tablaAlternativa, cifra} from './tabla-datos.js';
 
 const NS = 'http://www.w3.org/2000/svg';
-const ETIQUETAS = {
+export const ETIQUETAS = {
   primario: 'Primario 2001-2019',
   con_deriva: 'Con deriva 2001-2025',
   aqua: 'Aqua',
@@ -11,7 +12,7 @@ const ETIQUETAS = {
 };
 const COLORES = {rojo:'var(--estado-sube)', azul:'var(--estado-baja)', gris:'var(--estado-neutro)'};
 
-export function dibujarVariantes(contenedor, resultados, orden) {
+export function dibujarVariantes(contenedor, resultados, orden, elegida = orden[0]) {
   contenedor.replaceChildren();
   const filas = orden.map(variante => ({variante, nombre:ETIQUETAS[variante] || variante,
     dato:resultados.find(r => r.variante === variante)}));
@@ -37,11 +38,13 @@ export function dibujarVariantes(contenedor, resultados, orden) {
     if (contenido !== undefined) nodo.textContent = contenido;
     svg.append(nodo); return nodo;
   }
-  el('rect', {x:2,y:13,width:416,height:60,rx:6,fill:'var(--superficie-2)'});
+  // Fondo de la variante destacada (la primaria si no se eligió otra)
+  const iElegida = Math.max(0, orden.indexOf(elegida));
+  el('rect', {x:2,y:13 + iElegida * 66,width:416,height:60,rx:6,fill:'var(--superficie-2)',stroke:'var(--borde)'});
   el('line', {x1:x(0),x2:x(0),y1:25,y2:alto-43,stroke:'var(--texto)','stroke-width':2.5});
   filas.forEach((fila, i) => {
     const y = 37 + i * 66, d = fila.dato;
-    el('text', {x:10,y:y-5,fill:'var(--texto)','font-weight':i === 0 ? '700':'500'},fila.nombre);
+    el('text', {x:10,y:y-5,fill:'var(--texto)','font-weight':i === iElegida ? '700':'500'},fila.nombre);
     if (!d || !validas.includes(fila)) {
       el('text', {x:12,y:y+18,fill:'var(--texto-2)'},'Sin datos');
       return;
@@ -49,7 +52,7 @@ export function dibujarVariantes(contenedor, resultados, orden) {
     const color = semaforo(d), centro = y + 15;
     el('line', {x1:x(d.ic95_inf),x2:x(d.ic95_sup),y1:centro,y2:centro,stroke:COLORES[color],'stroke-width':3});
     for (const valor of [d.ic95_inf,d.ic95_sup]) el('line', {x1:x(valor),x2:x(valor),y1:centro-5,y2:centro+5,stroke:COLORES[color],'stroke-width':2});
-    el('circle', {cx:x(d.pendiente_c_decada),cy:centro,r:i === 0 ? 6 : 5,fill:COLORES[color],stroke:'var(--superficie)','stroke-width':1.5});
+    el('circle', {cx:x(d.pendiente_c_decada),cy:centro,r:i === iElegida ? 6 : 5,fill:COLORES[color],stroke:'var(--superficie)','stroke-width':1.5});
     el('circle', {cx:330,cy:centro-4,r:5,fill:COLORES[color]});
     el('text', {x:341,y:centro,fill:'var(--texto)','font-size':12},`p FDR ${d.p_fdr.toPrecision(2)}`);
     const titulo = document.createElementNS(NS,'title');
@@ -65,5 +68,12 @@ export function dibujarVariantes(contenedor, resultados, orden) {
   el('text',{x:(izquierda+derecha)/2,y:alto-1,'text-anchor':'middle',fill:'var(--texto-2)'},'°C por década');
   const nota = document.createElement('p');
   nota.textContent = 'Las variantes repiten el cálculo sobre datos que se traslapan; no son pruebas independientes.';
-  contenedor.append(svg,nota);
+  const [boton, marco] = tablaAlternativa({
+    titulo: 'Pendiente Theil–Sen e intervalo del 95 % de cada variante, en °C por década',
+    columnas: [{texto:'Variante'}, {texto:'Pendiente', num:true}, {texto:'IC 95 % inferior', num:true}, {texto:'IC 95 % superior', num:true}, {texto:'p FDR', num:true}, {texto:'Años', num:true}, {texto:'Estado'}],
+    filas: filas.map(f => f.dato
+      ? [f.nombre, cifra(f.dato.pendiente_c_decada), cifra(f.dato.ic95_inf), cifra(f.dato.ic95_sup), Number.isFinite(f.dato.p_fdr) ? f.dato.p_fdr.toPrecision(3) : '—', String(f.dato.n_anios ?? '—'), ESTADOS[estadoSector(f.dato)].texto]
+      : [f.nombre, '—', '—', '—', '—', '—', 'Sin datos'])
+  });
+  contenedor.append(svg,nota,boton,marco);
 }

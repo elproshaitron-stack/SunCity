@@ -30,6 +30,15 @@
       <p class="sc-aviso__titulo">Datos reales de MODIS sobre polígonos esquemáticos</p>
       <p class="sc-aviso__texto">Las temperaturas, las series y las tendencias salen de MODIS (MOD11A2, vía NASA GIBS). Los sectores y las referencias de desierto todavía son cuadros esquemáticos: los resultados cambiarán con los polígonos definitivos (D15).</p>
     </div>
+    <div id="aviso-error" class="sc-aviso sc-aviso--error" role="alert" hidden>
+      <p class="sc-aviso__titulo">No se pudieron abrir los datos de los sectores</p>
+      <p id="error-texto" class="sc-aviso__texto"></p>
+      <div class="sc-aviso__acciones"><button id="reintentar" class="sc-boton sc-boton--secundario sc-boton--compacto" type="button"><svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#reintentar"/></svg>Reintentar</button></div>
+    </div>
+    <div id="aviso-parcial" class="sc-aviso sc-aviso--advertencia" hidden>
+      <p class="sc-aviso__titulo">Datos parciales</p>
+      <p id="parcial-texto" class="sc-aviso__texto"></p>
+    </div>
 
     <div class="introduccion"><p class="ceja">Lectura por sector</p><h1>La noche, sector por sector</h1><p id="serie-descripcion">Diferencia de temperatura superficial nocturna entre sector y desierto. MODIS MOD11 Terra, junio a agosto.</p></div>
 
@@ -38,31 +47,59 @@
         <label class="sc-campo__etiqueta" for="sector">Explorar un sector</label>
         <select id="sector" class="sc-campo__control" disabled><option value="">Selecciona un sector</option></select>
       </div>
-      <button id="exportar-nombres" class="sc-boton sc-boton--secundario" type="button" disabled>Exportar nombres</button>
+      <button id="ubicar" class="sc-boton sc-boton--secundario" type="button" aria-describedby="ubicar-nota" disabled><svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#ubicacion"/></svg>Usar mi ubicación</button>
+      <button id="exportar-nombres" class="sc-boton sc-boton--texto" type="button" disabled><svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#descargar"/></svg>Exportar nombres</button>
+      <p id="ubicar-nota" class="ubicar-nota" aria-live="polite">Tu ubicación se redondea a unos 1 km y solo se usa en este navegador para buscar tu sector. SunCity no la guarda.</p>
       <p id="estado" role="status">Cargando los datos de los sectores…</p>
     </div>
 
     <div class="espacio">
-      <section class="mapa-panel" aria-label="Mapa de sectores">
-        <div id="mapa" class="sc-mapa" aria-label="Sectores y referencias de desierto de Hermosillo sobre la temperatura de la superficie de noche medida por MODIS"></div>
-        <div id="capa-nasa" class="capa-nasa">
-          <div class="capa-fila">
-            <label class="interruptor"><input id="lst-ver" type="checkbox" checked> Temperatura de la superficie de noche</label>
-            <div class="sc-campo"><label class="sc-campo__etiqueta" for="lst-anio">Año</label><select id="lst-anio" class="sc-campo__control"></select></div>
-            <div class="sc-campo"><label class="sc-campo__etiqueta" for="lst-periodo">Periodo</label><select id="lst-periodo" class="sc-campo__control"></select></div>
+      <div class="columna">
+        <section class="mapa-panel" aria-label="Mapa de sectores">
+          <div id="mapa" class="sc-mapa" aria-label="Sectores y referencias de desierto de Hermosillo sobre la temperatura de la superficie de noche medida por MODIS"></div>
+          <div id="capa-nasa" class="capa-nasa">
+            <div class="capa-fila">
+              <label class="interruptor"><input id="lst-ver" type="checkbox" checked> Temperatura de la superficie de noche</label>
+              <div class="sc-campo"><label class="sc-campo__etiqueta" for="lst-anio">Año</label><select id="lst-anio" class="sc-campo__control"></select></div>
+              <div class="sc-campo"><label class="sc-campo__etiqueta" for="lst-periodo">Periodo</label><select id="lst-periodo" class="sc-campo__control"></select></div>
+            </div>
+            <div class="escala-lst" aria-hidden="true"><span id="lst-min"></span><i id="lst-gradiente"></i><span id="lst-max"></span></div>
+            <p id="lst-lectura" class="lectura-lst" aria-live="polite">Pasa el cursor o toca el mapa para leer la temperatura de cada punto.</p>
+            <p id="lst-nota" class="pie-mapa">Medición real de MODIS Terra (MOD11A2): compuesto de 8 días, paso de las 22:30, píxeles de 1 km, servido por NASA GIBS. Los polígonos de los sectores siguen siendo de prueba. Desde 2020 la órbita de Terra deriva y la hora de paso cambia: compara con cuidado contra 2001-2019.</p>
           </div>
-          <div class="escala-lst" aria-hidden="true"><span id="lst-min"></span><i id="lst-gradiente"></i><span id="lst-max"></span></div>
-          <p id="lst-lectura" class="lectura-lst" aria-live="polite">Pasa el cursor o toca el mapa para leer la temperatura de cada punto.</p>
-          <p id="lst-nota" class="pie-mapa">Medición real de MODIS Terra (MOD11A2): compuesto de 8 días, paso de las 22:30, píxeles de 1 km, servido por NASA GIBS. Los polígonos de los sectores siguen siendo de prueba. Desde 2020 la órbita de Terra deriva y la hora de paso cambia: compara con cuidado contra 2001-2019.</p>
-        </div>
-        <ul class="sc-leyenda leyenda-semaforo" aria-label="Semáforo: p ajustado por FDR e intervalo del 95 %">
-          <li><span class="sc-muestra sc-muestra--trazo" style="--sc-color: var(--estado-sube)"></span>Rojo: aumento</li>
-          <li><span class="sc-muestra sc-muestra--trazo" style="--sc-color: var(--estado-baja)"></span>Azul: descenso</li>
-          <li><span class="sc-muestra sc-muestra--trazo" style="--sc-color: var(--estado-neutro)"></span>Gris: evidencia insuficiente</li>
-          <li><span class="sc-muestra sc-muestra--discontinuo" style="--sc-color: var(--texto)"></span>Desierto de referencia</li>
-        </ul>
-        <p id="mapa-descripcion" class="pie-mapa">Color: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente. Polígonos esquemáticos.</p>
-      </section>
+          <ul class="sc-leyenda leyenda-semaforo" aria-label="Semáforo de cada sector: p ajustado por FDR e intervalo del 95 %">
+            <li><span class="sc-muestra muestra-sector muestra-sector--sube"></span>Rayas rojas: aumento significativo</li>
+            <li><span class="sc-muestra muestra-sector muestra-sector--baja"></span>Puntos azules: descenso significativo</li>
+            <li><span class="sc-muestra muestra-sector muestra-sector--neutro"></span>Borde gris sin trama: evidencia insuficiente</li>
+            <li><span class="sc-muestra muestra-sector muestra-sector--sin-calculo"></span>Borde punteado: sin cálculo</li>
+            <li><span class="sc-muestra sc-muestra--discontinuo" style="--sc-color: var(--texto)"></span>Desierto de referencia</li>
+          </ul>
+          <p id="mapa-descripcion" class="pie-mapa">Color y trama: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente. Polígonos esquemáticos.</p>
+        </section>
+
+        <section id="sectores" class="tabla-sectores" aria-labelledby="titulo-tabla">
+          <h2 id="titulo-tabla">Todos los sectores</h2>
+          <p class="texto-tabla">Lo mismo que el mapa, en tabla. Ordena por cualquier columna; el nombre abre el expediente.</p>
+          <div id="marco-tabla" class="sc-tabla-marco" aria-busy="true">
+            <table id="tabla-sectores" class="sc-tabla sc-tabla--tarjetas" data-sc-ordenable>
+              <caption class="sc-solo-lector">Cambio por década de la diferencia nocturna sector menos desierto, 2001-2019</caption>
+              <thead><tr>
+                <th scope="col"><button class="sc-tabla__orden" type="button">Sector</button></th>
+                <th scope="col" class="sc-num"><button class="sc-tabla__orden" type="button">Cambio por década</button></th>
+                <th scope="col" class="sc-num"><button class="sc-tabla__orden" type="button">Intervalo del 95 %</button></th>
+                <th scope="col" class="sc-num"><button class="sc-tabla__orden" type="button">p ajustado</button></th>
+                <th scope="col" class="sc-num"><button class="sc-tabla__orden" type="button">Población</button></th>
+                <th scope="col"><button class="sc-tabla__orden" type="button">Estado</button></th>
+              </tr></thead>
+              <tbody id="cuerpo-tabla">
+                <tr class="fila-esqueleto" aria-hidden="true"><td colspan="6"><span class="sc-esqueleto sc-esqueleto--linea"></span></td></tr>
+                <tr class="fila-esqueleto" aria-hidden="true"><td colspan="6"><span class="sc-esqueleto sc-esqueleto--linea"></span></td></tr>
+                <tr class="fila-esqueleto" aria-hidden="true"><td colspan="6"><span class="sc-esqueleto sc-esqueleto--linea"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
 
       <dialog id="expediente" class="sc-hoja" aria-labelledby="titulo-sector">
         <header class="sc-hoja__cabeza">
@@ -70,28 +107,61 @@
             <p id="expediente-etiqueta" class="ceja">Expediente</p>
             <div class="titulo-fila">
               <h2 id="titulo-sector" class="sc-hoja__titulo" tabindex="-1"></h2>
-              <button id="editar-nombre" class="sc-boton sc-boton--icono sc-boton--compacto" type="button" aria-label="Editar nombre del sector" title="Editar nombre"><svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#editar"/></svg></button>
+              <button id="editar-nombre" class="sc-boton sc-boton--icono sc-boton--compacto" type="button" aria-label="Cambiar el nombre del sector" title="Cambiar el nombre"><svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#editar"/></svg></button>
             </div>
-            <form id="form-nombre" hidden>
-              <div class="sc-campo"><label class="sc-campo__etiqueta" for="entrada-nombre">Nombre del sector</label><input id="entrada-nombre" class="sc-campo__control" type="text" maxlength="80" autocomplete="off" enterkeyhint="done" required></div>
-              <button class="sc-boton sc-boton--primario sc-boton--compacto" type="submit">Guardar</button>
-              <button id="cancelar-nombre" class="sc-boton sc-boton--secundario sc-boton--compacto" type="button">Cancelar</button>
-            </form>
             <p id="origen-nombre" class="origen"></p>
-            <button id="restaurar-nombre" class="sc-boton sc-boton--texto sc-boton--compacto" type="button">Restaurar</button>
           </div>
           <button id="cerrar" class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar expediente"><svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#cerrar"/></svg></button>
         </header>
         <div class="sc-hoja__cuerpo">
-          <section id="seccion-modis"><h3>00 · Este periodo en MODIS</h3><p id="modis-periodo">Temperatura de la superficie de noche medida por el satélite, dentro del polígono.</p><div id="modis-lectura"></div></section>
-          <section><h3>01 · Ciclo diario</h3><p>Media 2003–2019 · Diferencia sector menos Referencia A · °C</p><div id="ciclo-diario"></div></section>
-          <section><h3>02 · Serie de diferencias nocturna 2001–2019</h3><p>Sector menos desierto · 2020–2025 punteado, fuera del cálculo primario.</p><div id="serie-anual"></div></section>
-          <section><h3>03 · Curva de variantes</h3><div id="curva-variantes"></div></section>
-          <section><h3>04 · Nivel, población y veredicto</h3><div id="lectura"></div></section>
-          <section><h3>05 · Zoom ECOSTRESS</h3><div id="zoom-ecostress"></div></section>
+          <p class="impresion">SunCity · Vía B · Ficha del sector · <span id="impresion-origen"></span></p>
+          <section id="exp-resumen" class="resumen" aria-label="Lectura del sector">
+            <div id="resumen-insignia"></div>
+            <p id="resumen-texto" class="resumen-texto"></p>
+            <dl id="resumen-cifras" class="sc-cifras"></dl>
+            <div class="acciones-ficha">
+              <button id="imprimir" class="sc-boton sc-boton--secundario sc-boton--compacto" type="button"><svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#imprimir"/></svg>Imprimir ficha</button>
+            </div>
+          </section>
+          <nav class="indice" aria-label="Secciones del expediente">
+            <ul>
+              <li><a href="#exp-modis">Periodo en MODIS</a></li>
+              <li><a href="#exp-ciclo">Ciclo diario</a></li>
+              <li><a href="#exp-serie">Serie anual</a></li>
+              <li><a href="#exp-variantes">Variantes</a></li>
+              <li><a href="#exp-nivel">Nivel y población</a></li>
+              <li><a href="#exp-zoom">ECOSTRESS</a></li>
+            </ul>
+          </nav>
+          <section id="exp-modis" aria-labelledby="t-modis"><h3 id="t-modis">00 · Este periodo en MODIS</h3><p id="modis-periodo">Temperatura de la superficie de noche medida por el satélite, dentro del polígono.</p><div id="modis-lectura"></div></section>
+          <section id="exp-ciclo" aria-labelledby="t-ciclo"><h3 id="t-ciclo">01 · Ciclo diario</h3><p>Media 2003–2019 · Diferencia sector menos Referencia A · °C</p><div id="ciclo-diario"></div></section>
+          <section id="exp-serie" aria-labelledby="t-serie"><h3 id="t-serie">02 · Serie de diferencias nocturna 2001–2019</h3><p>Sector menos desierto · 2020–2025 punteado, fuera del cálculo primario.</p><div id="serie-anual"></div></section>
+          <section id="exp-variantes" aria-labelledby="t-variantes"><h3 id="t-variantes">03 · Curva de variantes</h3>
+            <div class="sc-campo campo-variante"><label class="sc-campo__etiqueta" for="variante">Variante destacada</label><select id="variante" class="sc-campo__control"></select></div>
+            <p id="variante-lectura" class="variante-lectura" aria-live="polite"></p>
+            <div id="curva-variantes"></div></section>
+          <section id="exp-nivel" aria-labelledby="t-nivel"><h3 id="t-nivel">04 · Nivel y población</h3><div id="lectura"></div></section>
+          <section id="exp-zoom" aria-labelledby="t-zoom"><h3 id="t-zoom">05 · Zoom ECOSTRESS</h3><div id="zoom-ecostress"></div></section>
         </div>
       </dialog>
     </div>
+
+    <dialog id="dialogo-nombre" class="sc-dialogo" aria-labelledby="titulo-dialogo-nombre" aria-describedby="texto-dialogo-nombre">
+      <form id="form-nombre" novalidate>
+        <h2 id="titulo-dialogo-nombre" class="sc-dialogo__titulo">Cambiar el nombre del sector</h2>
+        <p id="texto-dialogo-nombre" class="sc-dialogo__texto">El nombre se guarda solo en este navegador. Con "Exportar nombres" lo compartes con el equipo.</p>
+        <div class="sc-campo campo-nombre">
+          <label class="sc-campo__etiqueta" for="entrada-nombre">Nombre del sector</label>
+          <input id="entrada-nombre" class="sc-campo__control" type="text" maxlength="80" autocomplete="off" enterkeyhint="done" aria-describedby="ayuda-nombre" autofocus>
+          <p id="ayuda-nombre" class="sc-campo__ayuda">Hasta 80 caracteres y distinto del de los otros sectores.</p>
+        </div>
+        <div class="sc-dialogo__acciones">
+          <button class="sc-boton sc-boton--primario" type="submit">Guardar nombre</button>
+          <button class="sc-boton sc-boton--secundario" type="button" data-sc-cierra>Cancelar</button>
+          <button id="restaurar-nombre" class="sc-boton sc-boton--texto" type="button">Restaurar el automático</button>
+        </div>
+      </form>
+    </dialog>
   </main>
 
   <sc-pie raiz="../" datos="MODIS MOD11A2 y MYD11A2 (NASA GIBS), 2001-2025"><p>Datos: temperatura de la superficie de MODIS Terra y Aqua (MOD11A2 y MYD11A2), compuestos de 8 días de junio a agosto, servidos por NASA GIBS y procesados con <code>via-b/procesamiento/</code>. Polígonos de los sectores: esquemáticos (D15).</p></sc-pie>
