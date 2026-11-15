@@ -156,7 +156,7 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 ### Fase 2. Plataforma
 
 - [x] **A6 · M** Barra y pie en todas las rutas; portada en `/`. *Depende:* A4. *Nota:* la Vía B pone `<sc-barra raiz="../" actual="via-b">` y `<sc-pie>` en B1, porque `via-b/` es de su carril.
-- [ ] **A7 · M** `/metodo/` con método, glosario, fuentes y límites; sale de `docs/` sin duplicar. *Depende:* A6.
+- [x] **A7 · M** `/metodo/` con método, glosario, fuentes y límites; sale de `docs/` sin duplicar. *Depende:* A6.
 - [ ] **A8 · C** `404.html`, ícono del sitio, metadatos para compartir y `manifest.webmanifest`.
 - [ ] **A9 · C** `compartido/mapa-estilo.js`: el estilo del mapa sale de `via-a/js/globo.js` para que la Vía B lo use. *Acepta:* el globo se ve igual.
 - [ ] **C5 · G** Pruebas de punta a punta con Playwright en `pruebas/e2e/`: los flujos de las dos vías en 375, 768 y 1366 px y en tres motores. *Depende:* C4. *Acepta:* corren en la integración continua.
