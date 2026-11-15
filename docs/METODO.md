@@ -43,6 +43,9 @@ Las cinco variables:
 | Sector | Un área de la ciudad de 9 km² o más |
 | Referencia | Un área de desierto cercano con poca vegetación (NDVI menor que 0.2) |
 | Acercamiento | ECOSTRESS a 70 m, escenas nocturnas despejadas, solo en el sector prioritario |
+| Mapa | El compuesto de 8 días de MODIS Terra (MOD11A2) que publica NASA GIBS, leído píxel por píxel en tu navegador |
+
+**El mapa muestra datos reales.** Para el año y el periodo de 8 días que elijas, la capa es la temperatura de la superficie de noche que midió MODIS Terra, tal como la publica NASA GIBS. Cada color de esas imágenes equivale a un intervalo de 0.6 °C, así que se puede leer el valor de cada píxel de 1 km y promediarlo dentro de un sector. Es la foto de un periodo, no una tendencia: no lleva los filtros de calidad del cálculo, y desde 2020 la hora de paso de Terra cambia.
 
 La serie de cada sector es la diferencia, año por año, entre la temperatura nocturna del sector y la de su desierto. Así se quita lo que le pasa a toda la región y queda lo propio de la ciudad.
 
@@ -132,6 +135,7 @@ Con pocos años, una tendencia chica puede ser real y aun así no salir signific
 - [NASA POWER](https://power.larc.nasa.gov/), API mensual, modelo MERRA-2.
 - [MODIS MOD11A2 v6.1](https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MOD11A2) y [MOD21A1N v6.1](https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MOD21A1N), en Earth Engine.
 - [ECOSTRESS ECO_L2T_LSTE v002](https://appeears.earthdatacloud.nasa.gov/), descargado con AppEEARS.
+- [NASA GIBS](https://nasa-gibs.github.io/gibs-api-docs/), capa `MODIS_Terra_L3_Land_Surface_Temp_8Day_Night` y su paleta, para el mapa de Hermosillo.
 - [Islas de calor de Yale, v4](https://developers.google.com/earth-engine/datasets/catalog/YALE_YCEO_UHI_UHI_yearly_averaged_v4), en Earth Engine, solo como cotejo.
 
 ### Métodos

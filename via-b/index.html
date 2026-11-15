@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SunCity · Sectores de Hermosillo</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23225d4d'/%3E%3Cpath d='M9 22V10h14v12Z' fill='none' stroke='%23f4d28c' stroke-width='3'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.1/dist/maplibre-gl.css" crossorigin="">
   <link rel="stylesheet" href="estilos.css">
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script defer src="https://unpkg.com/maplibre-gl@5.24.1/dist/maplibre-gl.js" crossorigin=""></script>
+  <script defer src="../compartido/mapa-estilo.js"></script>
   <script type="module" src="app.js"></script>
 </head>
 <body>
@@ -18,12 +19,23 @@
     <div class="herramientas"><label for="sector">Explorar un sector</label><select id="sector" disabled><option value="">Selecciona un sector</option></select><button id="exportar-nombres" type="button" disabled>Exportar nombres</button><p id="estado" role="status">Cargando datos de prueba…</p></div>
     <div class="espacio">
       <section class="mapa-panel" aria-label="Mapa de sectores">
-        <div id="mapa" aria-label="Sectores y referencias de desierto de Hermosillo"></div>
+        <div id="mapa" aria-label="Sectores y referencias de desierto de Hermosillo sobre la temperatura de la superficie de noche medida por MODIS"></div>
+        <div id="capa-nasa" class="capa-nasa">
+          <div class="capa-fila">
+            <label class="interruptor"><input id="lst-ver" type="checkbox" checked> Temperatura de la superficie de noche</label>
+            <label for="lst-anio">Año</label><select id="lst-anio"></select>
+            <label for="lst-periodo">Periodo</label><select id="lst-periodo"></select>
+          </div>
+          <div class="escala-lst" aria-hidden="true"><span id="lst-min"></span><i id="lst-gradiente"></i><span id="lst-max"></span></div>
+          <p id="lst-lectura" class="lectura-lst" aria-live="polite">Pasa el cursor o toca el mapa para leer la temperatura de cada punto.</p>
+          <p id="lst-nota" class="pie-mapa">Medición real de MODIS Terra (MOD11A2): compuesto de 8 días, paso de las 22:30, píxeles de 1 km, servido por NASA GIBS. Los polígonos de los sectores siguen siendo de prueba. Desde 2020 la órbita de Terra deriva y la hora de paso cambia: compara con cuidado contra 2001-2019.</p>
+        </div>
         <div class="leyenda" aria-label="Semáforo: p ajustado por FDR e intervalo del 95 %"><span><i class="rojo"></i>Rojo: aumento</span><span><i class="azul"></i>Azul: descenso</span><span><i class="gris"></i>Gris: evidencia insuficiente</span><span><i class="referencia"></i>Desierto de referencia</span></div>
         <p id="mapa-descripcion" class="pie-mapa">Color: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente. Polígonos esquemáticos y población inventada.</p>
       </section>
       <aside id="expediente" aria-labelledby="titulo-sector" hidden>
         <div class="cabecera-panel"><div class="grupo-nombre"><p id="expediente-etiqueta" class="ceja">EXPEDIENTE DE PRUEBA</p><div class="titulo-fila"><h2 id="titulo-sector" tabindex="-1"></h2><button id="editar-nombre" class="icono" type="button" aria-label="Editar nombre del sector" title="Editar nombre"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9M4 16.5V20h3.5L19 8.5 15.5 5 4 16.5ZM14 6.5l3.5 3.5"/></svg></button></div><form id="form-nombre" hidden><label for="entrada-nombre">Nombre del sector</label><input id="entrada-nombre" type="text" maxlength="80" autocomplete="off" enterkeyhint="done" required><button type="submit">Guardar</button><button id="cancelar-nombre" type="button">Cancelar</button></form><p id="origen-nombre" class="origen"></p><button id="restaurar-nombre" type="button">Restaurar</button></div><button id="cerrar" type="button" aria-label="Cerrar expediente">Cerrar</button></div>
+        <section id="seccion-modis"><h3>00 · Este periodo en MODIS</h3><p id="modis-periodo">Temperatura de la superficie de noche medida por el satélite, dentro del polígono.</p><div id="modis-lectura"></div></section>
         <section><h3>01 · Ciclo diario</h3><p>Media 2003–2019 · Diferencia sector menos Referencia A · °C</p><div id="ciclo-diario"></div></section>
         <section><h3>02 · Serie de diferencias nocturna 2001–2019</h3><p>Sector menos desierto · 2020–2025 punteado, fuera del cálculo primario.</p><div id="serie-anual"></div></section>
         <section><h3>03 · Curva de variantes</h3><div id="curva-variantes"></div></section>

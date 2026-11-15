@@ -158,7 +158,7 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 - [x] **A6 · M** Barra y pie en todas las rutas; portada en `/`. *Depende:* A4. *Nota:* la Vía B pone `<sc-barra raiz="../" actual="via-b">` y `<sc-pie>` en B1, porque `via-b/` es de su carril.
 - [x] **A7 · M** `/metodo/` con método, glosario, fuentes y límites; sale de `docs/` sin duplicar. *Depende:* A6.
 - [x] **A8 · C** `404.html`, ícono del sitio, metadatos para compartir y `manifest.webmanifest`. *Nota:* la Vía B cambia su ícono propio por `compartido/marca/` en B1; la imagen para compartir y el `<base>` de `404.html` necesitan la dirección publicada (C15).
-- [ ] **A9 · C** `compartido/mapa-estilo.js`: el estilo del mapa sale de `via-a/js/globo.js` para que la Vía B lo use. *Acepta:* el globo se ve igual.
+- [x] **A9 · C** `compartido/mapa-estilo.js`: el estilo del mapa sale de `via-a/js/globo.js` para que la Vía B lo use. *Acepta:* el globo se ve igual.
 - [ ] **C5 · G** Pruebas de punta a punta con Playwright en `pruebas/e2e/`: los flujos de las dos vías en 375, 768 y 1366 px y en tres motores. *Depende:* C4. *Acepta:* corren en la integración continua.
 - [ ] **C6 · M** Capturas de referencia del catálogo; un cambio visual no declarado rompe el PR. *Depende:* A3, C5.
 
@@ -175,7 +175,7 @@ Vía A:
 Vía B:
 
 - [ ] **B1 · M** La Vía B usa tokens y componentes `sc-`: aviso de datos de prueba, botones con jerarquía, campos, expediente como `sc-hoja`. *Depende:* A2, A4. *Acepta:* `aceptacion.py` pasa y no queda un color suelto.
-- [ ] **B2 · G** Mapa de sectores con MapLibre y el estilo compartido; cada sector lleva color, patrón y etiqueta; foco y selección visibles. *Depende:* A9, C3.
+- [ ] **B2 · G** Mapa de sectores con MapLibre y el estilo compartido; cada sector lleva color, patrón y etiqueta; foco y selección visibles. *Depende:* A9, C3. *Avance (Claude, a pedido de Navarrete):* MapLibre con el estilo compartido, selección visible y capa real de MODIS MOD11A2 nocturno desde NASA GIBS ya están; Leaflet se quitó. Falta el patrón y la etiqueta fija por sector.
 - [ ] **B3 · M** Tabla de sectores ordenable como alternativa al mapa: nombre, cambio por década, intervalo, p ajustado, población y estado. Abrir una fila abre su expediente. *Depende:* B1.
 - [ ] **B4 · G** Expediente rediseñado: insignia y lectura en lenguaje llano arriba; secciones con ancla; `ciclo-diario.js`, `variantes.js` y `zoom-ecostress.js` con tokens y tabla alternativa. *Depende:* B1, A12.
 - [ ] **B5 · M** Todos los estados: carga, CSV roto con mensaje claro, sector sin cálculo, datos parciales. *Depende:* B1.
