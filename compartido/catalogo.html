@@ -44,6 +44,7 @@
     .cat-codigo summary:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; border-radius: var(--r-sm); }
     .cat-codigo pre { margin: 0; padding: var(--e-3) var(--e-4); overflow-x: auto; border: 1px solid var(--linea); border-radius: var(--r-md); background: var(--superficie-2); font-family: var(--f-dato); font-size: var(--t-xs); line-height: 1.6; }
     .cat-tema .sc-barra { position: static; padding: 0 var(--e-3); }
+    .cat-icono { justify-items: center; width: 6.5rem; padding: var(--e-3) var(--e-1); border: 1px solid var(--linea); border-radius: var(--r-sm); text-align: center; }
     .cat-tema .sc-toast { animation: none; }
     @media (max-width: 960px) {
       .cat { grid-template-columns: minmax(0, 1fr); }
@@ -77,6 +78,14 @@
     fuerza la apariencia de esas pseudoclases. Los elementos con data-codigo forman el código mostrado.
   -->
 
+  <template data-id="icono" data-titulo="Íconos" data-clase="sc-icono" data-nota="Un solo juego en compartido/iconos.svg, trazo de 2 px en el color del texto. Siempre con texto visible o, si va solo, con aria-label en el botón.">
+    <div class="cat-estados" data-iconos></div>
+    <div class="cat-estados" style="margin-top: var(--e-4)">
+      <button class="sc-boton sc-boton--secundario" type="button" data-codigo><svg class="sc-icono" aria-hidden="true"><use href="iconos.svg#descargar"/></svg>Descargar datos</button>
+      <button class="sc-boton sc-boton--icono" type="button" aria-label="Imprimir" data-codigo><svg class="sc-icono" aria-hidden="true"><use href="iconos.svg#imprimir"/></svg></button>
+    </div>
+  </template>
+
   <template data-id="boton" data-titulo="Botón" data-clase="sc-boton" data-nota="Un primario por vista. Secundario con borde para acciones de apoyo; texto para lo discreto. Solo ícono exige aria-label. Cargando conserva ancho y color y lleva aria-busy.">
     <div class="cat-estados">
       <figure class="cat-estado"><figcaption>primario</figcaption><button class="sc-boton sc-boton--primario" type="button" data-codigo>Ver dentro de Hermosillo</button></figure>
@@ -97,8 +106,8 @@
     <div class="cat-estados" style="margin-top: var(--e-4)">
       <figure class="cat-estado"><figcaption>texto</figcaption><button class="sc-boton sc-boton--texto" type="button" data-codigo>Copiar enlace</button></figure>
       <figure class="cat-estado"><figcaption>cursor encima</figcaption><button class="sc-boton sc-boton--texto" type="button" data-estado="hover">Copiar enlace</button></figure>
-      <figure class="cat-estado"><figcaption>solo ícono</figcaption><button class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar" data-codigo><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></figure>
-      <figure class="cat-estado"><figcaption>ícono, encima</figcaption><button class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar" data-estado="hover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></figure>
+      <figure class="cat-estado"><figcaption>solo ícono</figcaption><button class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar" data-codigo><svg class="sc-icono" aria-hidden="true"><use href="iconos.svg#cerrar"/></svg></button></figure>
+      <figure class="cat-estado"><figcaption>ícono, encima</figcaption><button class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar" data-estado="hover"><svg class="sc-icono" aria-hidden="true"><use href="iconos.svg#cerrar"/></svg></button></figure>
       <figure class="cat-estado"><figcaption>compacto</figcaption><button class="sc-boton sc-boton--secundario sc-boton--compacto" type="button" data-codigo>Reintentar descarga</button></figure>
     </div>
   </template>
@@ -246,7 +255,7 @@ SC.toast("No se pudo copiar el enlace.", {tipo: "error"});</pre>
       <button class="sc-boton sc-boton--secundario" type="button" data-sc-abre="hoja-demo" data-codigo>Abrir expediente</button>
     </div>
     <dialog class="sc-hoja" id="hoja-demo" aria-labelledby="hoja-demo-t" data-codigo>
-      <header class="sc-hoja__cabeza"><h2 class="sc-hoja__titulo" id="hoja-demo-t">Sector Pitic</h2><button class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar" data-sc-cierra><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+      <header class="sc-hoja__cabeza"><h2 class="sc-hoja__titulo" id="hoja-demo-t">Sector Pitic</h2><button class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar" data-sc-cierra><svg class="sc-icono" aria-hidden="true"><use href="iconos.svg#cerrar"/></svg></button></header>
       <div class="sc-hoja__cuerpo"><p>Aquí va el expediente del sector: lectura en lenguaje llano arriba y las secciones con detalle debajo.</p></div>
       <footer class="sc-hoja__pie"><button class="sc-boton sc-boton--secundario" type="button" data-sc-cierra>Cerrar</button></footer>
     </dialog>
@@ -422,7 +431,19 @@ SC.toast("No se pudo copiar el enlace.", {tipo: "error"});</pre>
         a.href = "#" + id; a.textContent = t.dataset.titulo; li.appendChild(a); indice.appendChild(li);
       });
 
-      // 4. Demostraciones
+      // 4. Muestrario de íconos: lee los símbolos de iconos.svg para que no haya lista que mantener
+      fetch("iconos.svg").then(function (r) { return r.text(); }).then(function (texto) {
+        var ids = Array.prototype.map.call(new DOMParser().parseFromString(texto, "image/svg+xml").querySelectorAll("symbol[id]"), function (s) { return s.id; });
+        document.querySelectorAll("[data-iconos]").forEach(function (caja) {
+          ids.forEach(function (id) {
+            var f = document.createElement("figure"); f.className = "cat-estado cat-icono";
+            f.innerHTML = '<svg class="sc-icono sc-icono--grande" aria-hidden="true"><use href="iconos.svg#' + id + '"/></svg><figcaption>' + id + "</figcaption>";
+            caja.appendChild(f);
+          });
+        });
+      });
+
+      // 5. Demostraciones
       document.addEventListener("click", function (e) {
         var b = e.target.closest("[data-demo]");
         if (!b || !window.SC) return;

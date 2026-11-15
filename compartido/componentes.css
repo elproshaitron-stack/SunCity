@@ -54,6 +54,19 @@
 @keyframes sc-sube { from { transform: translateY(100%); } }
 @keyframes sc-desliza { from { transform: translateX(100%); } }
 
+/* ── sc-icono ─────────────────────────────────────────────────── */
+/* <svg class="sc-icono" aria-hidden="true"><use href="…/compartido/iconos.svg#descargar"/></svg>
+   Trazo de 2 px en currentColor: toma el color del texto que acompaña. */
+
+.sc-icono {
+  flex: none; display: inline-block; vertical-align: middle;
+  width: 18px; height: 18px;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.sc-icono--chico { width: 16px; height: 16px; }
+.sc-icono--grande { width: 24px; height: 24px; }
+
 /* ── sc-boton ─────────────────────────────────────────────────── */
 /* Variantes: --primario (uno por vista), --secundario, --texto, --icono. Tamaño: --compacto.
    Cargando: aria-busy="true"; conserva ancho y color. Solo ícono: exige aria-label. */
