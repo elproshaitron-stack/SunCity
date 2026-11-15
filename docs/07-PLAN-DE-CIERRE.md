@@ -143,7 +143,7 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 
 ### Fase 1. Cimientos
 
-- [ ] **A1 · M** `compartido/tokens.css` con las tres capas y los dos temas; la Vía A lo consume. *Acepta:* la Vía A se ve igual, con diferencia de captura menor que 0.1 %.
+- [x] **A1 · M** `compartido/tokens.css` con las tres capas y los dos temas; la Vía A lo consume. *Acepta:* la Vía A se ve igual, con diferencia de captura menor que 0.1 %. *Hecho en PR #9:* el globo se anima y la captura no es repetible, así que se compararon los estilos calculados de 331 elementos a 1366 y 375 px, sin diferencias.
 - [ ] **A2 · G** `compartido/componentes.css` con todos los componentes y estados de 4.2. *Depende:* A1.
 - [ ] **A3 · M** `compartido/catalogo.html`: cada componente, cada estado, en los dos temas, con el código que lo produce. *Depende:* A2. *Acepta:* es la referencia que usan B y las pruebas de C.
 - [ ] **A4 · M** `compartido/componentes.js`: hoja, diálogo, toast, segmento con flechas, barra y pie. *Depende:* A2. *Acepta:* cada uno se maneja completo con teclado.
