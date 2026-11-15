@@ -132,7 +132,7 @@ async function iniciar() {
     dibujarVariantes($('curva-variantes'), resultados.filter(fila => fila.sector === id), ESQUEMA.variantes);
     dibujarCicloDiario($('ciclo-diario'), ciclo.filter(fila => fila.sector === id), pasosAqua);
     const lectura = $('lectura'); lectura.replaceChildren();
-    const badge = document.createElement('span'); badge.className = `estado-sector ${color}`; badge.textContent = `Semáforo provisional: ${color}`;
+    const badge = document.createElement('span'); badge.className = `estado-sector ${color}`; badge.textContent = `Semáforo: ${color}`;
     const dl = document.createElement('dl'), nivel = niveles.filter(d => d.sector === id);
     const medias = nivel.filter(d => Number.isFinite(d.nivel_c));
     const valoresNivel = medias.map(d => d.nivel_c);
@@ -149,8 +149,8 @@ async function iniciar() {
     descripcion.textContent = medias.length === 2 ? 'Rango entre medias MOD11 y MOD21.' : '';
     const veredicto = document.createElement('p');
     veredicto.textContent = !Number.isFinite(r.p_fdr) ? 'No se pudo evaluar la significancia.' : color === 'gris'
-      ? 'No hay evidencia suficiente de un cambio con el criterio provisional.'
-      : `La diferencia nocturna entre sector y desierto ${color === 'rojo' ? 'aumenta' : 'disminuye'} de forma significativa con el criterio provisional.`;
+      ? 'No hay evidencia suficiente de un cambio con el criterio de FDR e intervalo del 95 %.'
+      : `La diferencia nocturna entre sector y desierto ${color === 'rojo' ? 'aumenta' : 'disminuye'} de forma significativa con el criterio de FDR e intervalo del 95 %.`;
     const pendiente = document.createElement('p'); pendiente.textContent = Number.isFinite(r.pendiente_c_decada)
       ? `${r.pendiente_c_decada.toFixed(2)} °C por década (IC 95 %: ${r.ic95_inf.toFixed(2)} a ${r.ic95_sup.toFixed(2)}).`
       : `Sin cálculo: solo ${r.n_anios} años válidos, menos que el mínimo.`;
@@ -177,6 +177,6 @@ if (!datosDePrueba) {
   $('aviso-prueba').hidden = true;
   $('serie-descripcion').textContent = 'Diferencia de temperatura superficial nocturna entre sector y desierto. MOD11 Terra.';
   $('expediente-etiqueta').textContent = 'EXPEDIENTE';
-  $('mapa-descripcion').textContent = 'Semáforo provisional con ajuste FDR.';
+  $('mapa-descripcion').textContent = 'Color: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente.';
 }
 iniciar().catch(error => { $('estado').textContent = `No se pudo abrir el explorador: ${error.message}`; });

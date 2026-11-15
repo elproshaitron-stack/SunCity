@@ -29,7 +29,7 @@ lo cierra. En celular aparece como hoja inferior y en escritorio como panel late
 - `datos/esquema.js`: único lugar donde se definen las columnas de los CSV
   y variantes admitidas. Cambiar los valores del mapa al recibir v4; conservar
   las claves internas. Mantener el objeto como JSON válido: también lo lee Python.
-- `semaforo.js`: regla provisional de color con p ajustado por FDR.
+- `semaforo.js`: regla D16; p FDR < 0.05, signo de la pendiente primaria e IC 95 % del mismo lado de cero.
 - `variantes.js`: curva SVG de pendientes, intervalos y p FDR por variante.
 - `datos/prueba/sectores.geojson`: seis polígonos urbanos y dos referencias esquemáticas.
 - `datos/prueba/generar_prueba.py`: semilla fija, cálculo compartido y FDR entre
@@ -60,11 +60,11 @@ del dominio de la tendencia; no calcula estadística. La banda usa las pendiente
 inferior y superior del IC 95 %, ambas ancladas en (mediana de años, mediana de
 valores). No es una banda de predicción. Incluye línea horizontal en cero.
 
-## Provisional
+## Estado actual
 
 El expediente incluye el nivel medio MOD11–MOD21, el ciclo diario, la curva de
 variantes y el zoom de prueba para S01. La demostración usa datos inventados.
-D15 (polígonos y referencias) y D16 (semáforo) siguen abiertas. Para usar datos
+D15 (polígonos y referencias) sigue abierta; D16 (semáforo) está cerrada. Para usar datos
 procesados, sigue [la guía de procesamiento](procesamiento/README.md).
 El umbral de 15 años y la regla de Aqua están registrados en D08 y D04.
 Solo `con_deriva` incorpora 2020–2025; esos años quedan fuera del cálculo primario.
