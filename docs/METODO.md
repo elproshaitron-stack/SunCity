@@ -49,7 +49,7 @@ Las cinco variables:
 
 La serie de cada sector es la diferencia, año por año, entre la temperatura nocturna del sector y la de su desierto. Así se quita lo que le pasa a toda la región y queda lo propio de la ciudad.
 
-**Por ahora la Vía B usa datos de prueba.** Los sectores, sus polígonos y sus números son sintéticos y sirven para probar la herramienta. Se reemplazan cuando estén los resultados observados.
+**De dónde salen hoy los números de Hermosillo.** Las series y las tendencias salen de MODIS MOD11, Terra y Aqua, tal como los publica NASA GIBS (D18). Todavía no llevan el filtro fino de calidad ni el producto MOD21, que llegarán con el export de Earth Engine. Y los sectores siguen siendo **cuadros esquemáticos** de unos 3 km por lado: cuando se definan los polígonos reales (D15), los números van a cambiar.
 
 ## Cómo se calcula la tendencia
 
@@ -151,6 +151,6 @@ Con pocos años, una tendencia chica puede ser real y aun así no salir signific
 | Vía | Datos |
 |---|---|
 | Región | NASA POWER en vivo, serie 1981-2025. Copia guardada de Hermosillo y Mexicali para cuando la API no responde |
-| Hermosillo | Datos de prueba sintéticos, en `via-b/datos/prueba/` |
+| Hermosillo | MODIS MOD11A2 y MYD11A2 desde NASA GIBS, junio a agosto de 2001 a 2025 (D18), sobre polígonos esquemáticos (D15). Los datos sintéticos de prueba siguen en `via-b/datos/prueba/` |
 
 La versión del software aparece en el pie de cada página.

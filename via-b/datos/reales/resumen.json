@@ -1,0 +1,161 @@
+{
+ "generado": "2026-11-15T12:14:53",
+ "parametros": {
+  "temporada_meses": [
+   6,
+   8
+  ],
+  "cobertura_min": 0.5,
+  "obs_min": {
+   "MOD11": 3,
+   "MOD21": 10
+  },
+  "min_anios": 15,
+  "variantes": {
+   "primario": {
+    "producto": "MOD11_Terra_noche",
+    "ref": "RA",
+    "anios": [
+     2001,
+     2019
+    ]
+   },
+   "con_deriva": {
+    "producto": "MOD11_Terra_noche",
+    "ref": "RA",
+    "anios": [
+     2001,
+     2025
+    ]
+   },
+   "aqua": {
+    "producto": "MOD11_Aqua_noche",
+    "ref": "RA",
+    "anios": [
+     2003,
+     2019
+    ]
+   },
+   "ref_b": {
+    "producto": "MOD11_Terra_noche",
+    "ref": "RB",
+    "anios": [
+     2001,
+     2019
+    ]
+   },
+   "mod21": {
+    "producto": "MOD21_Terra_noche",
+    "ref": "RA",
+    "anios": [
+     2001,
+     2019
+    ]
+   },
+   "sin_2001_2002": {
+    "producto": "MOD11_Terra_noche",
+    "ref": "RA",
+    "anios": [
+     2003,
+     2019
+    ]
+   }
+  }
+ },
+ "validez_por_producto": {
+  "MOD11_Terra_noche": {
+   "validos": 200,
+   "descartados": 0
+  },
+  "MOD11_Terra_dia": {
+   "validos": 200,
+   "descartados": 0
+  },
+  "MOD11_Aqua_noche": {
+   "validos": 184,
+   "descartados": 16
+  },
+  "MOD11_Aqua_dia": {
+   "validos": 184,
+   "descartados": 16
+  }
+ },
+ "primario": [
+  {
+   "sector": "S01",
+   "pendiente_c_decada": 0.6502941176470625,
+   "p_fdr": 9.885135818388235e-05,
+   "n_anios": 19
+  },
+  {
+   "sector": "S02",
+   "pendiente_c_decada": 0.42220000000008895,
+   "p_fdr": 0.014124197413252215,
+   "n_anios": 19
+  },
+  {
+   "sector": "S03",
+   "pendiente_c_decada": 0.8236000000000179,
+   "p_fdr": 3.247570132547395e-05,
+   "n_anios": 19
+  },
+  {
+   "sector": "S04",
+   "pendiente_c_decada": 0.48733333333340545,
+   "p_fdr": 0.007692845408549198,
+   "n_anios": 19
+  },
+  {
+   "sector": "S05",
+   "pendiente_c_decada": 0.6154999999999892,
+   "p_fdr": 9.885135818388235e-05,
+   "n_anios": 19
+  },
+  {
+   "sector": "S06",
+   "pendiente_c_decada": 0.16266666666668544,
+   "p_fdr": 0.29391717025195696,
+   "n_anios": 19
+  }
+ ],
+ "aire": {
+  "r_pearson": 0.114,
+  "n_anios": 19,
+  "nota": "T2M_MIN de POWER es el extremo mensual; se promedian los meses de la temporada"
+ },
+ "avisos": [
+  "MOD11_Aqua_dia: 16 de 200 polígono-años sin cobertura suficiente",
+  "MOD11_Aqua_noche: 16 de 200 polígono-años sin cobertura suficiente",
+  "S01 mod21: solo 0 años válidos (mínimo 15)",
+  "S02 mod21: solo 0 años válidos (mínimo 15)",
+  "S03 mod21: solo 0 años válidos (mínimo 15)",
+  "S04 mod21: solo 0 años válidos (mínimo 15)",
+  "S05 mod21: solo 0 años válidos (mínimo 15)",
+  "S06 mod21: solo 0 años válidos (mínimo 15)",
+  "Falta suncity_yale.csv: sin signo de Yale ni yale.csv",
+  "S01 terra_1030 MOD21: sin años válidos para el ciclo diario",
+  "S01 aqua_1330 MOD21: sin años válidos para el ciclo diario",
+  "S01 terra_2230 MOD21: sin años válidos para el ciclo diario",
+  "S01 aqua_0130 MOD21: sin años válidos para el ciclo diario",
+  "S02 terra_1030 MOD21: sin años válidos para el ciclo diario",
+  "S02 aqua_1330 MOD21: sin años válidos para el ciclo diario",
+  "S02 terra_2230 MOD21: sin años válidos para el ciclo diario",
+  "S02 aqua_0130 MOD21: sin años válidos para el ciclo diario",
+  "S03 terra_1030 MOD21: sin años válidos para el ciclo diario",
+  "S03 aqua_1330 MOD21: sin años válidos para el ciclo diario",
+  "S03 terra_2230 MOD21: sin años válidos para el ciclo diario",
+  "S03 aqua_0130 MOD21: sin años válidos para el ciclo diario",
+  "S04 terra_1030 MOD21: sin años válidos para el ciclo diario",
+  "S04 aqua_1330 MOD21: sin años válidos para el ciclo diario",
+  "S04 terra_2230 MOD21: sin años válidos para el ciclo diario",
+  "S04 aqua_0130 MOD21: sin años válidos para el ciclo diario",
+  "S05 terra_1030 MOD21: sin años válidos para el ciclo diario",
+  "S05 aqua_1330 MOD21: sin años válidos para el ciclo diario",
+  "S05 terra_2230 MOD21: sin años válidos para el ciclo diario",
+  "S05 aqua_0130 MOD21: sin años válidos para el ciclo diario",
+  "S06 terra_1030 MOD21: sin años válidos para el ciclo diario",
+  "S06 aqua_1330 MOD21: sin años válidos para el ciclo diario",
+  "S06 terra_2230 MOD21: sin años válidos para el ciclo diario",
+  "S06 aqua_0130 MOD21: sin años válidos para el ciclo diario"
+ ]
+}

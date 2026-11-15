@@ -25,12 +25,13 @@
   <sc-barra raiz="../" actual="via-b" contenido="contenido"><a href="../">SunCity</a></sc-barra>
 
   <main id="contenido" tabindex="-1">
-    <div id="aviso-prueba" class="sc-aviso sc-aviso--prueba">
-      <p class="sc-aviso__titulo">Sectores y tendencias de prueba</p>
-      <p class="sc-aviso__texto">El mapa de temperatura es real (NASA MODIS). Los polígonos de los sectores, su población y sus resultados son de prueba hasta cerrar la decisión D15.</p>
+    <!-- app.js ajusta este aviso según config.js: datos de prueba, datos reales sobre polígonos esquemáticos, o ninguno -->
+    <div id="aviso-prueba" class="sc-aviso sc-aviso--advertencia">
+      <p class="sc-aviso__titulo">Datos reales de MODIS sobre polígonos esquemáticos</p>
+      <p class="sc-aviso__texto">Las temperaturas, las series y las tendencias salen de MODIS (MOD11A2, vía NASA GIBS). Los sectores y las referencias de desierto todavía son cuadros esquemáticos: los resultados cambiarán con los polígonos definitivos (D15).</p>
     </div>
 
-    <div class="introduccion"><p class="ceja">Lectura por sector</p><h1>La noche, sector por sector</h1><p id="serie-descripcion">Diferencia de temperatura superficial nocturna entre sector y desierto. MOD11 Terra · Serie sintética.</p></div>
+    <div class="introduccion"><p class="ceja">Lectura por sector</p><h1>La noche, sector por sector</h1><p id="serie-descripcion">Diferencia de temperatura superficial nocturna entre sector y desierto. MODIS MOD11 Terra, junio a agosto.</p></div>
 
     <div class="herramientas">
       <div class="sc-campo campo-sector">
@@ -38,7 +39,7 @@
         <select id="sector" class="sc-campo__control" disabled><option value="">Selecciona un sector</option></select>
       </div>
       <button id="exportar-nombres" class="sc-boton sc-boton--secundario" type="button" disabled>Exportar nombres</button>
-      <p id="estado" role="status">Cargando datos de prueba…</p>
+      <p id="estado" role="status">Cargando los datos de los sectores…</p>
     </div>
 
     <div class="espacio">
@@ -60,13 +61,13 @@
           <li><span class="sc-muestra sc-muestra--trazo" style="--sc-color: var(--estado-neutro)"></span>Gris: evidencia insuficiente</li>
           <li><span class="sc-muestra sc-muestra--discontinuo" style="--sc-color: var(--texto)"></span>Desierto de referencia</li>
         </ul>
-        <p id="mapa-descripcion" class="pie-mapa">Color: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente. Polígonos esquemáticos y población inventada.</p>
+        <p id="mapa-descripcion" class="pie-mapa">Color: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente. Polígonos esquemáticos.</p>
       </section>
 
       <dialog id="expediente" class="sc-hoja" aria-labelledby="titulo-sector">
         <header class="sc-hoja__cabeza">
           <div class="grupo-nombre">
-            <p id="expediente-etiqueta" class="ceja">Expediente de prueba</p>
+            <p id="expediente-etiqueta" class="ceja">Expediente</p>
             <div class="titulo-fila">
               <h2 id="titulo-sector" class="sc-hoja__titulo" tabindex="-1"></h2>
               <button id="editar-nombre" class="sc-boton sc-boton--icono sc-boton--compacto" type="button" aria-label="Editar nombre del sector" title="Editar nombre"><svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#editar"/></svg></button>
@@ -93,6 +94,6 @@
     </div>
   </main>
 
-  <sc-pie raiz="../" datos="NASA GIBS (MODIS MOD11A2) y datos de prueba"><p>Mapa: temperatura de la superficie de noche, MODIS Terra MOD11A2 servido por NASA GIBS. Sectores, series y tendencias: datos de prueba de <code>via-b/datos/prueba/</code>.</p></sc-pie>
+  <sc-pie raiz="../" datos="MODIS MOD11A2 y MYD11A2 (NASA GIBS), 2001-2025"><p>Datos: temperatura de la superficie de MODIS Terra y Aqua (MOD11A2 y MYD11A2), compuestos de 8 días de junio a agosto, servidos por NASA GIBS y procesados con <code>via-b/procesamiento/</code>. Polígonos de los sectores: esquemáticos (D15).</p></sc-pie>
 </body>
 </html>

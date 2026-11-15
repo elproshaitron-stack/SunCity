@@ -1,6 +1,6 @@
 import {dibujarSerieAnual} from '../compartido/serie-anual.js';
 import {ESQUEMA} from './datos/esquema.js';
-import {RUTA_DATOS, datosDePrueba, pasosAqua, sectorPrioritario} from './config.js';
+import {RUTA_DATOS, datosDePrueba, poligonosEsquematicos, pasosAqua, sectorPrioritario} from './config.js';
 import {semaforo} from './semaforo.js';
 import {dibujarVariantes} from './variantes.js';
 import {nombreSector, guardarNombre, nombresPersonalizados} from './nombres.js';
@@ -235,7 +235,7 @@ async function iniciar() {
         ? `Diferencia con ${referencias[0].properties.nombre}: ${fmtDif(sector.media - refA.media)} en este periodo. Es un solo compuesto de 8 días, no una tendencia.`
         : 'No hay dato suficiente en este periodo para comparar el sector con su desierto. Prueba otro periodo.';
       const partes = [dl, p];
-      if (datosDePrueba) { const aviso = document.createElement('p'); aviso.className = 'nota'; aviso.textContent = 'Las temperaturas son reales; el polígono del sector todavía es de prueba (D15).'; partes.push(aviso); }
+      if (datosDePrueba || poligonosEsquematicos) { const aviso = document.createElement('p'); aviso.className = 'nota'; aviso.textContent = 'Las temperaturas son reales; el polígono del sector todavía es esquemático (D15).'; partes.push(aviso); }
       destino.replaceChildren(...partes);
     } catch {
       if (turno === turnoSector) destino.replaceChildren(Object.assign(document.createElement('p'), {textContent:'No se pudo leer el compuesto de NASA GIBS. Revisa la conexión o prueba otro periodo.'}));
@@ -325,7 +325,7 @@ async function iniciar() {
       : `entre ${Math.min(...valoresNivel).toFixed(1)} y ${Math.max(...valoresNivel).toFixed(1)} °C`;
     for (const [titulo, texto] of [
       ['Nivel medio 2001–2019 (Modelo F)', textoNivel],
-      [datosDePrueba ? 'Población inventada' : 'Población estimada (GPW 2020)',
+      [datosDePrueba ? 'Población inventada' : 'Población (GPW 2020)',
         Number.isFinite(f.properties.poblacion) ? new Intl.NumberFormat('es-MX').format(f.properties.poblacion) : 'Sin datos'],
       ['p ajustado por FDR', Number.isFinite(r.p_fdr) ? r.p_fdr.toPrecision(3) : '—']
     ]) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = titulo; dd.textContent = texto; dl.append(dt,dd); }
@@ -358,14 +358,21 @@ async function iniciar() {
       mapa[quieto ? 'jumpTo' : 'easeTo']({center:centro});
     });
   }
-  $('estado').textContent = `${sectores.length} sectores${datosDePrueba ? ' de prueba' : ''} · Toca un polígono o usa el selector.`;
+  $('estado').textContent = `${sectores.length} sectores${datosDePrueba ? ' de prueba' : poligonosEsquematicos ? ' esquemáticos con datos reales de MODIS' : ''} · Toca un polígono o usa el selector.`;
   const idEnlace = new URLSearchParams(location.search).get('sector');
   if (sectores.some(f => f.properties.id === idEnlace)) abrir(idEnlace);
 }
-if (!datosDePrueba) {
+// El aviso del HTML corresponde a datos reales sobre polígonos esquemáticos; aquí se ajusta a config.js
+if (datosDePrueba) {
+  const aviso = $('aviso-prueba');
+  aviso.className = 'sc-aviso sc-aviso--prueba';
+  aviso.querySelector('.sc-aviso__titulo').textContent = 'Sectores y tendencias de prueba';
+  aviso.querySelector('.sc-aviso__texto').textContent = 'El mapa de temperatura es real (NASA MODIS). Los polígonos de los sectores, su población y sus resultados son datos sintéticos de prueba.';
+  $('serie-descripcion').textContent = 'Diferencia de temperatura superficial nocturna entre sector y desierto. MOD11 Terra · Serie sintética.';
+  $('expediente-etiqueta').textContent = 'Expediente de prueba';
+  $('mapa-descripcion').textContent = 'Color: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente. Polígonos esquemáticos y población inventada.';
+} else if (!poligonosEsquematicos) {
   $('aviso-prueba').hidden = true;
-  $('serie-descripcion').textContent = 'Diferencia de temperatura superficial nocturna entre sector y desierto. MOD11 Terra.';
-  $('expediente-etiqueta').textContent = 'EXPEDIENTE';
   $('mapa-descripcion').textContent = 'Color: p FDR menor que 0.05 e intervalo del 95 % del lado de la pendiente.';
 }
 iniciar().catch(error => { $('estado').textContent = `No se pudo abrir el explorador: ${error.message}`; });
