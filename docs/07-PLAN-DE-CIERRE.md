@@ -145,8 +145,8 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 
 - [x] **A1 · M** `compartido/tokens.css` con las tres capas y los dos temas; la Vía A lo consume. *Acepta:* la Vía A se ve igual, con diferencia de captura menor que 0.1 %. *Hecho en PR #9:* el globo se anima y la captura no es repetible, así que se compararon los estilos calculados de 331 elementos a 1366 y 375 px, sin diferencias.
 - [x] **A2 · G** `compartido/componentes.css` con todos los componentes y estados de 4.2. *Depende:* A1.
-- [ ] **A3 · M** `compartido/catalogo.html`: cada componente, cada estado, en los dos temas, con el código que lo produce. *Depende:* A2. *Acepta:* es la referencia que usan B y las pruebas de C.
-- [ ] **A4 · M** `compartido/componentes.js`: hoja, diálogo, toast, segmento con flechas, barra y pie. *Depende:* A2. *Acepta:* cada uno se maneja completo con teclado.
+- [x] **A3 · M** `compartido/catalogo.html`: cada componente, cada estado, en los dos temas, con el código que lo produce. *Depende:* A2. *Acepta:* es la referencia que usan B y las pruebas de C.
+- [x] **A4 · M** `compartido/componentes.js`: hoja, diálogo, toast, segmento con flechas, barra y pie. *Depende:* A2. *Acepta:* cada uno se maneja completo con teclado.
 - [ ] **A5 · C** `compartido/iconos.svg` y su uso con `<use>`. *Acepta:* no queda un ícono dibujado en línea.
 - [ ] **C1 · M** `verificar.py`: todas las pruebas actuales, más la búsqueda de textos prohibidos y de colores fuera de los tokens. *Acepta:* código 0 en `main`; código 1 con cualquier fallo.
 - [ ] **C2 · C** Integración continua que corre `verificar.py` en cada PR. *Depende:* C1.

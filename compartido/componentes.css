@@ -117,7 +117,8 @@
 .sc-boton--texto:disabled:hover, .sc-boton--texto[aria-disabled="true"]:hover { border-color: transparent; }
 
 /* Cargando: el texto queda en su lugar (mismo ancho) pero invisible; el giro usa la tinta */
-.sc-boton[aria-busy="true"] { color: transparent; cursor: progress; transform: none; }
+.sc-boton[aria-busy="true"] { color: transparent; cursor: progress; transform: none; opacity: 1; }
+.sc-boton--primario[aria-busy="true"] { box-shadow: var(--sombra-accion); }
 .sc-boton[aria-busy="true"] > * { visibility: hidden; }
 .sc-boton[aria-busy="true"]::after {
   content: ""; position: absolute; inset: 0; margin: auto;
@@ -331,6 +332,7 @@ textarea.sc-campo__control { min-height: calc(var(--tactil) * 2); padding: var(-
   transform: translateX(-50%);
   pointer-events: none;
 }
+.sc-toasts__region { display: grid; gap: var(--e-2); width: 100%; }
 .sc-toast {
   --sc-tono: var(--exito);
   display: flex; align-items: center; gap: var(--e-3);
@@ -421,7 +423,7 @@ textarea.sc-campo__control { min-height: calc(var(--tactil) * 2); padding: var(-
 
 @media (max-width: 640px) {
   .sc-tabla--tarjetas thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  .sc-tabla--tarjetas, .sc-tabla--tarjetas tbody, .sc-tabla--tarjetas tr { display: block; }
+  .sc-tabla--tarjetas, .sc-tabla--tarjetas caption, .sc-tabla--tarjetas tbody, .sc-tabla--tarjetas tr { display: block; }
   .sc-tabla--tarjetas tr {
     margin-bottom: var(--e-3); padding: var(--e-2) var(--e-3);
     border: 1px solid var(--linea); border-radius: var(--r-md);
@@ -606,6 +608,8 @@ textarea.sc-campo__control { min-height: calc(var(--tactil) * 2); padding: var(-
 .sc-mapa__alternativa { margin-top: var(--e-2); font-size: var(--t-sm); }
 
 /* ── sc-barra ─────────────────────────────────────────────────── */
+/* <sc-barra> y <sc-pie> (componentes.js) no dibujan caja propia: la barra queda fija respecto a la página */
+sc-barra, sc-pie { display: contents; }
 /* Marca, navegación entre vías y enlace a Método. "Saltar al contenido" va antes.
    El enlace de la página actual lleva aria-current="page". */
 
