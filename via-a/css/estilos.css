@@ -152,12 +152,15 @@ legend {
 }
 .estado.sc-aviso { display: grid; font-family: var(--f-texto); font-size: var(--t-sm); letter-spacing: 0; text-transform: none; color: var(--texto); }
 .estado .origen { font-family: var(--f-texto); letter-spacing: 0; text-transform: none; }
-.cargando::after {
-  content: ""; width: 12px; height: 12px; border-radius: 50%;
-  border: 2px solid var(--linea); border-top-color: var(--texto);
-  animation: gira .8s linear infinite;
-}
-@keyframes gira { to { transform: rotate(360deg); } }
+.aviso-datos { margin-top: var(--e-3); }
+
+/* Esqueleto del veredicto: insignia, titular, frase, cifras y gráfica */
+.esqueleto-veredicto { padding-top: var(--e-4); }
+.esqueleto-veredicto .esq-insignia { width: 9rem; height: 1.6rem; border-radius: var(--r-pill); }
+.esqueleto-veredicto .sc-esqueleto--titulo { height: 3.2rem; width: 75%; margin: var(--e-3) 0; }
+.esq-cifras { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-3); margin: var(--e-5) 0; }
+.esq-cifras .sc-esqueleto--bloque { height: 3.5rem; }
+#vacio { margin-top: var(--e-4); }
 
 .veredicto { padding-top: var(--e-4); }
 .veredicto:not([hidden]) > * { animation: entra var(--dur-entrada) var(--curva) both; }
