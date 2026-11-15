@@ -1,0 +1,77 @@
+# Pruebas de punta a punta, accesibilidad, capturas del catálogo y Lighthouse (C5 a C8).
+# Las herramientas viven en pruebas/e2e/ y son solo para desarrollo: el sitio no las usa.
+name: e2e
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playwright:
+    name: Flujos, axe y capturas
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # La misma imagen con la que se generan las capturas de referencia (npm run visual:actualizar)
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+      options: --ipc=host
+    env:
+      HOME: /root # Firefox no arranca como root con otro HOME
+    defaults:
+      run:
+        working-directory: pruebas/e2e
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci --no-audit --no-fund
+      - name: Pruebas (3 motores × 3 anchos, axe y capturas)
+        run: npx playwright test
+      - name: Informe
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-playwright
+          path: |
+            pruebas/e2e/informe/
+            pruebas/e2e/resultados/
+          retention-days: 14
+
+  lighthouse:
+    name: Lighthouse (celular)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: pruebas/e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: pruebas/e2e/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci --no-audit --no-fund
+      - name: Presupuestos (rendimiento 90, LCP 2.5 s, CLS 0.1)
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+          E2E_PYTHON: python
+        run: npx lhci autorun --config=lighthouserc.cjs
+      - name: Informes
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-lighthouse
+          path: pruebas/e2e/.lighthouseci/
+          include-hidden-files: true
+          retention-days: 14

@@ -132,7 +132,8 @@
 /* Cargando: el texto queda en su lugar (mismo ancho) pero invisible; el giro usa la tinta */
 .sc-boton[aria-busy="true"] { color: transparent; cursor: progress; transform: none; opacity: 1; }
 .sc-boton--primario[aria-busy="true"] { box-shadow: var(--sombra-accion); }
-.sc-boton[aria-busy="true"] > * { visibility: hidden; }
+/* opacidad y no visibility: el texto oculto sigue dando el nombre accesible del botón */
+.sc-boton[aria-busy="true"] > * { opacity: 0; }
 .sc-boton[aria-busy="true"]::after {
   content: ""; position: absolute; inset: 0; margin: auto;
   width: 16px; height: 16px; border-radius: 50%;
@@ -400,6 +401,8 @@ textarea.sc-campo__control { min-height: calc(var(--tactil) * 2); padding: var(-
    En celular cada fila es una tarjeta: cada td lleva data-etiqueta con el nombre de su columna. */
 
 .sc-tabla-marco { overflow-x: auto; }
+/* Si la tabla desborda, componentes.js hace el marco enfocable para moverlo con las flechas */
+.sc-tabla-marco:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; border-radius: var(--r-sm); }
 .sc-tabla {
   width: 100%; border-collapse: collapse;
   font-size: var(--t-sm); font-variant-numeric: tabular-nums;

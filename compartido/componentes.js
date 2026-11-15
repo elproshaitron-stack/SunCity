@@ -11,6 +11,7 @@
  *   SC.cargando(boton, siONo)             estado cargando de un sc-boton
  *   SC.errorCampo(control, mensaje|null)  muestra o quita el error de un sc-campo
  *   SC.ordenarTabla(tabla)                activa el orden de una sc-tabla (automático con data-sc-ordenable)
+ *   SC.marcosTabla()                      vuelve enfocable cada .sc-tabla-marco que desborda (automático)
  *
  * Y dos elementos propios, en DOM normal para que los estilen tokens y componentes:
  *   <sc-barra raiz="../" actual="via-a" contenido="resultado"><a href="../">SunCity</a></sc-barra>
@@ -336,10 +337,47 @@
     definir("sc-pie", Pie);
   }
 
+  /* ── Marco de tabla con desplazamiento ────────────────────────────
+     Una tabla más ancha que su marco solo se puede leer completa desplazándola: el marco recibe
+     el foco (tabindex="0") y un nombre, para moverlo con las flechas sin ratón (WCAG 2.1.1).
+     Se revisa al cargar, al cambiar el ancho y cuando una página agrega tablas después. */
+  SC.marcosTabla = function () {
+    Array.prototype.forEach.call(doc.querySelectorAll(".sc-tabla-marco"), function (m) {
+      var desborda = m.scrollWidth > m.clientWidth + 1;
+      var propio = m.hasAttribute("data-sc-desplazable");
+      if (desborda && !m.hasAttribute("tabindex")) {
+        var titulo = m.querySelector("caption");
+        m.setAttribute("tabindex", "0");
+        m.setAttribute("data-sc-desplazable", "");
+        if (!m.hasAttribute("role")) m.setAttribute("role", "region");
+        if (!m.hasAttribute("aria-label") && !m.hasAttribute("aria-labelledby"))
+          m.setAttribute("aria-label", (titulo && titulo.textContent.trim() ? titulo.textContent.trim() + ". " : "") +
+            "Tabla con desplazamiento horizontal");
+      } else if (!desborda && propio) {
+        ["tabindex", "data-sc-desplazable", "role", "aria-label"].forEach(function (a) { m.removeAttribute(a); });
+      }
+    });
+  };
+  var turnoMarcos = 0;
+  function revisarMarcos() {
+    if (turnoMarcos) return;
+    turnoMarcos = raiz.requestAnimationFrame(function () { turnoMarcos = 0; SC.marcosTabla(); });
+  }
+
   /* ── Arranque ─────────────────────────────────────────────────── */
 
   function iniciar() {
     Array.prototype.forEach.call(doc.querySelectorAll("table.sc-tabla[data-sc-ordenable]"), SC.ordenarTabla);
+    SC.marcosTabla();
+    raiz.addEventListener("resize", revisarMarcos);
+    if (raiz.MutationObserver) new MutationObserver(function (cambios) {
+      for (var i = 0; i < cambios.length; i++) {
+        var n = cambios[i].addedNodes;
+        for (var j = 0; j < n.length; j++) {
+          if (n[j].nodeType === 1 && (n[j].matches(".sc-tabla-marco") || n[j].querySelector(".sc-tabla-marco"))) { revisarMarcos(); return; }
+        }
+      }
+    }).observe(doc.body, { childList: true, subtree: true });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", iniciar);
   else iniciar();

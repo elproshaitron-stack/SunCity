@@ -159,8 +159,8 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 - [x] **A7 · M** `/metodo/` con método, glosario, fuentes y límites; sale de `docs/` sin duplicar. *Depende:* A6.
 - [x] **A8 · C** `404.html`, ícono del sitio, metadatos para compartir y `manifest.webmanifest`. *Nota:* la Vía B cambia su ícono propio por `compartido/marca/` en B1; la imagen para compartir y el `<base>` de `404.html` necesitan la dirección publicada (C15).
 - [x] **A9 · C** `compartido/mapa-estilo.js`: el estilo del mapa sale de `via-a/js/globo.js` para que la Vía B lo use. *Acepta:* el globo se ve igual.
-- [ ] **C5 · G** Pruebas de punta a punta con Playwright en `pruebas/e2e/`: los flujos de las dos vías en 375, 768 y 1366 px y en tres motores. *Depende:* C4. *Acepta:* corren en la integración continua.
-- [ ] **C6 · M** Capturas de referencia del catálogo; un cambio visual no declarado rompe el PR. *Depende:* A3, C5.
+- [x] **C5 · G** Pruebas de punta a punta con Playwright en `pruebas/e2e/`: los flujos de las dos vías en 375, 768 y 1366 px y en tres motores. *Depende:* C4. *Acepta:* corren en la integración continua. *Hecho por Claude a pedido de Navarrete:* 9 flujos, 81 de 81 en Chromium, Firefox y WebKit; `.github/workflows/e2e.yml`. La red externa se bloquea y NASA POWER responde con la copia guardada. C4 (registrar la herramienta en `DECISIONES.md`) sigue abierta.
+- [x] **C6 · M** Capturas de referencia del catálogo; un cambio visual no declarado rompe el PR. *Depende:* A3, C5. *Hecho:* 40 capturas (20 secciones por 2 temas) en `pruebas/e2e/capturas/`, generadas en la imagen de Docker de Playwright; cómo actualizarlas en `pruebas/e2e/README.md`. Con C3 hay que regenerarlas una vez (cambian las fuentes).
 
 ### Fase 3. Pulido de cada vía
 
@@ -186,8 +186,8 @@ Vía B:
 
 ### Fase 4. Calidad
 
-- [ ] **C7 · M** axe en el catálogo y en cada ruta, dentro de las pruebas de punta a punta. *Acepta:* cero infracciones.
-- [ ] **C8 · M** Presupuestos de Lighthouse en la integración continua, con los umbrales de la sección 1.
+- [x] **C7 · M** axe en el catálogo y en cada ruta, dentro de las pruebas de punta a punta. *Acepta:* cero infracciones. *Hecho:* cero serias o críticas tras corregir dos en `compartido/componentes.*`; quedan una menor (Método) y una moderada aceptada (catálogo), en `docs/calidad/recorrido-a15.md`.
+- [x] **C8 · M** Presupuestos de Lighthouse en la integración continua, con los umbrales de la sección 1. *Hecho:* `pruebas/e2e/lighthouserc.cjs` en `e2e.yml`. El presupuesto falla hoy en la Vía A (66), la Vía B (70) y Método (88, LCP 3.1 s): números y causas en `docs/calidad/25010.md`. La condición 6 sigue abierta.
 - [ ] **C9 · M** Seguridad: política de seguridad de contenido, el script en línea de `via-a/index.html` pasa a un archivo, y se revisan los nueve usos de `innerHTML`; los que reciben texto de la dirección, de un CSV o de un nombre editable pasan a `textContent`. *Acepta:* una prueba inyecta HTML en un nombre de sector y no se ejecuta.
 - [ ] **C10 · M** Sin red: con los dominios externos bloqueados, cada ruta abre, usa los respaldos y lo dice.
 - [x] **A15 · M** Recorrido manual con teclado y lector de pantalla en las cinco rutas; correcciones. *Depende:* A11, B5.

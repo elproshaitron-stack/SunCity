@@ -41,6 +41,23 @@ glosario → fuentes del pie. El foco se ve en todos.
 | Los botones Acercar y Alejar del globo no mostraban el foco de la plataforma | Contorno de `--foco` en los controles y en el lienzo del mapa |
 | Los fondos oscuros de la portada, el escenario y el 404 eran solo un degradado | Color de respaldo `--superficie` debajo del degradado |
 
+## axe automático (C7)
+
+`pruebas/e2e/accesibilidad.spec.js` corre axe-core 4.14.0 (con `@axe-core/playwright` 4.14.0) con las
+reglas WCAG 2.0, 2.1 y 2.2 A y AA más las buenas prácticas, en Chromium a 375, 768 y 1366 px, sobre
+las cinco rutas, la Vía A con el error de descarga, la Vía B con el expediente abierto y el catálogo.
+Corre en cada PR. Primera corrida, 15 de noviembre de 2026:
+
+| Hallazgo | Gravedad | Dónde | Corrección |
+|---|---|---|---|
+| El botón en estado "cargando" se quedaba sin nombre accesible: `visibility: hidden` en su texto también lo quita del árbol de accesibilidad | Crítica (`button-name`) | `sc-boton[aria-busy]`: catálogo y "Usar mi ubicación" de la Vía A mientras espera | `compartido/componentes.css`: el texto se oculta con opacidad; conserva ancho y nombre |
+| Una tabla más ancha que su marco solo se podía desplazar con ratón | Seria (`scrollable-region-focusable`) | `/metodo/`, tabla de fuentes a 768 y 1366 px | `compartido/componentes.js`: `SC.marcosTabla()` da `tabindex="0"`, `role="region"` y nombre a cada `.sc-tabla-marco` que desborda, al cargar, al cambiar el ancho y cuando la página agrega tablas; foco visible en `componentes.css` |
+| Encabezado de columna vacío | Menor (`empty-table-header`) | `/metodo/`, la primera columna de una tabla que sale de `docs/METODO.md` | Pendiente: el Markdown de origen deja la primera celda de encabezado en blanco |
+| Dos regiones de navegación con el mismo nombre | Moderada (`landmark-unique`) | Catálogo: la muestra de `sc-barra` aparece en los dos temas | Aceptado: es la muestra del componente, no una página real |
+
+Tras las correcciones: **cero infracciones serias o críticas** en las 24 combinaciones (8 páginas o
+estados por 3 anchos). Las moderadas y menores quedan como anotación en el informe de Playwright.
+
 ## Pendiente
 
 - **Lector de pantalla real**: NVDA en Windows y VoiceOver en iPhone (C7 automatiza axe; lo manual

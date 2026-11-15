@@ -1,0 +1,19 @@
+{
+  "name": "suncity-e2e",
+  "private": true,
+  "description": "Pruebas de punta a punta, accesibilidad, capturas y Lighthouse de SunCity. Solo para desarrollo: el sitio no las usa.",
+  "scripts": {
+    "pruebas": "playwright test",
+    "flujos": "playwright test --project=chromium-* --project=firefox-* --project=webkit-*",
+    "visual": "node visual-docker.js",
+    "visual:actualizar": "node visual-docker.js --actualizar",
+    "axe": "playwright test --project=axe-*",
+    "lighthouse": "lhci autorun --config=lighthouserc.cjs",
+    "informe": "playwright show-report"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@lhci/cli": "0.16.1",
+    "@playwright/test": "1.65.1"
+  }
+}

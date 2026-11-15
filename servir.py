@@ -14,6 +14,9 @@ RAIZ = Path(__file__).resolve().parent
 class Servidor(ThreadingHTTPServer):
     # En Windows, SO_REUSEADDR puede permitir dos servidores en el mismo puerto.
     allow_reuse_address = False
+    # La cola por omisión es de 5 conexiones: con varios navegadores a la vez (pruebas de punta a punta)
+    # Windows rechaza las que sobran.
+    request_queue_size = 64
 
 
 class Manejador(SimpleHTTPRequestHandler):

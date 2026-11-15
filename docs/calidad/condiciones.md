@@ -2,7 +2,7 @@
 
 Revisión de la sección 1 de `docs/07-PLAN-DE-CIERRE.md` al 15 de noviembre de 2026, versión 0.9.0.
 Cada condición tiene su estado y la evidencia que hay hoy en el repositorio. **La versión 1.0 todavía no
-existe:** 1 condición se cumple, 5 en parte y 4 no. Lo que falta depende sobre todo del carril C
+existe:** 2 condiciones se cumplen, 4 en parte y 4 no. Lo que falta depende sobre todo del carril C
 (calidad y publicación), del carril B (Vía B) y de cerrar D15.
 
 | # | Condición | Estado | Evidencia hoy | Qué falta y de quién |
@@ -10,9 +10,9 @@ existe:** 1 condición se cumple, 5 en parte y 4 no. Lo que falta depende sobre 
 | 1 | Las dos vías usan los mismos tokens y componentes; no queda un color suelto | Parcial | Las cinco rutas usan tokens y componentes `sc-`; el expediente de la Vía B es una `sc-hoja` y sus gráficas toman los colores de los tokens (B1). Quedan valores hexadecimales en `compartido/mapa-estilo.js` (el estilo de MapLibre no acepta `var()`), en `compartido/lst-noche.js` (la escala de datos) y la meta `theme-color` | Leer esos colores de los tokens al arrancar el mapa; C1 (`verificar.py` que lo revise) |
 | 2 | Cada componente tiene todos sus estados dibujados | **Cumple** | `compartido/catalogo.html`: 20 componentes, cada estado en los dos temas, con su código; cursor, foco y presionado fijados desde el CSS real | — |
 | 3 | Cada pantalla resuelve carga, vacío, error, sin red y datos parciales | Parcial | Vía A: esqueleto, error con "Reintentar descarga", copia guardada, punto sin datos y error por campo (PR #22). Método: error con "Reintentar". Faltan los de la Vía B y las pruebas de punta a punta que los comprueben | B5; C5 |
-| 4 | Accesibilidad WCAG 2.2 AA | Parcial | Recorrido de las cinco rutas y de la Vía A con teclado, con correcciones: `recorrido-a15.md`. Con B1 la Vía B ya tiene "Saltar al contenido" y pasa la revisión automática (0 sin nombre, 0 de contraste). Sin axe y sin lector de pantalla real | C7 (axe); revisión con NVDA o VoiceOver |
-| 5 | Funciona en 375, 768 y 1366 px, en Chromium, Firefox y WebKit | Parcial | Revisado a mano en 375, 800 y 1366 px en Chromium. Firefox y WebKit sin probar | C5 (Playwright en tres motores) |
-| 6 | Rápida en un celular con datos móviles | No | Solo medido en local y sin limitar la red: LCP 2.0 s y CLS 0.000 en la Vía A; 77 kB de JavaScript propio (`25010.md`) | C8 (Lighthouse con el umbral del plan) |
+| 4 | Accesibilidad WCAG 2.2 AA | Parcial | Recorrido de las cinco rutas y de la Vía A con teclado, con correcciones: `recorrido-a15.md`. axe en cada PR (C7): cero infracciones serias o críticas en las cinco rutas y el catálogo a tres anchos; quedan una menor en Método y una moderada aceptada en el catálogo. Sin lector de pantalla real | Revisión con NVDA o VoiceOver; el encabezado vacío de Método |
+| 5 | Funciona en 375, 768 y 1366 px, en Chromium, Firefox y WebKit | **Cumple** | `pruebas/e2e/flujos.spec.js` en cada PR: 9 flujos en Chromium, Firefox y WebKit a 375, 768 y 1366 px, 81 de 81 | — |
+| 6 | Rápida en un celular con datos móviles | No | Lighthouse en perfil de celular en cada PR (C8). Portada 99; Vía A 66, Vía B 70 y Método 88 de rendimiento; LCP de Método 3.1 s; CLS 0.000 en las cuatro (`25010.md`) | Cargar MapLibre después del primer dibujo; C3 (fuentes locales); dibujar Método sin esperar la descarga |
 | 7 | No depende de terceros para abrir | No | Si NASA POWER falla, la Vía A usa la copia guardada. Pero MapLibre viene de unpkg y las fuentes de Google Fonts | C3 (terceros servidos desde el sitio); C10 (prueba sin red) |
 | 8 | Segura como sitio estático | No | Ningún dato de una API entra por `innerHTML` (`25010.md`). No hay política de seguridad de contenido y hay scripts en línea | C9 |
 | 9 | Publicada y versionada | No | Sin dirección pública, sin etiqueta `v1.0.0` y sin `CHANGELOG.md`. El sitio está listo para servirse desde la raíz del repositorio, sin compilación | Despliegue (Navarrete); C15; C16 |
