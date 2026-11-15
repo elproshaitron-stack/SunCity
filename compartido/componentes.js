@@ -14,8 +14,9 @@
  *
  * Y dos elementos propios, en DOM normal para que los estilen tokens y componentes:
  *   <sc-barra raiz="../" actual="via-a" contenido="resultado"><a href="../">SunCity</a></sc-barra>
- *   <sc-pie raiz="../" datos="NASA POWER 2025-10" software="0.9.0"></sc-pie>
- * Lo que va dentro es la alternativa sin JavaScript: un enlace simple a la portada.
+ *   <sc-pie raiz="../" datos="NASA POWER, 1981-2025"><p>Fuentes propias de la página…</p></sc-pie>
+ * Lo que va dentro de <sc-barra> es la alternativa sin JavaScript (un enlace a la portada);
+ * los <p> dentro de <sc-pie> se conservan como fuentes de la página. Sin "software", usa SC.VERSION.
  *
  * Atributos declarativos:
  *   data-sc-abre="id"   en un botón: abre el diálogo o la hoja con ese id
@@ -25,6 +26,8 @@
   "use strict";
 
   var SC = raiz.SC = raiz.SC || {};
+  // Versión del software que muestra <sc-pie>. Se cambia en cada entrega (ver CHANGELOG).
+  SC.VERSION = "0.9.0";
   var doc = raiz.document;
 
   function porId(x) { return typeof x === "string" ? doc.getElementById(x) : x; }
@@ -308,20 +311,22 @@
         if (this.dataset.scListo) return;
         this.dataset.scListo = "1";
         var base = this.getAttribute("raiz") || "/";
+        // Los párrafos propios de la página (sus fuentes) se conservan; sin ellos va el texto general
+        var propios = Array.prototype.slice.call(this.querySelectorAll(":scope > p"));
         this.textContent = "";
 
         var pie = crear("footer", "sc-pie");
-        var fuentes = crear("p");
-        fuentes.appendChild(doc.createTextNode("Datos: NASA POWER (MERRA-2), MODIS y ECOSTRESS. "));
+        if (propios.length) propios.forEach(function (p) { pie.appendChild(p); });
+        else pie.appendChild(crear("p", null, "Datos: NASA POWER (MERRA-2), MODIS y ECOSTRESS."));
+        var linea = crear("p");
         var metodo = crear("a", null, "Método, fuentes y límites"); metodo.href = base + "metodo/";
-        fuentes.appendChild(metodo);
-        fuentes.appendChild(doc.createTextNode("."));
-        pie.appendChild(fuentes);
+        linea.appendChild(metodo);
+        pie.appendChild(linea);
 
         var versiones = crear("p", "sc-pie__versiones");
         if (this.getAttribute("datos")) versiones.appendChild(crear("span", null, "Datos: " + this.getAttribute("datos")));
-        if (this.getAttribute("software")) versiones.appendChild(crear("span", null, "Software: " + this.getAttribute("software")));
-        if (versiones.childNodes.length) pie.appendChild(versiones);
+        versiones.appendChild(crear("span", null, "Software: " + (this.getAttribute("software") || SC.VERSION)));
+        pie.appendChild(versiones);
         pie.appendChild(crear("p", null, "Proyecto SunCity, NASA Space Apps Challenge 2026, Hermosillo."));
         this.appendChild(pie);
       }

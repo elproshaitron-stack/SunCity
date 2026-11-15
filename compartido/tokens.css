@@ -108,6 +108,7 @@
   --tactil: 44px;       /* objetivo táctil mínimo */
   --control: 40px;      /* chips y meses con ratón */
   --control-mapa: 40px; /* botones del mapa */
+  --alto-barra: 56px;   /* barra de la plataforma */
 
   /* Capas */
   --z-escenario: 2;
