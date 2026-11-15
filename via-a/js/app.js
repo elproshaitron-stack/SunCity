@@ -40,7 +40,7 @@
   function armarControles() {
     var ciu = $("ciudades");
     ciu.innerHTML = CIUDADES.map(function (c) {
-      return '<button type="button" class="chip" data-ciudad="' + c.id + '" aria-pressed="false">' + c.nombre + "</button>";
+      return '<button type="button" class="sc-chip" data-ciudad="' + c.id + '" aria-pressed="false">' + c.nombre + "</button>";
     }).join("");
     ciu.addEventListener("click", function (e) {
       var b = e.target.closest("[data-ciudad]");
@@ -51,7 +51,7 @@
 
     var cont = $("variables");
     cont.innerHTML = Object.keys(Power.VARIABLES).map(function (k) {
-      return '<label class="chip"><input type="radio" name="variable" value="' + k + '">' +
+      return '<label class="sc-chip"><input type="radio" name="variable" value="' + k + '">' +
         "<span>" + ETIQUETAS[k] + "</span></label>";
     }).join("");
     cont.addEventListener("change", function (e) {
@@ -59,11 +59,13 @@
     });
 
     var tem = $("temporada");
-    tem.innerHTML = '<label class="mes mes--anio"><input type="radio" name="temporada" value="0"><span>Año completo</span></label>' +
+    // Año completo como chip; los doce meses como segmento. Es un solo grupo de radios.
+    tem.innerHTML = '<label class="sc-chip"><input type="radio" name="temporada" value="0"><span>Año completo</span></label>' +
+      '<div class="sc-segmento sc-segmento--envuelve meses">' +
       Power.MESES.map(function (m, i) {
-        return '<label class="mes" title="Solo ' + m + ' de cada año"><input type="radio" name="temporada" value="' + (i + 1) +
+        return '<label class="sc-segmento__opcion" title="Solo ' + m + ' de cada año"><input type="radio" name="temporada" value="' + (i + 1) +
           '" aria-label="Solo ' + m + ' de cada año"><span aria-hidden="true">' + m.slice(0, 3) + "</span></label>";
-      }).join("");
+      }).join("") + "</div>";
     tem.addEventListener("change", function (e) {
       if (e.target.name === "temporada") { estado.mes = +e.target.value; calcular(); }
     });
@@ -167,14 +169,14 @@
     var v = Power.VARIABLES[estado.variable], u = v.unidad, l = estado.lugar;
     var lugarTxt = nombreLugar(l), sujeto = v.corta + textoTemporada(estado.mes);
     var a0 = s.anios[0], a1 = s.anios[s.anios.length - 1];
-    mostrarEstado("Datos de NASA POWER, " + a0 + "-" + a1 + ' <span class="origen">' +
+    mostrarEstado("Datos de NASA POWER, " + a0 + "-" + a1 + ' <span class="sc-insignia sc-insignia--exploratorio origen">' +
       (estado.origen === "en vivo" ? "descargados ahora" : "archivo guardado") + "</span>", "", true);
 
     var sello = $("sello"), tarjeta = $("tarjeta");
     tarjeta.hidden = false;
 
     if (isNaN(r.pendiente_c_decada)) {
-      sello.className = "sello nosig"; sello.textContent = "Sin cálculo";
+      sello.className = "sc-insignia sc-insignia--sin-calculo"; sello.textContent = "Sin cálculo";
       $("titular").textContent = "No hay suficientes años con datos";
       $("frase").textContent = "Solo hay " + r.n_anios + " años válidos para " + sujeto + " en " + lugarTxt + ".";
       ["c-pend", "c-rango", "c-p"].forEach(function (id) { $(id).textContent = "—"; });
@@ -189,7 +191,7 @@
     var cruzaCero = r.ic95_inf <= 0 && r.ic95_sup >= 0;
     var rangoTxt = conSigno(r.ic95_inf, 2) + " a " + conSigno(r.ic95_sup, 2) + " " + u;
 
-    sello.className = "sello " + (sig ? "sig" : "nosig");
+    sello.className = "sc-insignia " + (sig ? "sc-insignia--significativo" : "sc-insignia--neutro");
     sello.textContent = sig ? "Significativo" : "Sin evidencia suficiente todavía";
     $("titular").textContent = dir === "prácticamente no cambia"
       ? "Prácticamente sin cambio"
@@ -238,6 +240,12 @@
 
   function mostrarEstado(texto, clase, html) {
     var e = $("estado");
+    if (clase === "error") {
+      // Un error es un aviso con forma y texto, no solo color
+      e.className = "estado sc-aviso sc-aviso--error";
+      e.replaceChildren(Object.assign(document.createElement("p"), { className: "sc-aviso__texto", textContent: texto }));
+      return;
+    }
     e.className = "estado" + (clase ? " " + clase : "");
     if (html) e.innerHTML = texto; else e.textContent = texto;
   }
