@@ -13,7 +13,6 @@ Cada decisión lleva: qué se decidió, quién, cuándo (fecha y hora) y por qu�
 | ID | Decisión | Opciones | Responsable | Estado | Elegido | Fecha y hora | Motivo |
 |---|---|---|---|---|---|---|---|
 | D15 | Polígonos reales de sectores y referencias | Los esquemáticos de `via-b/datos/prueba/` u otros | Navarrete y Mario | abierta | | | Definen todo el resultado. Las referencias deben tener NDVI < 0.2 (`procesar.py` avisa) y cada sector 9 km² o más |
-| D16 | Regla real del semáforo | La provisional de `via-b/semaforo.js` (p FDR < 0.05 y signo de la pendiente) u otra | Mario | abierta | | | Venía en v4, que no tenemos |
 
 ## Hechos confirmados al probar
 
@@ -59,3 +58,4 @@ Se llenan con lo que respondan las comprobaciones de la primera hora.
 | D11 | Modelo G: fuente de temperatura del aire | `T2M_MIN` de POWER, promedio de los meses de la temporada | Navarrete y Mario | 14 nov 12:50 | La estación de Hermosillo parece terminar en 2013 y ya tenemos POWER guardado |
 | D14 | Temporada de la Vía B | Junio a agosto | Navarrete y Mario | 14 nov 12:50 | Las noches más cálidas; mismo periodo que el estudio de El Colegio de Sonora. Se cambia en `via-b/procesamiento/parametros.py` |
 | D17 | Sector sin años suficientes en la interfaz | Celdas vacías en `resultados.csv`; la interfaz lo muestra gris como "sin cálculo" | Navarrete y Mario | 14 nov 12:55 | Antes un solo sector incompleto impedía abrir toda la Vía B |
+| D16 | Regla real del semáforo | Opción B: `p_fdr < 0.05`, signo de la pendiente primaria e IC 95 % completamente del lado de ese signo; rojo si positivo, azul si negativo y gris en los demás casos. `sin_2001_2002` no cuenta para el color (D01) | Mario | 15 nov 2026 00:40 | evita que un sector tenga color si su intervalo cruza cero, lo que se vería incoherente en la gráfica |
