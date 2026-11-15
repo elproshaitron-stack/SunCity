@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SunCity · Catálogo de componentes</title>
+  <meta name="description" content="Cada componente de SunCity, cada estado, en los dos temas, con el código que lo produce.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="componentes.css">
+  <script src="componentes.js" defer></script>
+  <style>
+    /* Solo para el catálogo: la maqueta de la página. Los componentes no dependen de esto. */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: var(--f-texto); font-size: var(--t-base); line-height: var(--lh-texto);
+      color: var(--texto); background: var(--superficie);
+    }
+    .cat { display: grid; grid-template-columns: 14rem minmax(0, 1fr); gap: var(--e-6); padding: var(--e-5) clamp(var(--e-4), 3vw, var(--e-6)) var(--e-8); }
+    .cat-indice { position: sticky; top: calc(var(--e-7) + var(--e-5)); align-self: start; font-size: var(--t-sm); }
+    .cat-indice ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+    .cat-indice a { display: block; padding: var(--e-1) var(--e-2); border-radius: var(--r-sm); color: var(--texto-2); text-decoration: none; }
+    .cat-indice a:hover { background: var(--superficie-2); color: var(--texto); }
+    .cat-indice a:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
+    .cat-intro h1 { margin: 0 0 var(--e-2); font-family: var(--f-titulo); font-weight: 500; font-size: var(--t-3xl); line-height: var(--lh-titulo); letter-spacing: -.02em; }
+    .cat-intro p { margin: 0 0 var(--e-2); max-width: 62ch; color: var(--texto-2); }
+    .cat-intro code, .cat-sec code { font-family: var(--f-dato); font-size: .9em; }
+    .cat-sec { padding-top: var(--e-7); scroll-margin-top: var(--e-7); }
+    .cat-sec > h2 { margin: 0 0 var(--e-1); font-family: var(--f-titulo); font-weight: 600; font-size: var(--t-xl); letter-spacing: -.01em; }
+    .cat-sec > h2 code { font-size: var(--t-sm); font-weight: 500; color: var(--texto-2); margin-left: var(--e-2); }
+    .cat-sec > p { margin: 0 0 var(--e-3); max-width: 62ch; font-size: var(--t-sm); color: var(--texto-2); }
+    .cat-temas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--linea); border-radius: var(--r-md); overflow: hidden; }
+    .cat-tema { padding: var(--e-4); background: var(--superficie); color: var(--texto); min-width: 0; }
+    .cat-tema::before { content: attr(data-nombre); display: block; margin-bottom: var(--e-3); font-family: var(--f-dato); font-size: var(--t-2xs); letter-spacing: .08em; text-transform: uppercase; color: var(--texto-2); }
+    .cat-estados { display: flex; flex-wrap: wrap; gap: var(--e-4) var(--e-3); align-items: flex-start; }
+    .cat-estados--columna { flex-direction: column; align-items: stretch; }
+    .cat-estado { margin: 0; display: grid; gap: var(--e-1); justify-items: start; min-width: 0; }
+    .cat-estados--columna .cat-estado { justify-items: stretch; }
+    .cat-estado > figcaption { font-family: var(--f-dato); font-size: var(--t-2xs); color: var(--texto-2); }
+    .cat-codigo { margin-top: var(--e-2); }
+    .cat-codigo summary { cursor: pointer; font-size: var(--t-sm); font-weight: 600; color: var(--texto-2); min-height: var(--tactil); display: flex; align-items: center; }
+    .cat-codigo summary:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; border-radius: var(--r-sm); }
+    .cat-codigo pre { margin: 0; padding: var(--e-3) var(--e-4); overflow-x: auto; border: 1px solid var(--linea); border-radius: var(--r-md); background: var(--superficie-2); font-family: var(--f-dato); font-size: var(--t-xs); line-height: 1.6; }
+    .cat-tema .sc-barra { position: static; padding: 0 var(--e-3); }
+    .cat-tema .sc-toast { animation: none; }
+    @media (max-width: 960px) {
+      .cat { grid-template-columns: minmax(0, 1fr); }
+      .cat-indice { position: static; }
+      .cat-indice ol { display: flex; flex-wrap: wrap; gap: var(--e-1); }
+      .cat-temas { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <sc-barra raiz="../" contenido="contenido"><a href="../">SunCity</a></sc-barra>
+
+  <div class="cat">
+    <nav class="cat-indice" aria-label="Componentes"><ol id="indice"></ol></nav>
+
+    <main id="contenido" tabindex="-1">
+      <header class="cat-intro">
+        <h1>Catálogo de componentes</h1>
+        <p>Cada componente de la plataforma, cada estado, en los dos temas, con el código que lo produce. Es la referencia para las dos vías y para las pruebas visuales.</p>
+        <p>Se usan con <code>tokens.css</code>, <code>componentes.css</code> y <code>componentes.js</code>, todos en <code>compartido/</code>. Los estados de cursor encima, foco y presionado se muestran fijos para poder compararlos; en uso real los pone el navegador.</p>
+      </header>
+      <div id="secciones"></div>
+    </main>
+  </div>
+
+  <sc-pie raiz="../" software="catálogo A3"></sc-pie>
+
+  <!--
+    Cada <template> es una sección. data-titulo y data-clase dan el encabezado.
+    Dentro, cada <figure class="cat-estado"> es un estado; data-estado="hover foco presionado"
+    fuerza la apariencia de esas pseudoclases. Los elementos con data-codigo forman el código mostrado.
+  -->
+
+  <template data-id="boton" data-titulo="Botón" data-clase="sc-boton" data-nota="Un primario por vista. Secundario con borde para acciones de apoyo; texto para lo discreto. Solo ícono exige aria-label. Cargando conserva ancho y color y lleva aria-busy.">
+    <div class="cat-estados">
+      <figure class="cat-estado"><figcaption>primario</figcaption><button class="sc-boton sc-boton--primario" type="button" data-codigo>Ver dentro de Hermosillo</button></figure>
+      <figure class="cat-estado"><figcaption>cursor encima</figcaption><button class="sc-boton sc-boton--primario" type="button" data-estado="hover">Ver dentro de Hermosillo</button></figure>
+      <figure class="cat-estado"><figcaption>presionado</figcaption><button class="sc-boton sc-boton--primario" type="button" data-estado="hover presionado">Ver dentro de Hermosillo</button></figure>
+      <figure class="cat-estado"><figcaption>foco</figcaption><button class="sc-boton sc-boton--primario" type="button" data-estado="foco">Ver dentro de Hermosillo</button></figure>
+      <figure class="cat-estado"><figcaption>cargando</figcaption><button class="sc-boton sc-boton--primario" type="button" aria-busy="true" aria-disabled="true" data-codigo><span>Ver dentro de Hermosillo</span></button></figure>
+      <figure class="cat-estado"><figcaption>deshabilitado</figcaption><button class="sc-boton sc-boton--primario" type="button" disabled>Ver dentro de Hermosillo</button></figure>
+    </div>
+    <div class="cat-estados" style="margin-top: var(--e-4)">
+      <figure class="cat-estado"><figcaption>secundario</figcaption><button class="sc-boton sc-boton--secundario" type="button" data-codigo>Descargar datos</button></figure>
+      <figure class="cat-estado"><figcaption>cursor encima</figcaption><button class="sc-boton sc-boton--secundario" type="button" data-estado="hover">Descargar datos</button></figure>
+      <figure class="cat-estado"><figcaption>presionado</figcaption><button class="sc-boton sc-boton--secundario" type="button" data-estado="hover presionado">Descargar datos</button></figure>
+      <figure class="cat-estado"><figcaption>foco</figcaption><button class="sc-boton sc-boton--secundario" type="button" data-estado="foco">Descargar datos</button></figure>
+      <figure class="cat-estado"><figcaption>cargando (pruébalo)</figcaption><button class="sc-boton sc-boton--secundario" type="button" data-demo="cargando">Descargar datos</button></figure>
+      <figure class="cat-estado"><figcaption>deshabilitado</figcaption><button class="sc-boton sc-boton--secundario" type="button" disabled>Descargar datos</button></figure>
+    </div>
+    <div class="cat-estados" style="margin-top: var(--e-4)">
+      <figure class="cat-estado"><figcaption>texto</figcaption><button class="sc-boton sc-boton--texto" type="button" data-codigo>Copiar enlace</button></figure>
+      <figure class="cat-estado"><figcaption>cursor encima</figcaption><button class="sc-boton sc-boton--texto" type="button" data-estado="hover">Copiar enlace</button></figure>
+      <figure class="cat-estado"><figcaption>solo ícono</figcaption><button class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar" data-codigo><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></figure>
+      <figure class="cat-estado"><figcaption>ícono, encima</figcaption><button class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar" data-estado="hover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></figure>
+      <figure class="cat-estado"><figcaption>compacto</figcaption><button class="sc-boton sc-boton--secundario sc-boton--compacto" type="button" data-codigo>Reintentar descarga</button></figure>
+    </div>
+  </template>
+
+  <template data-id="chip" data-titulo="Chip" data-clase="sc-chip" data-nota="De acción con aria-pressed (ciudades) o de opción con un radio dentro (variables). 40 px de alto con ratón y 44 px con dedo.">
+    <div class="cat-estados">
+      <figure class="cat-estado"><figcaption>reposo</figcaption><button class="sc-chip" type="button" aria-pressed="false" data-codigo>Mexicali</button></figure>
+      <figure class="cat-estado"><figcaption>cursor encima</figcaption><button class="sc-chip" type="button" aria-pressed="false" data-estado="hover">Mexicali</button></figure>
+      <figure class="cat-estado"><figcaption>foco</figcaption><button class="sc-chip" type="button" aria-pressed="false" data-estado="foco">Mexicali</button></figure>
+      <figure class="cat-estado"><figcaption>elegido</figcaption><button class="sc-chip" type="button" aria-pressed="true" data-codigo>Hermosillo</button></figure>
+      <figure class="cat-estado"><figcaption>deshabilitado</figcaption><button class="sc-chip" type="button" aria-pressed="false" disabled>Obregón</button></figure>
+    </div>
+    <div class="cat-estados" style="margin-top: var(--e-4)">
+      <figure class="cat-estado"><figcaption>de opción</figcaption>
+        <div class="sc-chips" role="radiogroup" aria-label="Variable" data-codigo>
+          <label class="sc-chip"><input type="radio" name="var" value="t" checked>Temperatura</label>
+          <label class="sc-chip"><input type="radio" name="var" value="ll">Lluvia</label>
+          <label class="sc-chip"><input type="radio" name="var" value="v" disabled>Viento</label>
+        </div>
+      </figure>
+      <figure class="cat-estado"><figcaption>de opción, foco</figcaption><label class="sc-chip" data-estado="foco"><input type="radio" name="var-f">Lluvia</label></figure>
+    </div>
+  </template>
+
+  <template data-id="segmento" data-titulo="Segmento" data-clase="sc-segmento" data-nota="Tira de opciones excluyentes. Flechas para moverse; Inicio y Fin van a la primera y a la última.">
+    <div class="cat-estados cat-estados--columna">
+      <figure class="cat-estado"><figcaption>reposo, con Feb elegido</figcaption>
+        <div class="sc-segmento" role="radiogroup" aria-label="Mes" data-codigo>
+          <label class="sc-segmento__opcion"><input type="radio" name="mes" value="1" aria-label="enero">Ene</label>
+          <label class="sc-segmento__opcion"><input type="radio" name="mes" value="2" aria-label="febrero" checked>Feb</label>
+          <label class="sc-segmento__opcion"><input type="radio" name="mes" value="3" aria-label="marzo">Mar</label>
+          <label class="sc-segmento__opcion"><input type="radio" name="mes" value="4" aria-label="abril">Abr</label>
+          <label class="sc-segmento__opcion"><input type="radio" name="mes" value="5" aria-label="mayo" disabled>May</label>
+        </div>
+      </figure>
+      <figure class="cat-estado"><figcaption>Mar con cursor encima, Abr con foco</figcaption>
+        <div class="sc-segmento" role="radiogroup" aria-label="Mes, estados">
+          <label class="sc-segmento__opcion"><input type="radio" name="mes-e">Ene</label>
+          <label class="sc-segmento__opcion"><input type="radio" name="mes-e" checked>Feb</label>
+          <label class="sc-segmento__opcion" data-estado="hover"><input type="radio" name="mes-e">Mar</label>
+          <label class="sc-segmento__opcion" data-estado="foco"><input type="radio" name="mes-e">Abr</label>
+          <label class="sc-segmento__opcion"><input type="radio" name="mes-e" disabled>May</label>
+        </div>
+      </figure>
+    </div>
+  </template>
+
+  <template data-id="campo" data-titulo="Campo" data-clase="sc-campo" data-nota="Etiqueta siempre visible, ayuda debajo y error debajo enlazado con aria-describedby. Escribe un valor fuera de rango en la longitud para ver el error.">
+    <div class="cat-estados">
+      <figure class="cat-estado"><figcaption>reposo, con ayuda</figcaption>
+        <div class="sc-campo" data-codigo><label class="sc-campo__etiqueta" for="lat">Latitud</label><input class="sc-campo__control" id="lat" type="number" step="0.01" value="29.07" aria-describedby="lat-ayuda"><p class="sc-campo__ayuda" id="lat-ayuda">Entre −90 y 90.</p></div>
+      </figure>
+      <figure class="cat-estado"><figcaption>cursor encima</figcaption>
+        <div class="sc-campo"><label class="sc-campo__etiqueta" for="lat-h">Latitud</label><input class="sc-campo__control" id="lat-h" type="number" value="29.07" data-estado="hover"></div>
+      </figure>
+      <figure class="cat-estado"><figcaption>foco</figcaption>
+        <div class="sc-campo"><label class="sc-campo__etiqueta" for="lat-f">Latitud</label><input class="sc-campo__control" id="lat-f" type="number" value="29.07" data-estado="foco"></div>
+      </figure>
+      <figure class="cat-estado"><figcaption>con error (pruébalo)</figcaption>
+        <div class="sc-campo" data-codigo><label class="sc-campo__etiqueta" for="lon">Longitud</label><input class="sc-campo__control" id="lon" type="number" value="-300" data-demo="rango" aria-invalid="true" aria-describedby="lon-error"><p class="sc-campo__error" id="lon-error">Escribe un valor entre −180 y 180.</p></div>
+      </figure>
+      <figure class="cat-estado"><figcaption>selector</figcaption>
+        <div class="sc-campo" data-codigo><label class="sc-campo__etiqueta" for="var-sel">Variable</label><select class="sc-campo__control" id="var-sel"><option>Temperatura máxima</option><option>Lluvia</option></select></div>
+      </figure>
+      <figure class="cat-estado"><figcaption>deshabilitado</figcaption>
+        <div class="sc-campo"><label class="sc-campo__etiqueta" for="lat-d">Latitud</label><input class="sc-campo__control" id="lat-d" type="number" value="29.07" disabled></div>
+      </figure>
+    </div>
+  </template>
+
+  <template data-id="insignia" data-titulo="Insignia" data-clase="sc-insignia" data-nota="Siempre forma más texto: el color nunca va solo.">
+    <div class="cat-estados" data-codigo>
+      <span class="sc-insignia sc-insignia--sube">Sube</span>
+      <span class="sc-insignia sc-insignia--baja">Baja</span>
+      <span class="sc-insignia sc-insignia--neutro">Sin cambio claro</span>
+      <span class="sc-insignia sc-insignia--sin-calculo">Sin cálculo</span>
+      <span class="sc-insignia sc-insignia--significativo">Significativo</span>
+      <span class="sc-insignia sc-insignia--exploratorio">Exploratorio</span>
+    </div>
+  </template>
+
+  <template data-id="aviso" data-titulo="Aviso" data-clase="sc-aviso" data-nota="Fijo junto a lo que afecta. El de error lleva role=&quot;alert&quot; y una acción. El de datos de prueba lleva franjas para que se note aunque se imprima en gris.">
+    <div class="cat-estados cat-estados--columna">
+      <div class="sc-aviso" data-codigo><p class="sc-aviso__titulo">Celda aproximada</p><p class="sc-aviso__texto">El recuadro marca la celda de MERRA-2 que contiene el punto.</p></div>
+      <div class="sc-aviso sc-aviso--exito" data-codigo><p class="sc-aviso__texto">Serie descargada: 45 años, de 1981 a 2025.</p></div>
+      <div class="sc-aviso sc-aviso--advertencia" data-codigo><p class="sc-aviso__texto">Faltan tres años en la serie; la tendencia usa los 42 restantes.</p></div>
+      <div class="sc-aviso sc-aviso--error" role="alert" data-codigo><p class="sc-aviso__titulo">No se pudo descargar la serie</p><p class="sc-aviso__texto">NASA POWER no respondió. Revisa tu conexión y vuelve a intentarlo.</p><div class="sc-aviso__acciones"><button class="sc-boton sc-boton--secundario sc-boton--compacto" type="button">Reintentar descarga</button></div></div>
+      <div class="sc-aviso sc-aviso--prueba" data-codigo><p class="sc-aviso__titulo">Datos de prueba</p><p class="sc-aviso__texto">Estos sectores son sintéticos y sirven para probar la herramienta.</p></div>
+    </div>
+  </template>
+
+  <template data-id="toast" data-titulo="Toast" data-clase="sc-toast" data-nota="Confirma algo que ya pasó. Éxito se va a los 5 s y deshacer a los 8 s; el de error no se cierra solo. Se crean con SC.toast().">
+    <div class="cat-estados cat-estados--columna">
+      <div class="sc-toast" data-codigo><p class="sc-toast__texto">Enlace copiado.</p></div>
+      <div class="sc-toast sc-toast--deshacer"><p class="sc-toast__texto">Nombre del sector borrado.</p><button class="sc-boton sc-boton--texto sc-boton--compacto" type="button">Deshacer</button></div>
+      <div class="sc-toast sc-toast--error"><p class="sc-toast__texto">No se pudo copiar el enlace.</p><button class="sc-boton sc-boton--texto sc-boton--compacto" type="button">Cerrar</button></div>
+      <div class="cat-estados">
+        <button class="sc-boton sc-boton--secundario sc-boton--compacto" type="button" data-demo="toast-exito">Probar éxito</button>
+        <button class="sc-boton sc-boton--secundario sc-boton--compacto" type="button" data-demo="toast-deshacer">Probar deshacer</button>
+        <button class="sc-boton sc-boton--secundario sc-boton--compacto" type="button" data-demo="toast-error">Probar error</button>
+      </div>
+    </div>
+    <pre hidden data-codigo-js>SC.toast("Enlace copiado.");
+SC.toast("Nombre del sector borrado.", {tipo: "deshacer", accion: {texto: "Deshacer", alHacer: restaurar}});
+SC.toast("No se pudo copiar el enlace.", {tipo: "error"});</pre>
+  </template>
+
+  <template data-id="cifra" data-titulo="Cifra" data-clase="sc-cifra" data-nota="Etiqueta más valor en fuente mono con números tabulares.">
+    <dl class="sc-cifras" data-codigo>
+      <div class="sc-cifra"><dt>Cambio por década</dt><dd>+0.31 °C</dd></div>
+      <div class="sc-cifra"><dt>Rango del 95 %</dt><dd>+0.22 a +0.40</dd></div>
+      <div class="sc-cifra"><dt>Valor p</dt><dd>&lt; 0.001</dd></div>
+      <div class="sc-cifra"><dt>Años con datos</dt><dd>45</dd></div>
+    </dl>
+  </template>
+
+  <template data-id="tarjeta" data-titulo="Tarjeta" data-clase="sc-tarjeta" data-nota="Contenedor con borde y sin sombra, solo para contenido heterogéneo. Una lista de cosas iguales es una tabla.">
+    <div class="cat-estados cat-estados--columna">
+      <section class="sc-tarjeta" data-codigo><h3 class="sc-tarjeta__titulo">Lo que este dato no puede ver</h3><p>MERRA-2 trabaja en celdas de unas decenas de kilómetros.</p></section>
+      <section class="sc-tarjeta sc-tarjeta--suave" data-codigo><h3 class="sc-tarjeta__titulo">Variante suave</h3><p>Para un bloque secundario dentro del panel.</p></section>
+    </div>
+  </template>
+
+  <template data-id="tabla" data-titulo="Tabla" data-clase="sc-tabla" data-nota="Ordenable con data-sc-ordenable. Encabezados con scope; números a la derecha en mono. En celular, con sc-tabla--tarjetas, cada fila es una tarjeta. Prueba a ordenar.">
+    <div class="sc-tabla-marco" data-codigo>
+      <table class="sc-tabla sc-tabla--tarjetas" data-sc-ordenable>
+        <caption>Sectores de Hermosillo, julio</caption>
+        <thead><tr>
+          <th scope="col"><button class="sc-tabla__orden" type="button">Sector</button></th>
+          <th scope="col" class="sc-num" aria-sort="descending"><button class="sc-tabla__orden" type="button">Superficie °C</button></th>
+          <th scope="col" class="sc-num"><button class="sc-tabla__orden" type="button">Verdor</button></th>
+          <th scope="col">Tendencia</th>
+        </tr></thead>
+        <tbody>
+          <tr><th scope="row">Centro</th><td class="sc-num" data-etiqueta="Superficie °C">48.2</td><td class="sc-num" data-etiqueta="Verdor">0.12</td><td data-etiqueta="Tendencia"><span class="sc-insignia sc-insignia--sube">Sube</span></td></tr>
+          <tr aria-current="true"><th scope="row">Pitic</th><td class="sc-num" data-etiqueta="Superficie °C">44.9</td><td class="sc-num" data-etiqueta="Verdor">0.31</td><td data-etiqueta="Tendencia"><span class="sc-insignia sc-insignia--neutro">Sin cambio claro</span></td></tr>
+          <tr><th scope="row">Villa de Seris</th><td class="sc-num" data-etiqueta="Superficie °C">41.7</td><td class="sc-num" data-etiqueta="Verdor">0.44</td><td data-etiqueta="Tendencia"><span class="sc-insignia sc-insignia--baja">Baja</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </template>
+
+  <template data-id="hoja" data-titulo="Hoja" data-clase="sc-hoja" data-nota="Panel lateral en escritorio y hoja inferior en celular. Atrapa el foco, cierra con Escape o tocando el velo, y devuelve el foco al botón que la abrió.">
+    <div class="cat-estados">
+      <button class="sc-boton sc-boton--secundario" type="button" data-sc-abre="hoja-demo" data-codigo>Abrir expediente</button>
+    </div>
+    <dialog class="sc-hoja" id="hoja-demo" aria-labelledby="hoja-demo-t" data-codigo>
+      <header class="sc-hoja__cabeza"><h2 class="sc-hoja__titulo" id="hoja-demo-t">Sector Pitic</h2><button class="sc-boton sc-boton--icono" type="button" aria-label="Cerrar" data-sc-cierra><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+      <div class="sc-hoja__cuerpo"><p>Aquí va el expediente del sector: lectura en lenguaje llano arriba y las secciones con detalle debajo.</p></div>
+      <footer class="sc-hoja__pie"><button class="sc-boton sc-boton--secundario" type="button" data-sc-cierra>Cerrar</button></footer>
+    </dialog>
+  </template>
+
+  <template data-id="dialogo" data-titulo="Diálogo" data-clase="sc-dialogo" data-nota="Solo para confirmar algo que no se puede deshacer fácil. Título con verbo y objeto; el foco inicial va en Cancelar. Se crea con SC.confirmar() o se escribe a mano.">
+    <div class="cat-estados">
+      <button class="sc-boton sc-boton--secundario" type="button" data-sc-abre="dialogo-demo" data-codigo>Borrar nombre del sector</button>
+      <button class="sc-boton sc-boton--texto" type="button" data-demo="confirmar">Probar SC.confirmar()</button>
+    </div>
+    <dialog class="sc-dialogo" id="dialogo-demo" aria-labelledby="dialogo-demo-t" aria-describedby="dialogo-demo-d" data-codigo>
+      <h2 class="sc-dialogo__titulo" id="dialogo-demo-t">¿Borrar el nombre del sector?</h2>
+      <p class="sc-dialogo__texto" id="dialogo-demo-d">Volverá a llamarse por su número.</p>
+      <div class="sc-dialogo__acciones"><button class="sc-boton sc-boton--primario" type="button" data-sc-cierra>Borrar nombre</button><button class="sc-boton sc-boton--secundario" type="button" data-sc-cierra autofocus>Cancelar</button></div>
+    </dialog>
+  </template>
+
+  <template data-id="esqueleto" data-titulo="Esqueleto" data-clase="sc-esqueleto" data-nota="Tiene la forma de lo que viene. El contenedor lleva aria-busy; el esqueleto, aria-hidden. Nunca un giro suelto para una sección.">
+    <div aria-busy="true" data-codigo>
+      <span class="sc-esqueleto sc-esqueleto--titulo" aria-hidden="true"></span>
+      <span class="sc-esqueleto sc-esqueleto--linea" aria-hidden="true"></span>
+      <span class="sc-esqueleto sc-esqueleto--linea" aria-hidden="true"></span>
+      <span class="sc-esqueleto sc-esqueleto--grafica" aria-hidden="true"></span>
+    </div>
+  </template>
+
+  <template data-id="vacio" data-titulo="Vacío" data-clase="sc-vacio" data-nota="Dice qué falta y qué hacer, con o sin acción.">
+    <div class="cat-estados cat-estados--columna">
+      <div class="sc-vacio" data-codigo><p class="sc-vacio__titulo">Aún no eliges un lugar</p><p class="sc-vacio__texto">Haz clic en el globo o elige una ciudad de ejemplo para ver su tendencia.</p><button class="sc-boton sc-boton--secundario" type="button">Usar mi ubicación</button></div>
+      <div class="sc-vacio"><p class="sc-vacio__titulo">Sin datos para este punto</p><p class="sc-vacio__texto">MERRA-2 no tiene valores sobre el mar abierto en esta variable. Elige un punto en tierra.</p></div>
+    </div>
+  </template>
+
+  <template data-id="leyenda" data-titulo="Leyenda" data-clase="sc-leyenda" data-nota="La muestra es la misma que el dibujo: trazo, relleno, patrón o punto. El color va en --sc-color con un token.">
+    <ul class="sc-leyenda" data-codigo>
+      <li><span class="sc-muestra sc-muestra--punto" style="--sc-color: var(--graf-punto)"></span>Valor de cada año</li>
+      <li><span class="sc-muestra sc-muestra--trazo" style="--sc-color: var(--graf-tendencia)"></span>Tendencia</li>
+      <li><span class="sc-muestra sc-muestra--relleno" style="--sc-color: var(--graf-banda)"></span>Rango del 95 %</li>
+      <li><span class="sc-muestra sc-muestra--discontinuo" style="--sc-color: var(--graf-eje)"></span>Promedio</li>
+      <li><span class="sc-muestra sc-muestra--patron" style="--sc-color: var(--aviso)"></span>Datos de prueba</li>
+      <li><span class="sc-muestra sc-muestra--celda"></span>Celda MERRA-2</li>
+    </ul>
+  </template>
+
+  <template data-id="grafica" data-titulo="Gráfica" data-clase="sc-grafica" data-nota="Base común: ejes y rejilla iguales, punto enfocable con teclado y valor al pasar. El dibujo completo lo hace compartido/serie-anual.js (tarea A12).">
+    <figure class="sc-grafica" data-codigo>
+      <svg viewBox="0 0 320 120" role="img" aria-label="Serie anual de ejemplo con tendencia que sube">
+        <line class="sc-g-rejilla" x1="30" x2="315" y1="20" y2="20"/><line class="sc-g-rejilla" x1="30" x2="315" y1="55" y2="55"/><line class="sc-g-rejilla" x1="30" x2="315" y1="90" y2="90"/>
+        <line class="sc-g-eje" x1="30" x2="315" y1="105" y2="105"/>
+        <text x="0" y="24">36</text><text x="0" y="59">35</text><text x="0" y="94">34</text>
+        <polygon class="sc-g-banda" points="35,92 310,40 310,22 35,82"/>
+        <polyline class="sc-g-serie" points="35,90 70,80 105,86 140,70 175,74 210,58 245,62 280,44 310,36"/>
+        <line class="sc-g-tendencia" x1="35" y1="88" x2="310" y2="32"/>
+        <g><circle class="sc-g-punto" cx="35" cy="90" r="3.5" tabindex="0"/><circle class="sc-g-punto" cx="70" cy="80" r="3.5" tabindex="0"/><circle class="sc-g-punto" cx="105" cy="86" r="3.5" tabindex="0"/><circle class="sc-g-punto" cx="140" cy="70" r="3.5" tabindex="0"/><circle class="sc-g-punto" cx="175" cy="74" r="3.5" tabindex="0" aria-current="true"/><circle class="sc-g-punto" cx="210" cy="58" r="3.5" tabindex="0"/><circle class="sc-g-punto" cx="245" cy="62" r="3.5" tabindex="0"/><circle class="sc-g-punto" cx="280" cy="44" r="3.5" tabindex="0"/><circle class="sc-g-punto" cx="310" cy="36" r="3.5" tabindex="0"/></g>
+      </svg>
+      <figcaption class="sc-grafica__pie"><ul class="sc-leyenda"><li><span class="sc-muestra sc-muestra--punto" style="--sc-color: var(--graf-punto)"></span>Cada año</li><li><span class="sc-muestra sc-muestra--trazo" style="--sc-color: var(--graf-tendencia)"></span>Tendencia</li></ul><button class="sc-boton sc-boton--texto sc-boton--compacto" type="button">Ver datos en tabla</button></figcaption>
+    </figure>
+  </template>
+
+  <template data-id="barra" data-titulo="Barra" data-clase="sc-barra" data-nota="Se escribe &lt;sc-barra raiz=&quot;../&quot; actual=&quot;via-a&quot; contenido=&quot;resultado&quot;&gt; con un enlace a la portada dentro como alternativa sin JavaScript. Pone primero el enlace Saltar al contenido.">
+    <header class="sc-barra">
+      <a class="sc-barra__marca" href="../"><span class="sc-barra__sol" aria-hidden="true"></span>SunCity</a>
+      <nav aria-label="Secciones, ejemplo"><ul class="sc-barra__nav"><li><a href="../via-a/" aria-current="page">Región</a></li><li><a href="../via-b/">Hermosillo</a></li><li><a href="../metodo/">Método</a></li></ul></nav>
+    </header>
+    <pre hidden data-codigo-js>&lt;sc-barra raiz="../" actual="via-a" contenido="resultado"&gt;&lt;a href="../"&gt;SunCity&lt;/a&gt;&lt;/sc-barra&gt;</pre>
+  </template>
+
+  <template data-id="pie" data-titulo="Pie" data-clase="sc-pie" data-nota="Fuentes, versión de los datos y versión del software. Se escribe &lt;sc-pie raiz=&quot;../&quot; datos=&quot;…&quot; software=&quot;…&quot;&gt;; el de esta página es uno real.">
+    <footer class="sc-pie">
+      <p>Datos: NASA POWER (MERRA-2), MODIS y ECOSTRESS. <a href="../metodo/">Método, fuentes y límites</a>.</p>
+      <p class="sc-pie__versiones"><span>Datos: NASA POWER 2025</span><span>Software: 1.0.0</span></p>
+    </footer>
+    <pre hidden data-codigo-js>&lt;sc-pie raiz="../" datos="NASA POWER 2025" software="1.0.0"&gt;&lt;/sc-pie&gt;</pre>
+  </template>
+
+  <template data-id="migas" data-titulo="Migas" data-clase="sc-migas" data-nota="Solo donde hay tres niveles o más.">
+    <nav class="sc-migas" aria-label="Ruta" data-codigo><ol><li><a href="../">Inicio</a></li><li><a href="../via-b/">Hermosillo</a></li><li aria-current="page">Sector Pitic</li></ol></nav>
+  </template>
+
+  <script>
+    (function () {
+      "use strict";
+      var secciones = document.getElementById("secciones");
+      var indice = document.getElementById("indice");
+
+      // 1. Estados fijos: copia cada regla de componentes.css con :hover, :focus-visible o :active
+      //    cambiando la pseudoclase por [data-estado~="…"]. Así el catálogo nunca se aparta del CSS real.
+      var CAMBIOS = [[/:hover/g, '[data-estado~="hover"]'], [/:focus-visible/g, '[data-estado~="foco"]'], [/:active/g, '[data-estado~="presionado"]']];
+      function copiar(reglas, destino) {
+        Array.prototype.forEach.call(reglas, function (r) {
+          if (r.cssRules && r.media) {
+            var dentro = [];
+            copiar(r.cssRules, dentro);
+            if (dentro.length) destino.push("@media " + r.media.mediaText + " {" + dentro.join("\n") + "}");
+          } else if (r.selectorText && /:hover|:focus-visible|:active/.test(r.selectorText)) {
+            var sel = r.selectorText;
+            CAMBIOS.forEach(function (c) { sel = sel.replace(c[0], c[1]); });
+            destino.push(sel + " {" + r.style.cssText + "}");
+          }
+        });
+      }
+      var hoja = Array.prototype.find.call(document.styleSheets, function (s) { return /componentes\.css$/.test(s.href || ""); });
+      if (hoja) {
+        var reglas = [];
+        copiar(hoja.cssRules, reglas);
+        var estilo = document.createElement("style");
+        estilo.textContent = reglas.join("\n");
+        document.head.appendChild(estilo);
+      }
+
+      // 2. Código a mostrar: los elementos con data-codigo, sin los atributos del catálogo
+      function codigo(t) {
+        var trozos = [];
+        Array.prototype.forEach.call(t.content.querySelectorAll("[data-codigo]"), function (el) {
+          var c = el.cloneNode(true);
+          [c].concat(Array.prototype.slice.call(c.querySelectorAll("*"))).forEach(function (e) {
+            e.removeAttribute("data-codigo"); e.removeAttribute("data-estado"); e.removeAttribute("data-demo");
+          });
+          trozos.push(c.outerHTML.replace(/=""/g, ""));
+        });
+        Array.prototype.forEach.call(t.content.querySelectorAll("[data-codigo-js]"), function (el) { trozos.push(el.textContent); });
+        return trozos.join("\n\n");
+      }
+
+      // 3. Cada plantilla se pinta dos veces, papel y noche, con ids y nombres únicos
+      function sufijar(raiz, s) {
+        ["id", "name", "for", "data-sc-abre"].forEach(function (a) {
+          raiz.querySelectorAll("[" + a + "]").forEach(function (e) { e.setAttribute(a, e.getAttribute(a) + s); });
+        });
+        ["aria-describedby", "aria-labelledby"].forEach(function (a) {
+          raiz.querySelectorAll("[" + a + "]").forEach(function (e) {
+            e.setAttribute(a, e.getAttribute(a).split(/\s+/).map(function (x) { return x + s; }).join(" "));
+          });
+        });
+        // El estado forzado de un chip o segmento vive en su radio
+        raiz.querySelectorAll("[data-estado]").forEach(function (e) {
+          e.querySelectorAll("input").forEach(function (i) { i.setAttribute("data-estado", e.getAttribute("data-estado")); });
+        });
+        raiz.querySelectorAll("[data-estado], [data-estado] *").forEach(function (e) { e.setAttribute("tabindex", "-1"); e.setAttribute("aria-hidden", "true"); });
+      }
+
+      Array.prototype.forEach.call(document.querySelectorAll("template[data-id]"), function (t) {
+        var id = t.dataset.id;
+        var sec = document.createElement("section");
+        sec.className = "cat-sec"; sec.id = id;
+        sec.setAttribute("aria-labelledby", id + "-t");
+        var h = document.createElement("h2"); h.id = id + "-t";
+        h.textContent = t.dataset.titulo;
+        var cl = document.createElement("code"); cl.textContent = t.dataset.clase; h.appendChild(cl);
+        var p = document.createElement("p"); p.textContent = t.dataset.nota;
+        var temas = document.createElement("div"); temas.className = "cat-temas";
+        [["tema-papel", "Papel"], ["tema-noche", "Noche"]].forEach(function (par, i) {
+          var caja = document.createElement("div");
+          caja.className = "cat-tema " + par[0];
+          caja.dataset.nombre = par[1];
+          var c = t.content.cloneNode(true);
+          c.querySelectorAll("[data-codigo-js]").forEach(function (e) { e.remove(); });
+          caja.appendChild(c);
+          sufijar(caja, i ? "-noche" : "");
+          // Un diálogo hereda el tema de su caja aunque se muestre en la capa superior
+          caja.querySelectorAll("dialog").forEach(function (d) { d.classList.add(par[0]); });
+          temas.appendChild(caja);
+        });
+        var det = document.createElement("details"); det.className = "cat-codigo";
+        var sum = document.createElement("summary"); sum.textContent = "Código";
+        var pre = document.createElement("pre"); var co = document.createElement("code");
+        co.textContent = codigo(t); pre.appendChild(co);
+        det.appendChild(sum); det.appendChild(pre);
+        sec.appendChild(h); sec.appendChild(p); sec.appendChild(temas); sec.appendChild(det);
+        secciones.appendChild(sec);
+
+        var li = document.createElement("li"), a = document.createElement("a");
+        a.href = "#" + id; a.textContent = t.dataset.titulo; li.appendChild(a); indice.appendChild(li);
+      });
+
+      // 4. Demostraciones
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-demo]");
+        if (!b || !window.SC) return;
+        var d = b.dataset.demo;
+        if (d === "cargando") { SC.cargando(b, true); setTimeout(function () { SC.cargando(b, false); }, 2000); }
+        if (d === "toast-exito") SC.toast("Enlace copiado.");
+        if (d === "toast-deshacer") SC.toast("Nombre del sector borrado.", { tipo: "deshacer", accion: { texto: "Deshacer", alHacer: function () { SC.toast("Nombre restaurado."); } } });
+        if (d === "toast-error") SC.toast("No se pudo copiar el enlace.", { tipo: "error" });
+        if (d === "confirmar") SC.confirmar({ titulo: "¿Borrar el nombre del sector?", texto: "Volverá a llamarse por su número.", aceptar: "Borrar nombre" })
+          .then(function (si) { SC.toast(si ? "Nombre borrado." : "No se borró nada."); });
+      });
+      document.addEventListener("input", function (e) {
+        if (e.target.dataset.demo !== "rango" || !window.SC) return;
+        var v = parseFloat(e.target.value);
+        SC.errorCampo(e.target, isNaN(v) || v < -180 || v > 180 ? "Escribe un valor entre −180 y 180." : null);
+      });
+    })();
+  </script>
+</body>
+</html>
