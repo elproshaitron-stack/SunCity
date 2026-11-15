@@ -201,7 +201,7 @@ Vía B:
 - [ ] **C13 · M** Corrida con datos observados y pruebas de aceptación sobre `datos/reales/`. *Depende:* D15 cerrada y la exportación disponible.
 - [x] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13. Calculada sobre el export de GIBS con los polígonos esquemáticos; `procesar.py` la rehace cuando cierre D15.
 - [x] **B11 · C** El aviso de datos de prueba aparece solo con `datos/prueba/`. *Depende:* C13. *Verificado por Claude:* `datosDePrueba` sale de una expresión sobre `RUTA_DATOS`; con `datos/reales/` queda la advertencia de polígonos esquemáticos, no la de prueba.
-- [ ] **C15 · M** Publicación desde `main` con página 404 y caché correcta. *Depende:* C2, A6.
+- [ ] **C15 · M** Publicación desde `main` con página 404 y caché correcta. *Depende:* C2, A6. *Avance:* listo para publicar: `_headers` con la política de seguridad, `frame-ancestors` y la caché, y `docs/PUBLICAR.md`. Falta el despliegue en sí (Navarrete) y poner la dirección completa en `og:image`.
 
 ### Fase 6. Cierre
 
