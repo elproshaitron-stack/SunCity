@@ -1,0 +1,211 @@
+{
+  "esquema": 1,
+  "descripcion": "Recursos locales C3; hashes de cada archivo salvo este manifiesto",
+  "archivos": [
+    {
+      "ruta": "maplibre-gl-5.24.1/maplibre-gl.js",
+      "sha256": "a9c9e2aa36d4d5b63b131f27c1272f1a28883eeecc0eddd1e0dbfae4033bc7c9",
+      "bytes": 1058059,
+      "origen": "https://registry.npmjs.org/maplibre-gl/-/maplibre-gl-5.24.1.tgz",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "miembro": "package/dist/maplibre-gl.js",
+      "version": "5.24.1",
+      "licencia": "BSD-3-Clause",
+      "integridad_paquete": "sha512-HyiYBwtsbk3L1n1EPLJHWqdoyMiF80n7tEYXFZyu2m1TjvaNx6KMLiFeDdmszt1/mq2zvsR1TJuX/NMu5BonXQ=="
+    },
+    {
+      "ruta": "maplibre-gl-5.24.1/maplibre-gl.css",
+      "sha256": "ab1e70d59ec40465bae7e7030da2f3ccf28133fd502e62bd598eefbadfd7a732",
+      "bytes": 70024,
+      "origen": "https://registry.npmjs.org/maplibre-gl/-/maplibre-gl-5.24.1.tgz",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "miembro": "package/dist/maplibre-gl.css",
+      "version": "5.24.1",
+      "licencia": "BSD-3-Clause",
+      "integridad_paquete": "sha512-HyiYBwtsbk3L1n1EPLJHWqdoyMiF80n7tEYXFZyu2m1TjvaNx6KMLiFeDdmszt1/mq2zvsR1TJuX/NMu5BonXQ=="
+    },
+    {
+      "ruta": "maplibre-gl-5.24.1/LICENSE.txt",
+      "sha256": "ee5fc05a0677eaf69601d2c7db0d9ecd6cc27c3abc1d0733bc9ed34707cf8ef2",
+      "bytes": 5984,
+      "origen": "https://registry.npmjs.org/maplibre-gl/-/maplibre-gl-5.24.1.tgz",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "miembro": "package/LICENSE.txt",
+      "version": "5.24.1",
+      "licencia": "BSD-3-Clause",
+      "integridad_paquete": "sha512-HyiYBwtsbk3L1n1EPLJHWqdoyMiF80n7tEYXFZyu2m1TjvaNx6KMLiFeDdmszt1/mq2zvsR1TJuX/NMu5BonXQ=="
+    },
+    {
+      "ruta": "fuentes/fraunces-500-latin-ext.woff2",
+      "sha256": "a2930b27d13a228bd9ab6a49269b5f800237892ad560cb9dd7fab01b1620f88e",
+      "bytes": 59388,
+      "origen": "https://fonts.gstatic.com/s/fraunces/v38/6NU78FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0KxCFTeO-U.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "Fraunces",
+      "version_google_fonts": "v38",
+      "subconjunto": "latin-ext",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes/fraunces-500-latin.woff2",
+      "sha256": "7234ed860a9cc83045413c4faee63c960a8f2d1917adcf728119307d56e0d783",
+      "bytes": 67304,
+      "origen": "https://fonts.gstatic.com/s/fraunces/v38/6NU78FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0KxC9TeA.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "Fraunces",
+      "version_google_fonts": "v38",
+      "subconjunto": "latin",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes/hanken-grotesk-400-latin-ext.woff2",
+      "sha256": "768af2923e0ab1549f1dfba0a5c8ea749c4c01f01d8e77ffaf7fcd12f57a0a24",
+      "bytes": 19588,
+      "origen": "https://fonts.gstatic.com/s/hankengrotesk/v12/ieVn2YZDLWuGJpnzaiwFXS9tYtpT59CjCQ.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "Hanken Grotesk",
+      "version_google_fonts": "v12",
+      "subconjunto": "latin-ext",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes/hanken-grotesk-400-latin.woff2",
+      "sha256": "e9201eddf1d41d0b62253295d869ce3cf65768f7102b797f02c7f8c876b4a9d5",
+      "bytes": 34704,
+      "origen": "https://fonts.gstatic.com/s/hankengrotesk/v12/ieVn2YZDLWuGJpnzaiwFXS9tYtpd59A.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "Hanken Grotesk",
+      "version_google_fonts": "v12",
+      "subconjunto": "latin",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes/ibm-plex-mono-400-latin-ext.woff2",
+      "sha256": "7ba7a2b0f611cda114878d9412ed356481ee5232c7b188ac2fad4d01dd6c4263",
+      "bytes": 13356,
+      "origen": "https://fonts.gstatic.com/s/ibmplexmono/v23/-F63fjptAgt5VM-kVkqdyU8n1iEq129k.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "IBM Plex Mono",
+      "version_google_fonts": "v23",
+      "subconjunto": "latin-ext",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes/ibm-plex-mono-400-latin.woff2",
+      "sha256": "7ced53420784c93cecccb7c27237594f0e41e5a7990581565f0aef8eda9e9d2f",
+      "bytes": 14648,
+      "origen": "https://fonts.gstatic.com/s/ibmplexmono/v23/-F63fjptAgt5VM-kVkqdyU8n1i8q1w.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "IBM Plex Mono",
+      "version_google_fonts": "v23",
+      "subconjunto": "latin",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes/ibm-plex-mono-500-latin-ext.woff2",
+      "sha256": "18f641271b1393a07e1cc09e3528b1abcf4eb7294b454c8a3561d1455abb12c6",
+      "bytes": 13400,
+      "origen": "https://fonts.gstatic.com/s/ibmplexmono/v23/-F6qfjptAgt5VM-kVkqdyU8n3twJwl5FgtIU.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "IBM Plex Mono",
+      "version_google_fonts": "v23",
+      "subconjunto": "latin-ext",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes/ibm-plex-mono-500-latin.woff2",
+      "sha256": "6e618344335cc436ffd25deba4f4cb5a60ca6c3a4832e67f236ca43922f74eea",
+      "bytes": 14904,
+      "origen": "https://fonts.gstatic.com/s/ibmplexmono/v23/-F6qfjptAgt5VM-kVkqdyU8n3twJwlBFgg.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "IBM Plex Mono",
+      "version_google_fonts": "v23",
+      "subconjunto": "latin",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes/ibm-plex-mono-600-latin-ext.woff2",
+      "sha256": "9203938fd230cf46d99e63f962b78fcdbe42dddf0937b64c69cb2c693916dc10",
+      "bytes": 14320,
+      "origen": "https://fonts.gstatic.com/s/ibmplexmono/v23/-F6qfjptAgt5VM-kVkqdyU8n3vAOwl5FgtIU.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "IBM Plex Mono",
+      "version_google_fonts": "v23",
+      "subconjunto": "latin-ext",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes/ibm-plex-mono-600-latin.woff2",
+      "sha256": "cecb8f0bc58b996a828bc0a23e2814e4acec33f0f531adf565c0248e242061e1",
+      "bytes": 15588,
+      "origen": "https://fonts.gstatic.com/s/ibmplexmono/v23/-F6qfjptAgt5VM-kVkqdyU8n3vAOwlBFgg.woff2",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "IBM Plex Mono",
+      "version_google_fonts": "v23",
+      "subconjunto": "latin",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "fuentes.css",
+      "sha256": "ad8311d3340fd742533db043e6710204b319f3dea5b3b8104eccfea3fb4f2c94",
+      "bytes": 7171,
+      "origen": "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "transformacion": "Solo latin/latin-ext; URL reescritas a archivos locales; binarios sin modificar",
+      "agente_usuario": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    },
+    {
+      "ruta": "licencias/fraunces-OFL.txt",
+      "sha256": "bdf4c22802eaf804f998195871c6b8938aac2ac14b2d78a8bd66a6f1eced833b",
+      "bytes": 4391,
+      "origen": "https://raw.githubusercontent.com/google/fonts/main/ofl/fraunces/OFL.txt",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "Fraunces",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "licencias/hankengrotesk-OFL.txt",
+      "sha256": "e02ccb89a86839b22feff7872ff5cc355cc0f58318d29eee20e2cf83a612f16d",
+      "bytes": 4402,
+      "origen": "https://raw.githubusercontent.com/google/fonts/main/ofl/hankengrotesk/OFL.txt",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "Hanken Grotesk",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "licencias/ibmplexmono-OFL.txt",
+      "sha256": "7e6b2818edbd8f6a01ae80641cc8f16a51080d08fb4e532be3a0b6f74adb07da",
+      "bytes": 4456,
+      "origen": "https://raw.githubusercontent.com/google/fonts/main/ofl/ibmplexmono/OFL.txt",
+      "descargado_utc": "2026-11-15T16:29:22+00:00",
+      "familia": "IBM Plex Mono",
+      "licencia": "OFL-1.1"
+    },
+    {
+      "ruta": "maplibre-gl-5.24.1/LICENSE-dist.txt",
+      "sha256": "ee5fc05a0677eaf69601d2c7db0d9ecd6cc27c3abc1d0733bc9ed34707cf8ef2",
+      "bytes": 5984,
+      "origen": "https://registry.npmjs.org/maplibre-gl/-/maplibre-gl-5.24.1.tgz",
+      "descargado_utc": "2026-11-15T16:29:41+00:00",
+      "miembro": "package/dist/LICENSE.txt",
+      "version": "5.24.1",
+      "descripcion": "Avisos de licencias de dependencias incluidas en la distribución"
+    },
+    {
+      "ruta": "README.md",
+      "sha256": "a4897849ae8776681a2891254a9e6bfb9727d2e39e1142f20c10b74d17d450fa",
+      "bytes": 4624,
+      "origen": "https://github.com/elproshaitron-stack/SunCity",
+      "generado_utc": "2026-11-15T16:30:54+00:00",
+      "transformacion": "Documentación local de recursos C3"
+    },
+    {
+      "ruta": ".gitattributes",
+      "sha256": "e97602ab9cac70102245345c5ab0fc9830df8b17f1072b188265a662a3a547ae",
+      "bytes": 20,
+      "origen": "https://github.com/elproshaitron-stack/SunCity",
+      "generado_utc": "2026-11-15T16:32:19+00:00",
+      "transformacion": "Preservar bytes vendor en checkout multiplataforma"
+    }
+  ]
+}
