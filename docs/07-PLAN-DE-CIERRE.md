@@ -150,7 +150,7 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 - [x] **A5 · C** `compartido/iconos.svg` y su uso con `<use>`. *Acepta:* no queda un ícono dibujado en línea.
 - [ ] **C1 · M** `verificar.py`: todas las pruebas actuales, más la búsqueda de textos prohibidos y de colores fuera de los tokens. *Acepta:* código 0 en `main`; código 1 con cualquier fallo.
 - [ ] **C2 · C** Integración continua que corre `verificar.py` en cada PR. *Depende:* C1.
-- [ ] **C3 · M** Terceros servidos desde el sitio: MapLibre y las tres fuentes en `compartido/vendor/`, con su archivo de licencias. *Acepta:* cero peticiones a `unpkg.com` y a `fonts.googleapis.com`.
+- [x] **C3 · M** Terceros servidos desde el sitio: MapLibre y las tres fuentes en `compartido/vendor/`, con su archivo de licencias. *Acepta:* cero peticiones a `unpkg.com` y a `fonts.googleapis.com`.
 - [ ] **C4 · C** Registrar en `DECISIONES.md` las decisiones técnicas nuevas: herramientas de prueba solo para desarrollo, terceros servidos localmente y MapLibre en la Vía B.
 
 ### Fase 2. Plataforma
@@ -188,18 +188,18 @@ Vía B:
 
 - [ ] **C7 · M** axe en el catálogo y en cada ruta, dentro de las pruebas de punta a punta. *Acepta:* cero infracciones.
 - [ ] **C8 · M** Presupuestos de Lighthouse en la integración continua, con los umbrales de la sección 1.
-- [ ] **C9 · M** Seguridad: política de seguridad de contenido, el script en línea de `via-a/index.html` pasa a un archivo, y se revisan los nueve usos de `innerHTML`; los que reciben texto de la dirección, de un CSV o de un nombre editable pasan a `textContent`. *Acepta:* una prueba inyecta HTML en un nombre de sector y no se ejecuta.
-- [ ] **C10 · M** Sin red: con los dominios externos bloqueados, cada ruta abre, usa los respaldos y lo dice.
+- [x] **C9 · M** Seguridad: política de seguridad de contenido, el script en línea de `via-a/index.html` pasa a un archivo, y se revisan los nueve usos de `innerHTML`; los que reciben texto de la dirección, de un CSV o de un nombre editable pasan a `textContent`. *Acepta:* una prueba inyecta HTML en un nombre de sector y no se ejecuta.
+- [x] **C10 · M** Sin red: con los dominios externos bloqueados, cada ruta abre, usa los respaldos y lo dice.
 - [x] **A15 · M** Recorrido manual con teclado y lector de pantalla en las cinco rutas; correcciones. *Depende:* A11, B5.
 - [x] **A16 · M** `docs/calidad/9241-110.md` y `docs/calidad/25010.md` llenos, con enlace a la evidencia de cada fila. *Depende:* C7, C8. *Nota:* llenos con lo medido hoy; las filas de compatibilidad y Lighthouse se completan cuando lleguen C5, C7 y C8.
 - [ ] **B10 · M** Revisión de la Vía B en celular real: hoja inferior, alcance del pulgar, objetivos de 44 px. *Depende:* B4.
 
 ### Fase 5. Datos y publicación
 
-- [ ] **C11 · M** `revisar_poligonos.py`: identificadores, tipos, referencias, área mínima y traslapes.
-- [ ] **C12 · M** `metadatos.json` por conjunto de datos: fuente, producto, fecha ISO 8601, versión y completitud. La barra o el pie lo muestran.
+- [x] **C11 · M** `revisar_poligonos.py`: identificadores, tipos, referencias, área mínima y traslapes.
+- [ ] **C12 · M** `metadatos.json` por conjunto de datos: fuente, producto, fecha ISO 8601, versión y completitud. La barra o el pie lo muestran. *Avance:* los tres `metadatos.json` existen (`via-b/datos/reales/`, `via-b/datos/prueba/`, `via-a/datos/`); falta que la interfaz los muestre.
 - [ ] **C13 · M** Corrida con datos observados y pruebas de aceptación sobre `datos/reales/`. *Depende:* D15 cerrada y la exportación disponible.
-- [ ] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13.
+- [x] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13. Calculada sobre el export de GIBS con los polígonos esquemáticos; `procesar.py` la rehace cuando cierre D15.
 - [x] **B11 · C** El aviso de datos de prueba aparece solo con `datos/prueba/`. *Depende:* C13. *Verificado por Claude:* `datosDePrueba` sale de una expresión sobre `RUTA_DATOS`; con `datos/reales/` queda la advertencia de polígonos esquemáticos, no la de prueba.
 - [ ] **C15 · M** Publicación desde `main` con página 404 y caché correcta. *Depende:* C2, A6.
 

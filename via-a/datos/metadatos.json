@@ -1,0 +1,270 @@
+{
+ "esquema_metadatos": "1",
+ "conjunto": "via-a/datos",
+ "naturaleza": "reanálisis y productos satelitales servidos por POWER (respaldo local de la API)",
+ "descripcion": "Copias de NASA POWER que la Vía A usa si la API no responde",
+ "fuente": "NASA POWER, API mensual por punto (power.larc.nasa.gov), comunidad AG",
+ "productos": [
+  {
+   "producto": "POWER Monthly and Annual",
+   "uso": "T2M_MIN, T2M_MAX, T2M, TS, PRECTOTCORR"
+  }
+ ],
+ "version": {
+  "api_power": "v2.10.0",
+  "procesamiento": "via-a/datos/descargar.py"
+ },
+ "fechas": {
+  "descarga_mas_reciente": "2026-11-14T12:22:42-07:00"
+ },
+ "completitud": {
+  "regla": "Un mes falta si POWER devuelve el valor de relleno; un año está completo con sus 12 meses",
+  "por_archivo": {
+   "hermosillo.json": {
+    "PRECTOTCORR": {
+     "unidad": "mm/day",
+     "nombre": "Precipitation Corrected",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    },
+    "T2M": {
+     "unidad": "C",
+     "nombre": "Temperature at 2 Meters",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    },
+    "T2M_MAX": {
+     "unidad": "C",
+     "nombre": "Temperature at 2 Meters Maximum",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    },
+    "T2M_MIN": {
+     "unidad": "C",
+     "nombre": "Temperature at 2 Meters Minimum",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    },
+    "TS": {
+     "unidad": "C",
+     "nombre": "Earth Skin Temperature",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    }
+   },
+   "mexicali.json": {
+    "PRECTOTCORR": {
+     "unidad": "mm/day",
+     "nombre": "Precipitation Corrected",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    },
+    "T2M": {
+     "unidad": "C",
+     "nombre": "Temperature at 2 Meters",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    },
+    "T2M_MAX": {
+     "unidad": "C",
+     "nombre": "Temperature at 2 Meters Maximum",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    },
+    "T2M_MIN": {
+     "unidad": "C",
+     "nombre": "Temperature at 2 Meters Minimum",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    },
+    "TS": {
+     "unidad": "C",
+     "nombre": "Earth Skin Temperature",
+     "anios": {
+      "pedidos": 45,
+      "completos": 45,
+      "rango": [
+       1981,
+       2025
+      ],
+      "incompletos": []
+     },
+     "meses": {
+      "validos": 540,
+      "faltantes": 0,
+      "motivo": "",
+      "lista_faltantes": []
+     },
+     "promedios_anuales": 45
+    }
+   }
+  }
+ },
+ "archivos": [
+  {
+   "archivo": "hermosillo.json",
+   "punto": {
+    "lat": 29.07,
+    "lon": -110.97,
+    "elevacion_m": 165.48
+   },
+   "fechas": {
+    "descarga": "2026-11-14T12:22:42-07:00",
+    "descarga_origen": "fecha del último commit que cambió el archivo; el JSON de POWER no trae fecha de descarga",
+    "periodo_desde": "1981-01-01",
+    "periodo_hasta": "2025-12-31"
+   },
+   "fuentes_power": [
+    "MERRA2",
+    "POWER"
+   ]
+  },
+  {
+   "archivo": "mexicali.json",
+   "punto": {
+    "lat": 32.62,
+    "lon": -115.45,
+    "elevacion_m": 156.89
+   },
+   "fechas": {
+    "descarga": "2026-11-14T12:22:42-07:00",
+    "descarga_origen": "fecha del último commit que cambió el archivo; el JSON de POWER no trae fecha de descarga",
+    "periodo_desde": "1981-01-01",
+    "periodo_hasta": "2025-12-31"
+   },
+   "fuentes_power": [
+    "MERRA2",
+    "POWER"
+   ]
+  }
+ ],
+ "limites": [
+  "Respaldo fijo: no se actualiza solo; se rehace con descargar.py y luego este script"
+ ]
+}

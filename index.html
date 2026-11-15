@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' data: https://power.larc.nasa.gov https://gibs.earthdata.nasa.gov https://tiles.openfreemap.org; worker-src 'self' blob:; child-src blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SunCity · Qué cambia en el clima de tu región</title>
   <meta name="description" content="Mira cuánto cambia por década una variable del clima en cualquier lugar desde 1981, y si el cambio es significativo. Y dentro de Hermosillo, qué sectores se calientan de noche más que su desierto.">
@@ -20,9 +21,7 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Logo de SunCity: un marcador de mapa con el sol, un saguaro y una ciudad al atardecer.">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="compartido/vendor/fuentes/fuentes.css">
   <link rel="stylesheet" href="compartido/tokens.css">
   <link rel="stylesheet" href="compartido/componentes.css">
   <script src="compartido/componentes.js" defer></script>

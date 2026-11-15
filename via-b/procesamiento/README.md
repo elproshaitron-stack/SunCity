@@ -12,6 +12,19 @@ flowchart LR
     R -->|RUTA_DATOS en config.js| I[Interfaz Vía B]
 ```
 
+## Antes de todo: revisar los polígonos
+
+Cuando lleguen los polígonos reales (D15), lo primero es:
+
+```bash
+python via-b/procesamiento/revisar_poligonos.py ruta/a/sectores.geojson
+```
+
+Revisa identificadores únicos, `tipo` (`sector` o `referencia`), que existan `RA` y `RB`, geometría
+válida (anillos cerrados, sin autointersecciones), área geodésica de 9 km² o más por sector (D15) y
+traslapes entre polígonos (compartir un borde no cuenta). Termina con código 0 si todo está bien y 1
+con la lista de problemas. Sin argumento revisa `datos/prueba/sectores.geojson`.
+
 ## Ruta rápida sin cuenta: NASA GIBS (D18)
 
 ```bash
@@ -54,7 +67,11 @@ sin MOD21, sin filtro de bits de calidad, resolución de 0.6 K, sin población, 
 | `procesar.py` | Export de Earth Engine → archivos de la interfaz |
 | `exportar_gibs.py` | Export desde NASA GIBS, sin cuenta (D18). Mismo formato que el de Earth Engine, solo MOD11 |
 | `simular_export.py` | Export **simulado** con las columnas exactas, para probar sin cuenta de Earth Engine |
-| `probar_procesamiento.py` | Prueba de punta a punta: simulación → procesamiento → comprobaciones |
+| `revisar_poligonos.py` | Revisión del GeoJSON antes de procesar (C11) |
+| `potencia.py` | Pendiente mínima detectable con el ruido de cada serie (C14, `05-MODELOS.md` 5.6) |
+| `metadatos.py` | `metadatos.json` de cada conjunto (C12); a mano rehace los de `datos/prueba/` y `via-a/datos/` |
+| `probar_procesamiento.py` | Prueba de punta a punta: simulación → procesamiento → comprobaciones; corre también `probar_poligonos.py` y la prueba de potencia |
+| `probar_poligonos.py` | Prueba de `revisar_poligonos.py` con el GeoJSON de prueba y casos rotos |
 
 ## Qué exporta Earth Engine
 
@@ -82,6 +99,16 @@ Colecciones, bandas y bits verificados en el catálogo de Earth Engine el 14 nov
 | `nivel.csv` | Diferencia nocturna media 2001–2019 por sector y producto disponible | F |
 | `yale.csv` | Diferencia nocturna propia junto a Yale día y noche, 2003-2018 | H |
 | `aire.csv` | LST nocturna media de los sectores junto a `T2M_MIN` de POWER, y correlación en `resumen.json` | G |
+| `resumen.json` | Parámetros, validez por producto con el motivo de cada descarte, primario por sector con `ruido_c` y `pendiente_min_detectable_c_decada`, bloque `potencia` y avisos | B, D |
+| `metadatos.json` | Fuente, productos, versión, fechas ISO 8601 y completitud (años y polígono-años válidos y descartados, con motivo) | |
+
+**Pendiente mínima detectable.** Para cada sector con cálculo, `procesar.py` toma la desviación de los
+residuos de Theil-Sen de la serie primaria como ruido, simula 20 000 series con esos años, esa
+desviación y semilla fija, y busca la pendiente más chica que Mann-Kendall detecta en el 80 % de los
+casos con el umbral FDR más estricto (0.05 entre el número de sectores). Es una cota optimista: el
+semáforo usa además Hamed-Rao y el intervalo (D16). Un sector en gris con pendiente menor que esa cifra
+puede tener tendencia real. `python via-b/procesamiento/potencia.py` reproduce la tabla de
+`05-MODELOS.md`.
 
 Un sector con menos años válidos que el mínimo queda con celdas vacías en `resultados.csv`. La interfaz lo muestra en gris como "sin cálculo".
 
