@@ -12,7 +12,7 @@ python servir.py
 
 Luego abrir <http://localhost:8000/via-a/>. Así carga el componente compartido de gráfica y funciona el enlace a la Vía B. Un enlace con `#lat=29.07&lon=-110.97&var=T2M_MIN&mes=7` abre directo en ese caso (sirve para las demos grabadas).
 
-Si se sirve solo la carpeta `via-a/`, la página usa su gráfica provisional (`js/grafica.js`) y el enlace a la Vía B no abre.
+Si se sirve solo la carpeta `via-a/`, faltan los tokens, los componentes y la gráfica compartida: la página pierde su diseño y el enlace a la Vía B no abre. Siempre se sirve desde la raíz.
 
 ## Archivos
 
@@ -22,7 +22,8 @@ Si se sirve solo la carpeta `via-a/`, la página usa su gráfica provisional (`j
 | `js/tendencia.js` | Theil-Sen + intervalo del 95 % y Mann-Kendall. Réplica de scipy 1.18 y pymannkendall |
 | `js/power.js` | Llamada a POWER, definiciones de las cinco variables y armado de la serie anual |
 | `js/grafica.js` | Gráfica de respaldo, solo si no carga `compartido/serie-anual.js` |
-| `js/app.js` | Flujo de tres preguntas, veredicto, CSV y enlace |
+| `js/app.js` | Flujo de tres preguntas, "Usar mi ubicación", veredicto, estados de carga y error, CSV, enlace e impresión |
+| `js/globo.js` | Globo 3D de MapLibre y la celda aproximada de MERRA-2; el estilo viene de `compartido/mapa-estilo.js` |
 | `datos/descargar.py` | Descarga una vez los JSON de las ciudades de demostración (respaldo sin conexión) |
 | `pruebas/` | Prueba de igualdad JavaScript contra Python |
 
