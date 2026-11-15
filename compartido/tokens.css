@@ -50,7 +50,18 @@
   --brasa-700: #b23a0a;
 
   /* Rojo: errores */
+  --rojo-100: #f7dfe2;
+  --rojo-300: #ff9aa8;
   --rojo-700: #a01b2e;
+
+  /* Estados: verde (éxito), ámbar (advertencia), azul (información y baja) */
+  --verde-300: #8fd3c0;
+  --ambar-100: #f8e7c2;
+  --ambar-300: #f2c46b;
+  --ambar-700: #8a5300;
+  --azul-100: #e1ebf6;
+  --azul-300: #9cc3f0;
+  --azul-700: #1d5a9e;
 
   --blanco: #ffffff;
 
@@ -145,6 +156,28 @@
 
   --error: var(--rojo-700);
 
+  /* Estados de mensajes: color del ícono y del borde (4.5:1 o más sobre la superficie
+     y sobre su fondo) y fondo suave. El texto del mensaje sigue siendo --texto. */
+  --exito: var(--verde-700);
+  --exito-fondo: var(--verde-100);
+  --aviso: var(--ambar-700);
+  --aviso-fondo: var(--ambar-100);
+  --info: var(--azul-700);
+  --info-fondo: var(--azul-100);
+  --error-fondo: var(--rojo-100);
+
+  /* Dirección de una tendencia: siempre acompañada de forma y texto */
+  --estado-sube: var(--brasa-700);
+  --estado-baja: var(--azul-700);
+  --estado-neutro: var(--tinta-600);
+
+  /* Controles: presionado y deshabilitado */
+  --accion-presion: var(--tinta-600);
+  --opacidad-off: .45;
+
+  /* Velo detrás de hojas y diálogos */
+  --velo: rgba(27, 23, 16, .42);
+
   /* Gráficas */
   --graf-serie: var(--verde-gris);
   --graf-punto: var(--verde-900);
@@ -156,6 +189,8 @@
   /* Sombras: solo para lo que flota */
   --sombra-accion: 0 14px 30px -20px rgba(27, 23, 16, .7);
   --sombra-marcador: 0 2px 8px rgba(6, 10, 24, .5);
+  --sombra-1: 0 6px 20px -8px rgba(27, 23, 16, .35);   /* toast */
+  --sombra-2: 0 24px 60px -20px rgba(27, 23, 16, .5);  /* hoja y diálogo */
 }
 
 /* ── 2. Semánticos: tema noche ───────────────────────────────── */
@@ -175,6 +210,30 @@
   --sobre-accion: var(--noche-900);
 
   --foco: var(--brasa-300);
+  --enlace: var(--verde-300);
+
+  --dato: var(--verde-300);
+  --dato-fondo: rgba(143, 211, 192, .14);
+  --dato-borde: rgba(143, 211, 192, .4);
+
+  --error: var(--rojo-300);
+  --error-fondo: rgba(255, 154, 168, .14);
+  --exito: var(--verde-300);
+  --exito-fondo: rgba(143, 211, 192, .14);
+  --aviso: var(--ambar-300);
+  --aviso-fondo: rgba(242, 196, 107, .14);
+  --info: var(--azul-300);
+  --info-fondo: rgba(156, 195, 240, .14);
+
+  --estado-sube: var(--brasa-300);
+  --estado-baja: var(--azul-300);
+  --estado-neutro: var(--luz-300);
+
+  --accion-presion: var(--luz-300);
+  --velo: rgba(6, 10, 24, .6);
+
+  --sombra-1: 0 6px 20px -8px rgba(0, 0, 0, .6);
+  --sombra-2: 0 24px 60px -20px rgba(0, 0, 0, .7);
 
   /* Fondo del escenario: cielo con estrellas sobre la noche */
   --fondo-escenario:

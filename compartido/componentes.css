@@ -1,0 +1,675 @@
+/*
+ * SunCity · Componentes
+ * Todos los componentes de la plataforma, con prefijo sc-. Ver docs/07-PLAN-DE-CIERRE.md, 4.2.
+ * Requiere compartido/tokens.css antes. Solo usa tokens semánticos y de escala: ningún color
+ * escrito a mano. Las únicas medidas fijas son bordes (1 a 4 px) y el tamaño de íconos y muestras.
+ *
+ * Estados de todo componente interactivo:
+ *   reposo · cursor encima (:hover) · foco (:focus-visible) · presionado (:active)
+ *   deshabilitado ([disabled] o [aria-disabled="true"]) y, si aplica,
+ *   cargando ([aria-busy="true"]) · seleccionado (:checked, [aria-pressed], [aria-current])
+ *   · con error ([aria-invalid="true"]).
+ *
+ * Nombres: bloque sc-x, parte sc-x__parte, variante sc-x--variante.
+ * El comportamiento (hoja, diálogo, toast, segmento con flechas, barra y pie) vive en
+ * compartido/componentes.js (tarea A4); aquí solo está la forma de cada estado.
+ */
+
+/* ── Base compartida ──────────────────────────────────────────── */
+
+/* Cada componente mide igual en cualquier página, tenga o no su propio reinicio */
+[class*="sc-"], [class*="sc-"]::before, [class*="sc-"]::after { box-sizing: border-box; }
+
+.sc-foco:focus-visible,
+.sc-boton:focus-visible,
+.sc-chip:focus-visible,
+.sc-chip:has(input:focus-visible),
+.sc-segmento__opcion:has(input:focus-visible),
+.sc-tabla__orden:focus-visible,
+.sc-barra a:focus-visible,
+.sc-migas a:focus-visible,
+.sc-pie a:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}
+
+.sc-solo-lector {
+  position: absolute !important;
+  width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.sc-saltar {
+  position: absolute; left: var(--e-3); top: var(--e-3); z-index: var(--z-saltar);
+  padding: var(--e-2) var(--e-4); border-radius: var(--r-sm);
+  background: var(--accion); color: var(--sobre-accion); font-weight: 600; text-decoration: none;
+  transform: translateY(-200%);
+}
+.sc-saltar:focus { transform: none; outline: 2px solid var(--foco); outline-offset: 2px; }
+
+/* Giro de carga, usado dentro de componentes (nunca suelto para una sección: ver sc-esqueleto) */
+@keyframes sc-gira { to { transform: rotate(360deg); } }
+@keyframes sc-pulso { 50% { opacity: .55; } }
+@keyframes sc-entra { from { opacity: 0; transform: translateY(var(--e-2)); } }
+@keyframes sc-sube { from { transform: translateY(100%); } }
+@keyframes sc-desliza { from { transform: translateX(100%); } }
+
+/* ── sc-boton ─────────────────────────────────────────────────── */
+/* Variantes: --primario (uno por vista), --secundario, --texto, --icono. Tamaño: --compacto.
+   Cargando: aria-busy="true"; conserva ancho y color. Solo ícono: exige aria-label. */
+
+.sc-boton {
+  --sc-tinta: var(--texto);
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e-2);
+  min-height: var(--tactil); padding: 0 var(--e-4);
+  border: 1px solid transparent; border-radius: var(--r-sm);
+  background: transparent; color: var(--sc-tinta);
+  font: inherit; font-weight: 600; line-height: var(--lh-control);
+  text-decoration: none; white-space: nowrap;
+  cursor: pointer; user-select: none;
+  transition: background-color var(--dur) var(--curva), border-color var(--dur) var(--curva),
+              color var(--dur) var(--curva), transform var(--dur) var(--curva);
+}
+.sc-boton svg { flex: none; width: 18px; height: 18px; }
+.sc-boton:active { transform: translateY(1px); }
+
+.sc-boton--primario {
+  --sc-tinta: var(--sobre-accion);
+  background: var(--accion); box-shadow: var(--sombra-accion);
+}
+.sc-boton--primario:hover { background: var(--accion-hover); }
+.sc-boton--primario:active { background: var(--accion-presion); }
+
+.sc-boton--secundario { border-color: var(--borde); }
+.sc-boton--secundario:hover { background: var(--superficie-2); border-color: var(--texto); }
+.sc-boton--secundario:active { background: var(--linea); }
+
+.sc-boton--texto { --sc-tinta: var(--texto-2); padding: 0 var(--e-3); }
+.sc-boton--texto:hover { --sc-tinta: var(--texto); background: var(--superficie-2); }
+.sc-boton--texto:active { background: var(--linea); }
+
+.sc-boton--icono { width: var(--tactil); padding: 0; border-color: var(--borde); }
+.sc-boton--icono:hover { background: var(--superficie-2); border-color: var(--texto); }
+.sc-boton--icono:active { background: var(--linea); }
+
+.sc-boton--compacto { min-height: var(--e-6); padding: 0 var(--e-3); font-size: var(--t-sm); }
+.sc-boton--compacto.sc-boton--icono { width: var(--e-6); padding: 0; }
+.sc-boton--compacto svg { width: 16px; height: 16px; }
+@media (pointer: coarse) {
+  .sc-boton--compacto { min-height: var(--tactil); }
+  .sc-boton--compacto.sc-boton--icono { width: var(--tactil); }
+}
+
+.sc-boton--ancho { width: 100%; }
+
+.sc-boton:disabled,
+.sc-boton[aria-disabled="true"] {
+  opacity: var(--opacidad-off); cursor: not-allowed; transform: none; box-shadow: none;
+}
+.sc-boton--primario:disabled:hover,
+.sc-boton--primario[aria-disabled="true"]:hover { background: var(--accion); }
+.sc-boton--secundario:disabled:hover, .sc-boton--secundario[aria-disabled="true"]:hover,
+.sc-boton--texto:disabled:hover, .sc-boton--texto[aria-disabled="true"]:hover,
+.sc-boton--icono:disabled:hover, .sc-boton--icono[aria-disabled="true"]:hover {
+  background: transparent; border-color: var(--borde);
+}
+.sc-boton--texto:disabled:hover, .sc-boton--texto[aria-disabled="true"]:hover { border-color: transparent; }
+
+/* Cargando: el texto queda en su lugar (mismo ancho) pero invisible; el giro usa la tinta */
+.sc-boton[aria-busy="true"] { color: transparent; cursor: progress; transform: none; }
+.sc-boton[aria-busy="true"] > * { visibility: hidden; }
+.sc-boton[aria-busy="true"]::after {
+  content: ""; position: absolute; inset: 0; margin: auto;
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--sc-tinta); border-right-color: transparent;
+  animation: sc-gira .8s linear infinite;
+}
+
+/* ── sc-chip ──────────────────────────────────────────────────── */
+/* De acción: <button class="sc-chip" aria-pressed="false">.
+   De opción: <label class="sc-chip"><input type="radio">Texto</label>. */
+
+.sc-chips { display: flex; flex-wrap: wrap; gap: var(--e-2); }
+.sc-chip {
+  position: relative;
+  display: inline-flex; align-items: center; gap: var(--e-2);
+  min-height: var(--control); padding: 0 var(--e-4);
+  border: 1px solid var(--borde); border-radius: var(--r-pill);
+  background: transparent; color: var(--texto);
+  font: inherit; font-size: var(--t-sm); font-weight: 600; line-height: var(--lh-control);
+  cursor: pointer; user-select: none;
+  transition: background-color var(--dur) var(--curva), color var(--dur) var(--curva),
+              border-color var(--dur) var(--curva), transform var(--dur) var(--curva);
+}
+.sc-chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: inherit; }
+.sc-chip:hover { background: var(--superficie-2); border-color: var(--texto); }
+.sc-chip:active { transform: translateY(1px); }
+.sc-chip:has(input:checked),
+.sc-chip[aria-pressed="true"] {
+  background: var(--accion); border-color: var(--accion); color: var(--sobre-accion);
+}
+.sc-chip:has(input:checked):hover,
+.sc-chip[aria-pressed="true"]:hover { background: var(--accion-hover); border-color: var(--accion-hover); }
+.sc-chip:has(input:disabled),
+.sc-chip:disabled,
+.sc-chip[aria-disabled="true"] {
+  opacity: var(--opacidad-off); cursor: not-allowed; transform: none;
+}
+.sc-chip:has(input:disabled):hover,
+.sc-chip:disabled:hover,
+.sc-chip[aria-disabled="true"]:hover { background: transparent; border-color: var(--borde); }
+@media (pointer: coarse) { .sc-chip { min-height: var(--tactil); } }
+
+/* ── sc-segmento ──────────────────────────────────────────────── */
+/* Tira de opciones excluyentes. <div class="sc-segmento" role="radiogroup">
+   con <label class="sc-segmento__opcion"><input type="radio" name="…">Ene</label>.
+   Las flechas mueven la selección (nativo del grupo de radios; A4 lo refuerza). */
+
+.sc-segmento {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  border: 1px solid var(--borde); border-radius: var(--r-sm);
+  overflow: hidden;
+}
+.sc-segmento__opcion {
+  position: relative;
+  display: grid; place-items: center;
+  min-height: var(--control); padding: 0 var(--e-2);
+  color: var(--texto-2);
+  font-family: var(--f-dato); font-size: var(--t-xs); font-weight: 500;
+  letter-spacing: .02em; text-transform: uppercase;
+  cursor: pointer; user-select: none;
+  transition: background-color var(--dur) var(--curva), color var(--dur) var(--curva);
+}
+.sc-segmento__opcion + .sc-segmento__opcion { border-left: 1px solid var(--linea); }
+.sc-segmento__opcion input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: inherit; }
+.sc-segmento__opcion:hover { background: var(--superficie-2); color: var(--texto); }
+.sc-segmento__opcion:active { background: var(--linea); }
+.sc-segmento__opcion:has(input:checked) { background: var(--accion); color: var(--sobre-accion); }
+.sc-segmento__opcion:has(input:focus-visible) { outline-offset: -3px; z-index: 1; }
+.sc-segmento__opcion:has(input:disabled) { opacity: var(--opacidad-off); cursor: not-allowed; background: transparent; }
+/* En pantallas angostas la tira se parte en filas */
+.sc-segmento--envuelve { grid-auto-flow: row; grid-template-columns: repeat(var(--sc-columnas, 6), minmax(0, 1fr)); }
+.sc-segmento--envuelve .sc-segmento__opcion { border-top: 1px solid var(--linea); border-left: 1px solid var(--linea); margin: -1px 0 0 -1px; }
+@media (pointer: coarse) { .sc-segmento__opcion { min-height: var(--tactil); } }
+
+/* ── sc-campo ─────────────────────────────────────────────────── */
+/* <div class="sc-campo">
+     <label for="x" class="sc-campo__etiqueta">Latitud</label>
+     <input id="x" class="sc-campo__control" aria-describedby="x-ayuda x-error">
+     <p id="x-ayuda" class="sc-campo__ayuda">…</p>
+     <p id="x-error" class="sc-campo__error" hidden>…</p>
+   </div>
+   Con error: aria-invalid="true" en el control y el párrafo de error visible. */
+
+.sc-campo { display: flex; flex-direction: column; gap: var(--e-1); min-width: 0; }
+.sc-campo__etiqueta {
+  font-size: var(--t-xs); font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--texto-2);
+}
+.sc-campo__control {
+  width: 100%; min-height: var(--tactil); padding: 0 var(--e-3);
+  border: 1px solid var(--borde); border-radius: var(--r-sm);
+  background: var(--superficie-campo); color: var(--texto);
+  font: inherit; font-size: var(--t-base);
+  transition: border-color var(--dur) var(--curva);
+}
+.sc-campo__control::placeholder { color: var(--texto-2); opacity: 1; }
+.sc-campo__control[type="number"],
+.sc-campo__control--dato { font-family: var(--f-dato); font-variant-numeric: tabular-nums; }
+.sc-campo__control:hover { border-color: var(--texto); }
+.sc-campo__control:focus-visible { outline: 2px solid var(--foco); outline-offset: 0; border-color: var(--foco); }
+.sc-campo__control:disabled { opacity: var(--opacidad-off); cursor: not-allowed; }
+.sc-campo__control:disabled:hover { border-color: var(--borde); }
+.sc-campo__control[aria-invalid="true"] { border-color: var(--error); border-width: 2px; padding: 0 calc(var(--e-3) - 1px); }
+select.sc-campo__control {
+  appearance: none; padding-right: var(--e-7);
+  background-image: linear-gradient(45deg, transparent 50%, var(--texto-2) 50%),
+                    linear-gradient(135deg, var(--texto-2) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+textarea.sc-campo__control { min-height: calc(var(--tactil) * 2); padding: var(--e-2) var(--e-3); resize: vertical; }
+.sc-campo__ayuda { margin: 0; font-size: var(--t-sm); color: var(--texto-2); }
+.sc-campo__error {
+  display: flex; align-items: flex-start; gap: var(--e-2);
+  margin: 0; font-size: var(--t-sm); font-weight: 600; color: var(--error);
+}
+/* Forma además del color: un círculo con signo */
+.sc-campo__error::before {
+  content: "!"; flex: none; display: grid; place-items: center;
+  width: 16px; height: 16px; margin-top: 2px; border-radius: 50%;
+  background: var(--error); color: var(--superficie);
+  font-family: var(--f-dato); font-size: var(--t-2xs); font-weight: 700;
+}
+
+/* ── sc-insignia ──────────────────────────────────────────────── */
+/* Variantes: --sube, --baja, --neutro, --sin-calculo, --significativo, --exploratorio.
+   Siempre forma + texto: el color nunca va solo. */
+
+.sc-insignia {
+  --sc-tono: var(--texto-2);
+  display: inline-flex; align-items: center; gap: var(--e-2);
+  padding: 2px var(--e-3) 2px var(--e-2);
+  border: 1px solid currentColor; border-radius: var(--r-pill);
+  color: var(--sc-tono);
+  font-size: var(--t-sm); font-weight: 600; line-height: var(--lh-texto);
+  white-space: nowrap;
+}
+.sc-insignia::before {
+  content: ""; flex: none; width: 10px; height: 10px; background: currentColor;
+}
+.sc-insignia--sube { --sc-tono: var(--estado-sube); }
+.sc-insignia--sube::before { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.sc-insignia--baja { --sc-tono: var(--estado-baja); }
+.sc-insignia--baja::before { clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.sc-insignia--neutro { --sc-tono: var(--estado-neutro); }
+.sc-insignia--neutro::before { height: 2px; }
+.sc-insignia--sin-calculo { --sc-tono: var(--texto-2); border-style: dashed; }
+.sc-insignia--sin-calculo::before { background: transparent; border: 1.5px dashed currentColor; border-radius: 50%; }
+.sc-insignia--significativo {
+  --sc-tono: var(--dato);
+  background: var(--dato-fondo); border-color: var(--dato-borde);
+}
+.sc-insignia--significativo::before { border-radius: 50%; }
+.sc-insignia--exploratorio { --sc-tono: var(--texto-2); border-color: var(--borde); }
+.sc-insignia--exploratorio::before { background: transparent; border: 1.5px solid currentColor; border-radius: 50%; }
+
+/* ── sc-aviso ─────────────────────────────────────────────────── */
+/* Variantes: --info, --exito, --advertencia, --error, --prueba (datos de prueba).
+   Fijo junto a lo que afecta. El de error lleva role="alert" y una acción.
+   <div class="sc-aviso sc-aviso--error" role="alert">
+     <p class="sc-aviso__titulo">No se pudo descargar la serie</p>
+     <p class="sc-aviso__texto">…</p>
+     <div class="sc-aviso__acciones"><button class="sc-boton sc-boton--secundario">Reintentar descarga</button></div>
+   </div> */
+
+.sc-aviso {
+  --sc-tono: var(--info);
+  --sc-fondo: var(--info-fondo);
+  position: relative;
+  display: grid; gap: var(--e-1);
+  padding: var(--e-3) var(--e-4) var(--e-3) calc(var(--e-4) + 20px + var(--e-3));
+  border: 1px solid var(--sc-tono); border-left-width: 4px; border-radius: var(--r-md);
+  background: var(--sc-fondo); color: var(--texto);
+  font-size: var(--t-sm);
+}
+.sc-aviso::before {
+  position: absolute; left: var(--e-4); top: var(--e-3);
+  display: grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--sc-tono); color: var(--superficie);
+  font-family: var(--f-dato); font-size: var(--t-xs); font-weight: 700; line-height: 1;
+  content: "i";
+}
+.sc-aviso__titulo { margin: 0; font-weight: 700; }
+.sc-aviso__texto { margin: 0; max-width: 62ch; }
+.sc-aviso__acciones { display: flex; flex-wrap: wrap; gap: var(--e-2); margin-top: var(--e-2); }
+.sc-aviso--exito { --sc-tono: var(--exito); --sc-fondo: var(--exito-fondo); }
+.sc-aviso--exito::before { content: "✓"; }
+.sc-aviso--advertencia { --sc-tono: var(--aviso); --sc-fondo: var(--aviso-fondo); }
+.sc-aviso--advertencia::before { content: "!"; border-radius: 3px; }
+.sc-aviso--error { --sc-tono: var(--error); --sc-fondo: var(--error-fondo); }
+.sc-aviso--error::before { content: "!"; }
+/* Datos de prueba: franjas, para que se note aunque se imprima en gris */
+.sc-aviso--prueba {
+  --sc-tono: var(--aviso); --sc-fondo: var(--aviso-fondo);
+  background-image: repeating-linear-gradient(-45deg, var(--sc-fondo) 0 10px, var(--superficie) 10px 20px);
+  border-style: dashed; border-left-style: solid;
+}
+.sc-aviso--prueba::before { content: "P"; border-radius: var(--r-sm); }
+
+/* ── sc-toast ─────────────────────────────────────────────────── */
+/* Región: <div class="sc-toasts" aria-live="polite"> (los de error en una con role="alert").
+   Variantes: --exito, --deshacer, --error. El de error no se cierra solo (A4). */
+
+.sc-toasts {
+  position: fixed; left: 50%; bottom: var(--e-5); z-index: var(--z-aviso);
+  display: grid; gap: var(--e-2); justify-items: center;
+  width: min(28rem, calc(100% - 2 * var(--e-4)));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.sc-toast {
+  --sc-tono: var(--exito);
+  display: flex; align-items: center; gap: var(--e-3);
+  width: 100%; min-height: var(--tactil); padding: var(--e-2) var(--e-2) var(--e-2) var(--e-4);
+  border: 1px solid var(--linea); border-left: 4px solid var(--sc-tono); border-radius: var(--r-md);
+  background: var(--superficie); color: var(--texto); box-shadow: var(--sombra-1);
+  font-size: var(--t-sm); font-weight: 600;
+  pointer-events: auto;
+  animation: sc-entra var(--dur) var(--curva) both;
+}
+.sc-toast__texto { flex: 1; margin: 0; }
+.sc-toast--deshacer { --sc-tono: var(--texto-2); }
+.sc-toast--error { --sc-tono: var(--error); }
+.sc-toast[data-saliendo] { opacity: 0; transition: opacity var(--dur) var(--curva); }
+
+/* ── sc-cifra ─────────────────────────────────────────────────── */
+/* <dl class="sc-cifras"><div class="sc-cifra"><dt>Cambio por década</dt><dd>+0.31 °C</dd></div>…</dl> */
+
+.sc-cifras {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  margin: 0; border-top: 1px solid var(--texto);
+}
+.sc-cifra { padding: var(--e-3) var(--e-4) var(--e-3) 0; border-bottom: 1px solid var(--linea); }
+.sc-cifra dt, .sc-cifra__etiqueta {
+  font-size: var(--t-xs); font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--texto-2);
+}
+.sc-cifra dd, .sc-cifra__valor {
+  margin: 2px 0 0;
+  font-family: var(--f-dato); font-size: var(--t-cifra); font-weight: 500;
+  font-variant-numeric: tabular-nums; color: var(--texto);
+}
+.sc-cifra__nota { display: block; margin-top: 2px; font-size: var(--t-xs); color: var(--texto-2); }
+
+/* ── sc-tarjeta ───────────────────────────────────────────────── */
+/* Contenedor con borde, sin sombra. Solo para contenido heterogéneo. */
+
+.sc-tarjeta {
+  padding: var(--e-4) var(--e-5) var(--e-5);
+  border: 1px solid var(--linea); border-radius: var(--r-md);
+  background: var(--superficie);
+}
+.sc-tarjeta--suave { background: var(--superficie-2); }
+.sc-tarjeta__titulo {
+  margin: 0 0 var(--e-2);
+  font-family: var(--f-titulo); font-size: var(--t-xl); font-weight: 600; letter-spacing: -.01em;
+}
+
+/* ── sc-tabla ─────────────────────────────────────────────────── */
+/* <div class="sc-tabla-marco"><table class="sc-tabla">…</table></div>
+   th con scope; números con class="sc-num"; ordenable con <th aria-sort><button class="sc-tabla__orden">.
+   En celular cada fila es una tarjeta: cada td lleva data-etiqueta con el nombre de su columna. */
+
+.sc-tabla-marco { overflow-x: auto; }
+.sc-tabla {
+  width: 100%; border-collapse: collapse;
+  font-size: var(--t-sm); font-variant-numeric: tabular-nums;
+}
+.sc-tabla caption { text-align: left; padding-bottom: var(--e-2); font-weight: 600; }
+.sc-tabla th, .sc-tabla td {
+  padding: var(--e-2) var(--e-3); text-align: left; vertical-align: top;
+  border-bottom: 1px solid var(--linea);
+}
+.sc-tabla thead th {
+  border-bottom: 1px solid var(--texto);
+  font-size: var(--t-xs); font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--texto-2); white-space: nowrap;
+}
+.sc-tabla tbody th { font-weight: 600; }
+.sc-tabla .sc-num { text-align: right; font-family: var(--f-dato); }
+.sc-tabla tbody tr { transition: background-color var(--dur) var(--curva); }
+.sc-tabla tbody tr:hover { background: var(--superficie-2); }
+.sc-tabla tbody tr[aria-selected="true"],
+.sc-tabla tbody tr[aria-current="true"] { background: var(--superficie-2); box-shadow: inset 3px 0 0 var(--accion); }
+
+.sc-tabla__orden {
+  display: inline-flex; align-items: center; gap: var(--e-1);
+  min-height: var(--e-6); margin: calc(-1 * var(--e-1)) calc(-1 * var(--e-2)); padding: 0 var(--e-2);
+  border: 0; border-radius: var(--r-sm); background: transparent;
+  color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;
+}
+.sc-tabla__orden:hover { background: var(--superficie-2); color: var(--texto); }
+.sc-tabla__orden::after { content: "↕"; font-family: var(--f-dato); opacity: .5; }
+.sc-tabla th[aria-sort="ascending"] .sc-tabla__orden::after { content: "↑"; opacity: 1; }
+.sc-tabla th[aria-sort="descending"] .sc-tabla__orden::after { content: "↓"; opacity: 1; }
+.sc-tabla th[aria-sort="ascending"], .sc-tabla th[aria-sort="descending"] { color: var(--texto); }
+.sc-tabla th.sc-num .sc-tabla__orden { flex-direction: row-reverse; }
+
+@media (max-width: 640px) {
+  .sc-tabla--tarjetas thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .sc-tabla--tarjetas, .sc-tabla--tarjetas tbody, .sc-tabla--tarjetas tr { display: block; }
+  .sc-tabla--tarjetas tr {
+    margin-bottom: var(--e-3); padding: var(--e-2) var(--e-3);
+    border: 1px solid var(--linea); border-radius: var(--r-md);
+  }
+  .sc-tabla--tarjetas th, .sc-tabla--tarjetas td {
+    display: flex; justify-content: space-between; gap: var(--e-3);
+    padding: var(--e-1) 0; border: 0; text-align: right;
+  }
+  .sc-tabla--tarjetas tbody th { font-size: var(--t-base); text-align: left; padding-bottom: var(--e-2); }
+  .sc-tabla--tarjetas td::before {
+    content: attr(data-etiqueta); text-align: left;
+    font-family: var(--f-texto); font-size: var(--t-xs); font-weight: 600;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--texto-2);
+  }
+}
+
+/* ── sc-hoja ──────────────────────────────────────────────────── */
+/* Panel lateral en escritorio, hoja inferior en celular. Se usa con <dialog class="sc-hoja">
+   abierto con showModal(): el navegador atrapa el foco, cierra con Escape y A4 devuelve el foco.
+   <dialog class="sc-hoja" aria-labelledby="t">
+     <header class="sc-hoja__cabeza"><h2 id="t">…</h2><button class="sc-boton sc-boton--icono" aria-label="Cerrar">…</button></header>
+     <div class="sc-hoja__cuerpo">…</div>
+   </dialog> */
+
+.sc-hoja {
+  position: fixed; inset: 0 0 0 auto; z-index: var(--z-hoja);
+  width: min(30rem, 100%); max-width: 100%; height: 100%; max-height: 100%;
+  margin: 0; padding: 0;
+  border: 0; border-left: 1px solid var(--linea);
+  background: var(--superficie); color: var(--texto); box-shadow: var(--sombra-2);
+  overflow: hidden;
+}
+.sc-hoja[open] { display: flex; flex-direction: column; animation: sc-desliza var(--dur) var(--curva) both; }
+.sc-hoja::backdrop { background: var(--velo); }
+.sc-hoja__cabeza {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--e-3);
+  padding: var(--e-3) var(--e-3) var(--e-3) var(--e-5);
+  border-bottom: 1px solid var(--linea);
+}
+.sc-hoja__cabeza h2,
+.sc-hoja__titulo {
+  margin: 0; color: var(--texto); text-transform: none;
+  font-family: var(--f-titulo); font-size: var(--t-xl); font-weight: 600; letter-spacing: -.01em;
+}
+.sc-hoja__cuerpo { flex: 1; overflow-y: auto; padding: var(--e-4) var(--e-5) var(--e-6); overscroll-behavior: contain; }
+.sc-hoja__pie {
+  display: flex; flex-wrap: wrap; gap: var(--e-2); justify-content: flex-end;
+  padding: var(--e-3) var(--e-5); border-top: 1px solid var(--linea);
+}
+@media (max-width: 640px) {
+  .sc-hoja {
+    inset: auto 0 0 0; width: 100%; height: auto; max-height: 88dvh;
+    border-left: 0; border-top: 1px solid var(--linea); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  }
+  .sc-hoja[open] { animation-name: sc-sube; }
+  /* Asa visual de la hoja inferior */
+  .sc-hoja__cabeza { position: relative; padding-top: var(--e-5); }
+  .sc-hoja__cabeza::before {
+    content: ""; position: absolute; top: var(--e-2); left: 50%;
+    width: 36px; height: 4px; border-radius: var(--r-pill);
+    background: var(--borde); transform: translateX(-50%);
+  }
+}
+
+/* ── sc-dialogo ───────────────────────────────────────────────── */
+/* Confirmación. <dialog class="sc-dialogo" aria-labelledby="t" aria-describedby="d">
+   Título con verbo y objeto. El foco inicial va en Cancelar (autofocus). */
+
+.sc-dialogo {
+  z-index: var(--z-dialogo);
+  width: min(26rem, calc(100% - 2 * var(--e-4)));
+  padding: var(--e-5);
+  border: 1px solid var(--linea); border-radius: var(--r-lg);
+  background: var(--superficie); color: var(--texto); box-shadow: var(--sombra-2);
+}
+.sc-dialogo[open] { animation: sc-entra var(--dur) var(--curva) both; }
+.sc-dialogo::backdrop { background: var(--velo); }
+.sc-dialogo__titulo {
+  margin: 0 0 var(--e-2); color: var(--texto); text-transform: none;
+  font-family: var(--f-titulo); font-size: var(--t-xl); font-weight: 600; letter-spacing: -.01em;
+}
+.sc-dialogo__texto { margin: 0; color: var(--texto-2); }
+.sc-dialogo__acciones {
+  display: flex; flex-wrap: wrap-reverse; justify-content: flex-end; gap: var(--e-2);
+  margin-top: var(--e-5);
+}
+
+/* ── sc-esqueleto ─────────────────────────────────────────────── */
+/* Variantes: --linea, --bloque, --grafica. Con la forma de lo que viene.
+   El contenedor que espera lleva aria-busy="true"; el esqueleto, aria-hidden="true". */
+
+.sc-esqueleto {
+  display: block;
+  border-radius: var(--r-sm);
+  background: var(--superficie-2);
+  animation: sc-pulso 1.6s ease-in-out infinite;
+}
+.sc-esqueleto--linea { height: 1em; margin: .25em 0; }
+.sc-esqueleto--linea:last-child:not(:first-child) { width: 62%; }
+.sc-esqueleto--titulo { height: 2.2rem; width: 80%; margin: var(--e-2) 0; }
+.sc-esqueleto--bloque { height: 5rem; border-radius: var(--r-md); }
+.sc-esqueleto--grafica {
+  aspect-ratio: 16 / 7; border-radius: var(--r-md);
+  background:
+    linear-gradient(var(--linea) 1px, transparent 1px) 0 0 / 100% 25%,
+    var(--superficie-2);
+}
+
+/* ── sc-vacio ─────────────────────────────────────────────────── */
+/* Dice qué falta y qué hacer. Con acción opcional. */
+
+.sc-vacio {
+  display: grid; justify-items: start; gap: var(--e-2);
+  padding: var(--e-5);
+  border: 1px dashed var(--borde); border-radius: var(--r-md);
+  color: var(--texto-2);
+}
+.sc-vacio__titulo { margin: 0; color: var(--texto); font-weight: 700; }
+.sc-vacio__texto { margin: 0; max-width: 52ch; font-size: var(--t-sm); }
+.sc-vacio .sc-boton { margin-top: var(--e-2); }
+
+/* ── sc-leyenda ───────────────────────────────────────────────── */
+/* La muestra es la misma que el dibujo: trazo, relleno, patrón o punto.
+   <ul class="sc-leyenda"><li><span class="sc-muestra sc-muestra--trazo" style="--sc-color: var(--graf-tendencia)"></span>Tendencia</li></ul> */
+
+.sc-leyenda {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-1) var(--e-4);
+  margin: 0; padding: 0; list-style: none;
+  font-size: var(--t-xs); color: var(--texto-2);
+}
+.sc-leyenda > li { display: inline-flex; align-items: center; gap: var(--e-2); }
+.sc-leyenda--vertical { flex-direction: column; align-items: flex-start; }
+.sc-muestra { --sc-color: var(--texto-2); flex: none; display: inline-block; width: 18px; height: 10px; }
+.sc-muestra--trazo { height: 3px; border-radius: 2px; background: var(--sc-color); }
+.sc-muestra--discontinuo { height: 0; border-top: 2px dashed var(--sc-color); }
+.sc-muestra--relleno { border-radius: 2px; background: var(--sc-color); opacity: .3; }
+.sc-muestra--punto { width: 8px; height: 8px; border-radius: 50%; background: var(--sc-color); }
+.sc-muestra--patron {
+  border: 1px solid var(--sc-color);
+  background: repeating-linear-gradient(-45deg, var(--sc-color) 0 1.5px, transparent 1.5px 4px);
+}
+.sc-muestra--celda { width: 16px; height: 13px; border: 2px dashed var(--marca); background: var(--marca-relleno); }
+
+/* ── Gráficas ─────────────────────────────────────────────────── */
+/* Base de las cuatro gráficas: ejes y rejilla iguales, punto enfocable, valor al pasar. */
+
+.sc-grafica { position: relative; width: 100%; color: var(--texto-2); }
+.sc-grafica svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--f-dato); font-variant-numeric: tabular-nums; }
+.sc-grafica text { font-size: var(--t-xs); fill: var(--graf-eje); }
+.sc-grafica .sc-g-rejilla { stroke: var(--graf-rejilla); stroke-width: 1; }
+.sc-grafica .sc-g-eje { stroke: var(--graf-eje); stroke-width: 1; }
+.sc-grafica .sc-g-serie { fill: none; stroke: var(--graf-serie); stroke-width: 1.5; }
+.sc-grafica .sc-g-punto { fill: var(--graf-punto); }
+.sc-grafica .sc-g-tendencia { stroke: var(--graf-tendencia); stroke-width: 3; fill: none; }
+.sc-grafica .sc-g-banda { fill: var(--graf-banda); opacity: .18; }
+.sc-grafica .sc-g-punto:focus { outline: none; }
+.sc-grafica .sc-g-punto:focus-visible,
+.sc-grafica .sc-g-punto[aria-current="true"] { stroke: var(--foco); stroke-width: 3; }
+.sc-grafica__valor {
+  position: absolute; z-index: var(--z-mapa-ctrl);
+  padding: var(--e-1) var(--e-2); border-radius: var(--r-sm);
+  background: var(--accion); color: var(--sobre-accion);
+  font-family: var(--f-dato); font-size: var(--t-xs); white-space: nowrap;
+  pointer-events: none; transform: translate(-50%, calc(-100% - var(--e-2)));
+}
+.sc-grafica__pie { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--e-2); margin-top: var(--e-2); }
+
+/* ── Mapa ─────────────────────────────────────────────────────── */
+/* Piel común de los controles de MapLibre. El estilo del mapa vive en compartido/mapa-estilo.js. */
+
+.sc-mapa { position: relative; font-family: var(--f-texto); }
+.sc-mapa .maplibregl-ctrl-group {
+  background: var(--superficie-elevada); border: 1px solid var(--linea);
+  border-radius: var(--r-md); box-shadow: none; overflow: hidden;
+}
+.sc-mapa .maplibregl-ctrl-group button { width: var(--control-mapa); height: var(--control-mapa); }
+.sc-mapa .maplibregl-ctrl-group button + button { border-top: 1px solid var(--linea); }
+.sc-mapa .maplibregl-ctrl-group button:hover { background: var(--superficie-2); }
+.sc-mapa .maplibregl-ctrl-attrib { font-size: var(--t-2xs); }
+.tema-noche .sc-mapa .maplibregl-ctrl-group button .maplibregl-ctrl-icon,
+.sc-mapa.tema-noche .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1) brightness(1.6); }
+.sc-mapa__alternativa { margin-top: var(--e-2); font-size: var(--t-sm); }
+
+/* ── sc-barra ─────────────────────────────────────────────────── */
+/* Marca, navegación entre vías y enlace a Método. "Saltar al contenido" va antes.
+   El enlace de la página actual lleva aria-current="page". */
+
+.sc-barra {
+  position: sticky; top: 0; z-index: var(--z-barra);
+  display: flex; align-items: center; gap: var(--e-4);
+  min-height: calc(var(--e-7) + var(--e-2)); padding: 0 clamp(var(--e-4), 3vw, var(--e-6));
+  border-bottom: 1px solid var(--linea);
+  background: var(--superficie); color: var(--texto);
+}
+.sc-barra__marca {
+  display: inline-flex; align-items: center; gap: var(--e-2);
+  margin-right: auto; color: inherit; font-weight: 700; text-decoration: none;
+}
+.sc-barra__sol {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--marca); box-shadow: 0 0 0 4px var(--marca-halo);
+}
+.sc-barra__nav { display: flex; align-items: center; gap: var(--e-1); margin: 0; padding: 0; list-style: none; }
+.sc-barra__nav a {
+  display: inline-flex; align-items: center;
+  min-height: var(--tactil); padding: 0 var(--e-3); border-radius: var(--r-sm);
+  color: var(--texto-2); font-size: var(--t-sm); font-weight: 600; text-decoration: none;
+  transition: background-color var(--dur) var(--curva), color var(--dur) var(--curva);
+}
+.sc-barra__nav a:hover { background: var(--superficie-2); color: var(--texto); }
+.sc-barra__nav a[aria-current="page"] { color: var(--texto); box-shadow: inset 0 -2px 0 var(--accion); border-radius: 0; }
+@media (max-width: 520px) {
+  .sc-barra { gap: var(--e-2); }
+  .sc-barra__nav a { padding: 0 var(--e-2); }
+}
+
+/* ── sc-pie ───────────────────────────────────────────────────── */
+/* Fuentes, versión de los datos y versión del software. */
+
+.sc-pie {
+  display: grid; gap: var(--e-2);
+  padding: var(--e-5) clamp(var(--e-4), 3vw, var(--e-6));
+  border-top: 1px solid var(--linea);
+  font-size: var(--t-xs); color: var(--texto-2);
+}
+.sc-pie p { margin: 0; max-width: 72ch; }
+.sc-pie a { color: inherit; }
+.sc-pie a:hover { color: var(--texto); }
+.sc-pie__versiones { display: flex; flex-wrap: wrap; gap: var(--e-1) var(--e-4); font-family: var(--f-dato); }
+
+/* ── sc-migas ─────────────────────────────────────────────────── */
+/* <nav class="sc-migas" aria-label="Ruta"><ol><li><a href="/">Inicio</a></li>…<li aria-current="page">Sector 12</li></ol></nav>
+   Solo donde hay tres niveles o más. */
+
+.sc-migas ol {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-1);
+  margin: 0; padding: 0; list-style: none;
+  font-size: var(--t-sm); color: var(--texto-2);
+}
+.sc-migas li { display: inline-flex; align-items: center; gap: var(--e-1); }
+.sc-migas li + li::before { content: "/"; color: var(--borde); }
+.sc-migas a { color: inherit; text-underline-offset: 3px; border-radius: var(--r-sm); }
+.sc-migas a:hover { color: var(--texto); }
+.sc-migas [aria-current="page"] { color: var(--texto); font-weight: 600; }
+
+/* ── Movimiento reducido ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .sc-esqueleto { animation: none; }
+  .sc-boton[aria-busy="true"]::after { animation-duration: 1.6s; }
+  .sc-hoja[open], .sc-dialogo[open], .sc-toast { animation: none; }
+}
