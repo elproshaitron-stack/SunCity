@@ -44,17 +44,19 @@
       <fieldset class="donde">
         <legend><span class="num">1</span> ¿Dónde?</legend>
         <p class="ayuda">Gira el globo y haz clic en un punto, o elige una ciudad de ejemplo.</p>
-        <div id="ciudades" class="chips" role="group" aria-label="Ciudades de ejemplo"></div>
+        <div id="ciudades" class="sc-chips" role="group" aria-label="Ciudades de ejemplo"></div>
         <div class="coords">
-          <label class="campo">Latitud
-            <input id="lat" type="number" step="0.01" min="-90" max="90" inputmode="decimal">
-          </label>
-          <label class="campo">Longitud
-            <input id="lon" type="number" step="0.01" min="-180" max="180" inputmode="decimal">
-          </label>
-          <button id="ir" class="boton boton--secundario" type="button">Usar este punto</button>
+          <div class="sc-campo">
+            <label class="sc-campo__etiqueta" for="lat">Latitud</label>
+            <input class="sc-campo__control" id="lat" type="number" step="0.01" min="-90" max="90" inputmode="decimal">
+          </div>
+          <div class="sc-campo">
+            <label class="sc-campo__etiqueta" for="lon">Longitud</label>
+            <input class="sc-campo__control" id="lon" type="number" step="0.01" min="-180" max="180" inputmode="decimal">
+          </div>
+          <button id="ir" class="sc-boton sc-boton--secundario" type="button">Usar este punto</button>
         </div>
-        <p class="celda-nota"><span class="celda-muestra" aria-hidden="true"></span><span id="celda-texto">El recuadro marca la celda aproximada de MERRA-2.</span></p>
+        <p class="celda-nota"><span class="sc-muestra sc-muestra--celda" aria-hidden="true"></span><span id="celda-texto">El recuadro marca la celda aproximada de MERRA-2.</span></p>
       </fieldset>
     </section>
 
@@ -63,13 +65,13 @@
       <section class="preguntas" aria-label="Preguntas">
         <fieldset class="pregunta">
           <legend><span class="num">2</span> ¿Qué variable?</legend>
-          <div id="variables" class="chips" role="radiogroup" aria-label="Variable"></div>
+          <div id="variables" class="sc-chips" role="radiogroup" aria-label="Variable"></div>
           <p id="definicion" class="definicion" aria-live="polite"></p>
         </fieldset>
 
         <fieldset class="pregunta">
           <legend><span class="num">3</span> ¿Qué temporada?</legend>
-          <div id="temporada" class="meses" role="radiogroup" aria-label="Temporada"></div>
+          <div id="temporada" class="temporada" role="radiogroup" aria-label="Temporada"></div>
           <p class="ayuda">Comparar siempre la misma época del año quita el ciclo de las estaciones.</p>
         </fieldset>
       </section>
@@ -78,40 +80,47 @@
         <div id="estado" class="estado">Elige un lugar para empezar.</div>
 
         <article id="tarjeta" class="veredicto" hidden>
-          <p id="sello" class="sello"></p>
+          <p id="sello" class="sc-insignia"></p>
           <h2 id="titular"></h2>
           <p id="frase" class="frase"></p>
 
-          <dl class="cifras">
-            <div><dt>Cambio por década</dt><dd id="c-pend"></dd></div>
-            <div><dt>Rango del 95 %</dt><dd id="c-rango"></dd></div>
-            <div><dt>Valor p <span class="dt-sub">Mann-Kendall</span></dt><dd id="c-p"></dd></div>
-            <div><dt>Años con datos</dt><dd id="c-n"></dd></div>
+          <dl class="sc-cifras cifras">
+            <div class="sc-cifra"><dt>Cambio por década</dt><dd id="c-pend"></dd></div>
+            <div class="sc-cifra"><dt>Rango del 95 %</dt><dd id="c-rango"></dd></div>
+            <div class="sc-cifra"><dt>Valor p <span class="dt-sub">Mann-Kendall</span></dt><dd id="c-p"></dd></div>
+            <div class="sc-cifra"><dt>Años con datos</dt><dd id="c-n"></dd></div>
           </dl>
 
           <p class="exploratorio"><strong>Exploratorio.</strong> Tú eliges qué probar, así que el valor p no está ajustado por todas las combinaciones posibles.</p>
 
           <figure class="figura">
             <div id="grafica" class="grafica"></div>
-            <figcaption class="leyenda" id="leyenda-provisional"><span class="ley ley-serie"></span>valor de cada año <span class="ley ley-pend"></span>tendencia (Theil-Sen) <span class="ley ley-banda"></span>rango del 95 %</figcaption>
+            <figcaption id="leyenda-provisional"><ul class="sc-leyenda">
+              <li><span class="sc-muestra sc-muestra--punto" style="--sc-color: var(--graf-punto)"></span>Valor de cada año</li>
+              <li><span class="sc-muestra sc-muestra--trazo" style="--sc-color: var(--graf-tendencia)"></span>Tendencia (Theil-Sen)</li>
+              <li><span class="sc-muestra sc-muestra--relleno" style="--sc-color: var(--graf-banda)"></span>Rango del 95 %</li>
+            </ul></figcaption>
           </figure>
 
           <div class="acciones">
-            <button id="csv" class="boton boton--secundario" type="button">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="../compartido/iconos.svg#descargar"/></svg>
+            <button id="csv" class="sc-boton sc-boton--secundario" type="button">
+              <svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#descargar"/></svg>
               Descargar datos (CSV)
             </button>
-            <button id="enlace" class="boton boton--texto" type="button">Copiar enlace</button>
+            <button id="enlace" class="sc-boton sc-boton--texto" type="button">
+              <svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#enlace"/></svg>
+              Copiar enlace
+            </button>
           </div>
         </article>
 
-        <aside id="escala" class="escala" hidden>
-          <h3>Lo que este dato no puede ver</h3>
+        <aside id="escala" class="escala sc-tarjeta sc-tarjeta--suave" aria-labelledby="escala-t" hidden>
+          <h3 id="escala-t" class="sc-tarjeta__titulo">Lo que este dato no puede ver</h3>
           <p>MERRA-2 trabaja en celdas de unas decenas de kilómetros. El punto elegido representa toda la región que lo rodea: una ciudad y su desierto quedan en la misma celda. Esta herramienta ve regiones, no ciudades.</p>
           <div id="puente" class="puente" hidden>
             <p>Para ver dentro de la ciudad hace falta otro satélite.</p>
-            <a class="boton boton--primario" href="../via-b/index.html">Ver dentro de Hermosillo
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="../compartido/iconos.svg#flecha-derecha"/></svg>
+            <a class="sc-boton sc-boton--primario" href="../via-b/index.html">Ver dentro de Hermosillo
+              <svg class="sc-icono" aria-hidden="true"><use href="../compartido/iconos.svg#flecha-derecha"/></svg>
             </a>
           </div>
         </aside>
@@ -126,6 +135,7 @@
             <dt>Valor p</dt><dd>Qué tan probable sería ver una tendencia así si en realidad no hubiera ninguna. Menos de 0.05 se llama significativo.</dd>
             <dt>MERRA-2</dt><dd>Un modelo de la NASA que reconstruye el clima de todo el planeta desde 1980 combinando observaciones.</dd>
           </dl>
+          <p class="glosario-mas"><a href="../metodo/#glosario">Glosario completo y método</a></p>
         </details>
       </section>
 

@@ -166,7 +166,7 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 
 Vía A:
 
-- [ ] **A10 · M** La Vía A usa solo componentes `sc-`; se borra lo propio de `via-a/css/estilos.css` que ya vive en compartido. *Depende:* A2.
+- [x] **A10 · M** La Vía A usa solo componentes `sc-`; se borra lo propio de `via-a/css/estilos.css` que ya vive en compartido. *Depende:* A2.
 - [ ] **A11 · M** Todos los estados: esqueleto del veredicto y de la gráfica, error con botón "Reintentar descarga", sin red con el respaldo anunciado, punto sin datos. *Depende:* A10.
 - [ ] **A12 · G** Gráfica compartida 2: colores por tokens, ancho adaptable, punto enfocable, valor al pasar y "Ver datos en tabla". La firma de `dibujarSerieAnual` no cambia. *Depende:* A1.
 - [ ] **A13 · C** "Usar mi ubicación"; la ubicación no sale del navegador. *Acepta:* probado aceptando y negando el permiso.
