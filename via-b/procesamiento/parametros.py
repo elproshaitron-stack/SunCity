@@ -25,3 +25,7 @@ CICLO_ANIOS = (2003, 2019)
 # (id del paso en ciclo_diario.csv, satélite, momento): ids de via-b/ciclo-diario.js
 CICLO_PASOS = [("terra_1030", "Terra", "dia"), ("aqua_1330", "Aqua", "dia"),
                ("terra_2230", "Terra", "noche"), ("aqua_0130", "Aqua", "noche")]
+
+# Pendiente mínima detectable (C14, método de 05-MODELOS.md, 5.6). No cambia ninguna tendencia ni el semáforo.
+# El 80 % de potencia es la convención usual; si el equipo quiere otro valor, se registra en DECISIONES.md.
+POTENCIA = {"objetivo": 0.8, "alfa": 0.05, "simulaciones": 20000, "semilla": 2026}

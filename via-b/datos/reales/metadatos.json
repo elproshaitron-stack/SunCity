@@ -1,0 +1,123 @@
+{
+ "esquema_metadatos": "1",
+ "conjunto": "via-b/datos/reales",
+ "naturaleza": "observado",
+ "descripcion": "Temperatura de superficie nocturna de MODIS por sector de Hermosillo y referencias de desierto",
+ "fuente": "NASA GIBS, capas MODIS L3 Land Surface Temperature 8-Day (MOD11A2 y MYD11A2 v6.1)",
+ "via": "NASA GIBS, leído por la paleta oficial con exportar_gibs.py (D18)",
+ "productos": [
+  {
+   "producto": "MYD11A2",
+   "uso": "MOD11_Aqua"
+  },
+  {
+   "producto": "MOD11A2",
+   "uso": "MOD11_Terra"
+  }
+ ],
+ "version": {
+  "coleccion_modis": "6.1 (061)",
+  "procesamiento": "via-b/procesamiento/procesar.py"
+ },
+ "poligonos": {
+  "archivo": "via-b/datos/prueba/sectores.geojson",
+  "esquematicos": true,
+  "nota": "Polígonos esquemáticos mientras D15 siga abierta"
+ },
+ "fechas": {
+  "generado": "2026-11-15T12:56:13-07:00",
+  "descarga": "2026-11-15",
+  "descarga_origen": "export/origen.json",
+  "periodo_desde": "2001-06-01",
+  "periodo_hasta": "2025-08-31",
+  "temporada": "junio a agosto de cada año (D14)"
+ },
+ "completitud": {
+  "regla": "D03: polígono-año válido si al menos 50% de los píxeles tienen dato y cada píxel tiene en promedio 3 compuestos (MOD11) o 10 noches (MOD21)",
+  "por_producto": {
+   "MOD11_Aqua_dia": {
+    "anios": {
+     "pedidos": 25,
+     "completos": 23,
+     "sin_ningun_poligono_valido": [
+      2001,
+      2002
+     ],
+     "con_poligonos_descartados": []
+    },
+    "poligono_anios": {
+     "validos": 184,
+     "descartados": 16,
+     "motivos_de_descarte": {
+      "sin_dato": 16
+     }
+    }
+   },
+   "MOD11_Aqua_noche": {
+    "anios": {
+     "pedidos": 25,
+     "completos": 23,
+     "sin_ningun_poligono_valido": [
+      2001,
+      2002
+     ],
+     "con_poligonos_descartados": []
+    },
+    "poligono_anios": {
+     "validos": 184,
+     "descartados": 16,
+     "motivos_de_descarte": {
+      "sin_dato": 16
+     }
+    }
+   },
+   "MOD11_Terra_dia": {
+    "anios": {
+     "pedidos": 25,
+     "completos": 25,
+     "sin_ningun_poligono_valido": [],
+     "con_poligonos_descartados": []
+    },
+    "poligono_anios": {
+     "validos": 200,
+     "descartados": 0,
+     "motivos_de_descarte": {}
+    }
+   },
+   "MOD11_Terra_noche": {
+    "anios": {
+     "pedidos": 25,
+     "completos": 25,
+     "sin_ningun_poligono_valido": [],
+     "con_poligonos_descartados": []
+    },
+    "poligono_anios": {
+     "validos": 200,
+     "descartados": 0,
+     "motivos_de_descarte": {}
+    }
+   }
+  },
+  "productos_ausentes": [
+   "MOD21_Aqua_dia",
+   "MOD21_Aqua_noche",
+   "MOD21_Terra_dia",
+   "MOD21_Terra_noche"
+  ],
+  "anios_validos_por_sector_primario": {
+   "S01": 19,
+   "S02": 19,
+   "S03": 19,
+   "S04": 19,
+   "S05": 19,
+   "S06": 19
+  },
+  "minimo_anios": 15
+ },
+ "limites": [
+  "sin MOD21",
+  "sin filtro de bits QC (D03 solo por cobertura y observaciones)",
+  "resolución de 0.6 K por la paleta",
+  "sin población, NDVI ni Yale"
+ ]
+}

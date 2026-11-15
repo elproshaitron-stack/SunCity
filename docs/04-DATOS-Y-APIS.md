@@ -102,7 +102,19 @@ El periodo 2001-2019 queda limpio en ambos extremos, salvo el cruce a las 10:45 
 
 El producto de Yale se construyó con los mismos productos MODIS de 8 días de Terra y Aqua. Coteja el método, no el instrumento, y así se dice. Su banda `Daytime` sirve además como segundo cotejo del oasis: el signo de su valor diurno para Hermosillo se pone junto a las barras de 10:30 y 13:30.
 
-## 4.7 Fuentes
+## 4.7 Metadatos y revisión de cada conjunto
+
+Cada carpeta de datos lleva un `metadatos.json` con el mismo esquema: `fuente`, `productos`, `version`, `fechas` (ISO 8601) y `completitud`, que cuenta años y polígono-años válidos y descartados, con el motivo de cada descarte (`sin_dato`, `cobertura_menor_al_minimo` u `observaciones_insuficientes`, según D03).
+
+| Carpeta | Quién lo escribe | Qué dice |
+|---|---|---|
+| `via-b/datos/reales/` | `procesar.py`, en cada corrida | Fuente del export (GIBS por `export/origen.json`, o Earth Engine), productos MOD11 o MOD21 que llegaron y los que faltan, años completos, descartes por producto y años válidos por sector |
+| `via-b/datos/prueba/` | `via-b/procesamiento/metadatos.py` | Que los datos son inventados, la semilla y los polígonos esquemáticos |
+| `via-a/datos/` | `via-b/procesamiento/metadatos.py` | Versión de la API de POWER, punto, periodo y meses con valor de relleno por parámetro. El JSON de POWER no trae fecha de descarga: se toma la del último commit |
+
+Antes de procesar polígonos nuevos (D15) se corre `via-b/procesamiento/revisar_poligonos.py`: identificadores, tipos, `RA` y `RB`, geometría válida, 9 km² por sector y traslapes. `resumen.json` trae además, por sector, el ruido de la serie y la pendiente mínima detectable (sección 5.6 de [05-MODELOS.md](05-MODELOS.md)).
+
+## 4.8 Fuentes
 
 - NASA POWER, API mensual y resumen de servicios
 - Earth Engine: MOD11A2 v6.1
