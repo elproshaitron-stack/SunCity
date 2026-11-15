@@ -1,0 +1,50 @@
+{
+ "esquema_metadatos": "1",
+ "conjunto": "via-b/datos/prueba",
+ "naturaleza": "inventado",
+ "descripcion": "Datos inventados para probar la interfaz. No son resultados ni observaciones satelitales.",
+ "fuente": "generar_prueba.py (semillas fijas 2027 y 2028); polígonos esquemáticos",
+ "productos": [
+  {
+   "producto": "ninguno",
+   "uso": "la serie lleva la etiqueta MOD11 Terra solo para probar la interfaz"
+  }
+ ],
+ "version": {
+  "coleccion_modis": "no aplica",
+  "procesamiento": "via-b/datos/prueba/generar_prueba.py"
+ },
+ "poligonos": {
+  "archivo": "via-b/datos/prueba/sectores.geojson",
+  "esquematicos": true,
+  "nota": "No son límites oficiales (README.md de esta carpeta)"
+ },
+ "fechas": {
+  "generado": "2026-11-14T12:40:36-07:00",
+  "generado_origen": "fecha del último commit que cambió el archivo",
+  "periodo_desde": "2001-06-01",
+  "periodo_hasta": "2025-08-31",
+  "temporada": "junio a agosto, solo como etiqueta"
+ },
+ "completitud": {
+  "regla": "No aplica D03: no hay píxeles ni observaciones",
+  "anios": {
+   "pedidos": 25,
+   "con_dato": 25,
+   "rango": [
+    2001,
+    2025
+   ]
+  },
+  "poligono_anios": {
+   "validos": 150,
+   "descartados": 0,
+   "motivos_de_descarte": {},
+   "faltantes": []
+  },
+  "resultados_sin_calculo": []
+ },
+ "limites": [
+  "Datos inventados: nunca se presentan como resultados ni se copian a datos/reales/"
+ ]
+}

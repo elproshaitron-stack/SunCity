@@ -1,3 +1,5 @@
+import {tablaAlternativa, cifra, vacio} from './tabla-datos.js';
+
 const NS = 'http://www.w3.org/2000/svg';
 const PASOS = [
   ['terra_1030', '10:30', 'Terra'], ['aqua_1330', '13:30', 'Aqua'],
@@ -14,7 +16,7 @@ export function dibujarCicloDiario(contenedor, filas, pasosAqua = 'solo_mod11') 
     return {hora, satelite, mod11, mod21:rango ? mod21 : undefined, yale:lista.find(f => f.yale_signo)?.yale_signo || ''};
   });
   if (datos.some(d => !d.mod11)) {
-    contenedor.textContent = 'Faltan datos del ciclo diario para este sector.';
+    contenedor.append(vacio('Sin ciclo diario para este sector', 'Faltan pasos de MOD11 en ciclo_diario.csv. El resto del expediente no depende de esta gráfica; vuelve a generar los datos con via-b/procesamiento para verla.'));
     return;
   }
   const svg = document.createElementNS(NS, 'svg');
@@ -56,7 +58,7 @@ export function dibujarCicloDiario(contenedor, filas, pasosAqua = 'solo_mod11') 
       el('rect',{x:x-17,y:y(alto),width:34,height:Math.max(3,y(bajo)-y(alto)),fill:i<2?'var(--graf-dia)':'var(--graf-noche)'});
       for (const v of [a,b]) el('line',{x1:x-19,x2:x+19,y1:y(v),y2:y(v),stroke:'var(--texto)','stroke-width':2});
     }
-    const titulo = el('title',{},`${d.hora} ${d.satelite}: MOD11 ${a.toFixed(2)} °C${b === undefined ? '' : `; MOD21 ${b.toFixed(2)} °C`}`);
+    el('title',{},`${d.hora} ${d.satelite}: MOD11 ${a.toFixed(2)} °C${b === undefined ? '' : `; MOD21 ${b.toFixed(2)} °C`}`);
     el('text',{x,y:257,'text-anchor':'middle',fill:'var(--texto)','font-weight':'700'},d.hora);
     el('text',{x,y:276,'text-anchor':'middle',fill:'var(--texto-2)'},d.satelite);
     if (i < 2 && (d.yale === '+' || d.yale === '-')) {
@@ -69,5 +71,11 @@ export function dibujarCicloDiario(contenedor, filas, pasosAqua = 'solo_mod11') 
   leyenda.textContent = 'Banda oscura: rango MOD11–MOD21 cuando hay ambos productos. Signo diurno de Yale (cotejo, no sensor independiente).';
   const lectura = document.createElement('p'); lectura.className = 'nota-ciclo';
   lectura.textContent = 'Bajo cero: el sector está más fresco que el desierto a esa hora. Sobre cero: más caliente.';
-  contenedor.append(leyenda, lectura);
+  const hayMod21 = datos.some(d => d.mod21);
+  const [boton, marco] = tablaAlternativa({
+    titulo: 'Diferencia sector menos Referencia A por hora de paso, media 2003-2019, en °C',
+    columnas: [{texto:'Hora'}, {texto:'Satélite'}, {texto:'MOD11 (°C)', num:true}, ...(hayMod21 ? [{texto:'MOD21 (°C)', num:true}] : []), {texto:'Signo de Yale'}],
+    filas: datos.map(d => [d.hora, d.satelite, cifra(d.mod11.valor), ...(hayMod21 ? [d.mod21 ? cifra(d.mod21.valor) : '—'] : []), d.yale || '—'])
+  });
+  contenedor.append(leyenda, lectura, boton, marco);
 }

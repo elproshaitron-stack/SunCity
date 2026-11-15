@@ -1,4 +1,6 @@
-import {ESCALA, colorPara} from '../compartido/lst-noche.js';
+import {ESCALA, colorCss} from '../compartido/lst-noche.js';
+
+import {tablaAlternativa, cifra, vacio} from './tabla-datos.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -8,7 +10,7 @@ export function dibujarZoom(contenedor, datos, datosDePrueba) {
       !Number.isInteger(datos.columnas) || datos.columnas < 1 ||
       !Array.isArray(datos.valores_c) || datos.valores_c.length !== datos.filas ||
       !datos.valores_c.every(f => Array.isArray(f) && f.length === datos.columnas && f.every(Number.isFinite))) {
-    contenedor.textContent = 'No hay datos válidos para el zoom.';
+    contenedor.append(vacio('El zoom no tiene datos válidos', 'ecostress_zoom.json no trae una rejilla completa de números. Vuelve a exportarlo desde AppEEARS (D10).'));
     return;
   }
   const valores = datos.valores_c.flat(), minimo = Math.min(...valores), maximo = Math.max(...valores);
@@ -21,7 +23,7 @@ export function dibujarZoom(contenedor, datos, datosDePrueba) {
   datos.valores_c.forEach((fila, y) => fila.forEach((valor, x) => {
     const t = (valor - minimo) / (maximo - minimo || 1);
     const rect = document.createElementNS(NS, 'rect');
-    for (const [k,v] of Object.entries({x:x*celdaX,y:y*celdaY,width:celdaX+.2,height:celdaY+.2,fill:`rgb(${colorPara(t).join(',')})`})) rect.setAttribute(k,v);
+    for (const [k,v] of Object.entries({x:x*celdaX,y:y*celdaY,width:celdaX+.2,height:celdaY+.2,fill:colorCss(t)})) rect.setAttribute(k,v);
     svg.append(rect);
   }));
   const leyenda = document.createElement('div'); leyenda.className = 'leyenda-calor';
@@ -32,5 +34,14 @@ export function dibujarZoom(contenedor, datos, datosDePrueba) {
   leyenda.append(bajo,barra,altoLabel);
   const nota = document.createElement('p');
   nota.textContent = `Mediana por píxel de ${datos.n_escenas} escenas nocturnas despejadas de ECOSTRESS a ${datos.resolucion_m} m.${datosDePrueba ? ' Datos de prueba.' : ''}`;
-  contenedor.append(svg,leyenda,nota);
+  // Tabla alternativa: el resumen de la rejilla (la rejilla completa tiene demasiadas celdas para leerla)
+  const orden = [...valores].sort((a, b) => a - b);
+  const cuantil = q => { const i = (orden.length - 1) * q, b = Math.floor(i); return orden[b] + (orden[Math.min(b + 1, orden.length - 1)] - orden[b]) * (i - b); };
+  const [boton, marco] = tablaAlternativa({
+    titulo: `Resumen de los ${valores.length} píxeles de la rejilla, en °C`,
+    columnas: [{texto:'Medida'}, {texto:'Valor (°C)', num:true}],
+    filas: [['Mínimo', cifra(minimo, 1)], ['Cuartil inferior', cifra(cuantil(.25), 1)], ['Mediana', cifra(cuantil(.5), 1)],
+      ['Cuartil superior', cifra(cuantil(.75), 1)], ['Máximo', cifra(maximo, 1)]]
+  });
+  contenedor.append(svg,leyenda,nota,boton,marco);
 }

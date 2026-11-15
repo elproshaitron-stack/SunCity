@@ -124,6 +124,11 @@ legend {
 .mapa .maplibregl-canvas:focus-visible { outline: 3px solid var(--foco); outline-offset: -3px; }
 .mapa .maplibregl-ctrl-top-right { top: var(--e-3); right: var(--e-3); z-index: var(--z-mapa-ctrl); }
 .mapa .maplibregl-ctrl-attrib { font-size: var(--t-2xs); }
+.aviso-mapa {
+  position: absolute; left: 50%; top: 45%; z-index: var(--z-mapa-ctrl); transform: translateX(-50%);
+  max-width: 24rem; padding: var(--e-2) var(--e-4); border: 1px solid var(--linea); border-radius: var(--r-md);
+  background: var(--superficie-elevada); color: var(--texto); font-size: var(--t-sm); text-align: center;
+}
 
 /* ── Panel (tema papel) ─────────────────────────────────────── */
 .panel {

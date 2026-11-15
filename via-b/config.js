@@ -2,7 +2,8 @@
 // 'datos/reales/' sale de via-b/procesamiento (exportar_gibs.py o el export de Earth Engine, y procesar.py).
 // 'datos/prueba/' son los datos sintéticos de generar_prueba.py.
 export const RUTA_DATOS = 'datos/reales/';
-export const datosDePrueba = RUTA_DATOS === 'datos/prueba/';
+// B11: el aviso de datos de prueba sale solo cuando la ruta apunta a datos/prueba/
+export const datosDePrueba = /(^|\/)datos\/prueba\/?$/.test(RUTA_DATOS);
 // D15 abierta: los polígonos de los sectores y las referencias siguen siendo los esquemáticos de prueba.
 // Mientras sea true, la página avisa que las temperaturas son reales pero los polígonos no.
 export const poligonosEsquematicos = true;

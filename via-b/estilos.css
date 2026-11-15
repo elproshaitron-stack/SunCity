@@ -38,9 +38,13 @@ h1 {
 /* Herramientas */
 .herramientas { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--e-3); margin: var(--e-5) 0 var(--e-4); }
 .campo-sector { flex: 1 1 14rem; max-width: 20rem; }
-#estado { flex: 1 1 100%; margin: 0; font-size: var(--t-sm); color: var(--texto-2); }
+#estado, .ubicar-nota { flex: 1 1 100%; margin: 0; font-size: var(--t-sm); color: var(--texto-2); }
+.ubicar-nota { max-width: 62ch; }
+.ubicar-nota--error { color: var(--texto); font-weight: 600; }
+#aviso-error, #aviso-parcial { margin-bottom: var(--e-5); }
 
 .espacio { display: grid; gap: var(--e-5); align-items: start; }
+.columna { display: grid; gap: var(--e-6); min-width: 0; }
 
 /* Mapa */
 .mapa-panel { border: 1px solid var(--linea); border-radius: var(--r-lg); overflow: hidden; background: var(--superficie); }
@@ -71,17 +75,31 @@ h1 {
 .pie-mapa { padding: 0 var(--e-4) var(--e-4); font-size: var(--t-xs); color: var(--texto-2); }
 .leyenda-semaforo { padding: var(--e-4); }
 
+/* Muestras de la leyenda: la misma trama y el mismo borde que el mapa (B2) */
+.muestra-sector { width: 22px; height: 14px; border: 2px solid var(--sc-color); border-radius: 2px; }
+.muestra-sector--sube { --sc-color: var(--estado-sube); background: repeating-linear-gradient(-45deg, var(--sc-color) 0 2px, transparent 2px 5px); }
+.muestra-sector--baja { --sc-color: var(--estado-baja); background: radial-gradient(circle, var(--sc-color) 1.6px, transparent 2px) 0 0 / 5px 5px; }
+.muestra-sector--neutro { --sc-color: var(--estado-neutro); }
+.muestra-sector--sin-calculo { --sc-color: var(--estado-neutro); border-style: dotted; }
+
+/* Tabla de sectores (B3) */
+.tabla-sectores h2 { margin: 0 0 var(--e-2); font-family: var(--f-titulo); font-size: var(--t-xl); font-weight: 600; letter-spacing: -.01em; }
+.texto-tabla { max-width: 62ch; margin-bottom: var(--e-3); font-size: var(--t-sm); color: var(--texto-2); }
+.enlace-sector { display: inline-flex; align-items: center; min-height: var(--tactil); color: var(--texto); font-weight: 700; }
+.enlace-sector:hover { color: var(--enlace); }
+.tabla-sectores .sc-insignia { white-space: normal; }
+.tabla-sectores td, .tabla-sectores tbody th { vertical-align: middle; }
+.fila-esqueleto td { padding-block: var(--e-3); }
+
 /* Expediente (sc-hoja) */
 #expediente .sc-hoja__cabeza { align-items: flex-start; }
 .grupo-nombre { min-width: 0; flex: 1; }
 .titulo-fila { display: flex; align-items: center; gap: var(--e-2); min-width: 0; }
 .titulo-fila h2 { overflow-wrap: anywhere; }
 .origen { margin: var(--e-1) 0; font-size: var(--t-xs); color: var(--texto-2); }
-#form-nombre { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--e-2); margin: var(--e-3) 0; }
-#form-nombre .sc-campo { flex: 1 1 100%; }
 
 #expediente .sc-hoja__cuerpo > section { margin-top: var(--e-5); padding-top: var(--e-5); border-top: 1px solid var(--linea); }
-#expediente .sc-hoja__cuerpo > section:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+#expediente .sc-hoja__cuerpo > section:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
 #expediente h3 { margin: 0 0 var(--e-2); font-size: var(--t-base); font-weight: 700; }
 #expediente section > p { margin-bottom: var(--e-3); font-size: var(--t-sm); color: var(--texto-2); }
 #expediente dl { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-2); margin: 0 0 var(--e-3); font-size: var(--t-sm); }
@@ -90,16 +108,85 @@ h1 {
 #serie-anual p, .nota-ciclo { font-size: var(--t-xs); color: var(--texto-2); }
 .nota-ciclo { margin-top: var(--e-2); }
 .nota { padding-left: var(--e-3); border-left: 3px solid var(--borde); }
-#lectura .sc-insignia { margin-bottom: var(--e-3); }
+
+/* Arriba del expediente: insignia, lectura en lenguaje llano y cifras (B4) */
+.resumen { display: grid; gap: var(--e-3); justify-items: start; }
+.resumen-texto { max-width: 62ch; font-size: var(--t-base); }
+.resumen .sc-cifras { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 899px) { .resumen .sc-cifra dd { font-size: var(--t-base); white-space: nowrap; } }
+.acciones-ficha { display: flex; flex-wrap: wrap; gap: var(--e-2); }
+.indice { margin-top: var(--e-4); }
+.indice ul { display: flex; flex-wrap: wrap; gap: var(--e-1) var(--e-3); margin: 0; padding: 0; list-style: none; font-size: var(--t-sm); }
+.indice a { display: inline-flex; align-items: center; min-height: var(--tactil); color: var(--enlace); }
+#expediente h3:focus { outline: none; }
+#expediente h3:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
+#expediente .sc-hoja__cuerpo > section { scroll-margin-top: var(--e-4); }
+.campo-variante { max-width: 20rem; margin-bottom: var(--e-2); }
+#expediente .variante-lectura { font-size: var(--t-sm); color: var(--texto); }
+.grafica-ver-tabla { margin-top: var(--e-2); }
+#expediente .sc-tabla-marco { margin-top: var(--e-2); }
+#expediente .sc-vacio { margin-top: var(--e-2); }
+.impresion { display: none; }
+
+/* Diálogo de nombre (B7) */
+.campo-nombre { margin-top: var(--e-4); }
 
 .leyenda-calor { display: flex; align-items: center; gap: var(--e-2); max-width: 420px; margin-top: var(--e-2); font-family: var(--f-dato); font-size: var(--t-xs); }
 .escala-calor { flex: 1; height: 14px; border: 1px solid var(--borde); border-radius: var(--r-sm); }
 
 /* Pantallas anchas: el expediente es un panel fijo al lado del mapa, sin velo */
 @media (min-width: 900px) {
+  .resumen .sc-cifras { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   #mapa { height: 65dvh; min-height: 470px; }
-  .herramientas { flex-wrap: nowrap; }
-  #estado { flex: 0 1 auto; margin-left: auto; }
   body.con-expediente main { padding-right: calc(min(30rem, 100%) + var(--e-6)); }
   body.con-expediente #expediente { inset: var(--alto-barra) 0 0 auto; height: auto; box-shadow: none; }
+}
+
+/* Ficha del sector en papel (B9): con el expediente abierto se imprime solo la ficha, en una página.
+   Sin expediente, se imprime la tabla de sectores. */
+@media print {
+  @page { size: A4; margin: 12mm; }
+  html, body { background: var(--blanco); }
+  body { font-size: 9.5pt; }
+  sc-barra, .sc-saltar, sc-pie, .sc-toasts, .herramientas, .mapa-panel, .grafica-ver-tabla, .sc-tabla-marco:not(#marco-tabla),
+  .acciones-ficha, .indice, #editar-nombre, #cerrar, .campo-variante, #aviso-parcial, .sc-grafica__pie button { display: none !important; }
+  main { max-width: none; padding: 0; }
+  .sc-aviso { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .sc-insignia, .muestra-sector { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body.ficha-abierta .introduccion, body.ficha-abierta .columna, body.ficha-abierta #aviso-prueba .sc-aviso__texto { display: none !important; }
+  body.ficha-abierta #aviso-prueba { margin: 0 0 4pt; padding-block: 3pt; }
+  body.ficha-abierta main { padding-right: 0 !important; }
+  body.ficha-abierta .espacio { display: block; }
+  #expediente[open] {
+    position: static; display: block; inset: auto; width: auto; max-width: none; height: auto; max-height: none;
+    margin: 0; border: 0; border-radius: 0; box-shadow: none; overflow: visible; animation: none;
+  }
+  #expediente::backdrop { display: none; }
+  #expediente .sc-hoja__cabeza { padding: 0 0 4pt; }
+  #expediente .sc-hoja__cabeza::before { display: none; }
+  #expediente .sc-hoja__titulo { font-size: 16pt; }
+  #expediente .sc-hoja__cuerpo {
+    overflow: visible; padding: 4pt 0 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6pt 14pt; align-items: start;
+  }
+  .impresion { display: block; grid-column: 1 / -1; font-size: 7.5pt; color: var(--texto-2); word-break: break-all; }
+  #exp-resumen { grid-column: 1 / -1; gap: 4pt; }
+  .resumen-texto { max-width: none; font-size: 10pt; }
+  #exp-resumen .sc-cifras { grid-template-columns: repeat(4, 1fr); }
+  #exp-resumen .sc-cifra { padding: 2pt 6pt 2pt 0; }
+  #exp-resumen .sc-cifra dd { font-size: 10.5pt; }
+  #origen-nombre, #expediente-etiqueta, #modis-lectura .nota { display: none; }
+  #expediente .sc-hoja__cuerpo > section { margin: 0; padding-top: 4pt; border-top: 1px solid var(--linea); break-inside: avoid; }
+  #expediente .sc-hoja__cuerpo > section:first-of-type { border-top: 0; }
+  #expediente h3 { font-size: 9.5pt; margin-bottom: 2pt; }
+  #expediente section p, #expediente section dl { font-size: 7.5pt; margin-bottom: 2pt; }
+  #expediente #resumen-texto { font-size: 9.5pt; }
+  #expediente .variante-lectura { font-size: 7.5pt; }
+  #expediente svg { max-height: 44mm; width: 100%; }
+  #expediente dl { font-size: 8pt; gap: 1pt 6pt; margin-bottom: 2pt; }
+  .sc-vacio { padding: 4pt; }
+  #exp-zoom { display: none; }
+  body:not(.ficha-abierta) #expediente { display: none; }
+  body:not(.ficha-abierta) .columna { display: block; }
 }

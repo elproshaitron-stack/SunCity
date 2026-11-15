@@ -28,6 +28,8 @@
     texto: "#3a2a18",
     textoFuerte: "#4a3520",
     cielo: "#0a1024",
+    celda: "#ff5a1f",        // recuadro de la celda de MERRA-2 (Vía A)
+    celdaBorde: "#d63f0c",
     horizonte: "#f2b27a"
   };
 

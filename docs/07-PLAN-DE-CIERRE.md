@@ -150,7 +150,7 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 - [x] **A5 · C** `compartido/iconos.svg` y su uso con `<use>`. *Acepta:* no queda un ícono dibujado en línea.
 - [x] **C1 · M** `verificar.py`: todas las pruebas actuales, más la búsqueda de textos prohibidos y de colores fuera de los tokens. *Acepta:* código 0 en `main`; código 1 con cualquier fallo. *Hecho por Claude a pedido de Navarrete:* reemplaza el borrador del PR #10. Las excepciones de color y de texto están en una lista dentro del script, cada una con su motivo; `aceptacion.py` sobre `datos/reales/` sale como aviso (D18). Al entrar daba código 1 por tres colores sueltos: dos en `via-a/js/globo.js` (recuadro de la celda) y el `rgb(` de `via-b/zoom-ecostress.js`.
 - [x] **C2 · C** Integración continua que corre `verificar.py` en cada PR. *Depende:* C1. *Hecho:* `.github/workflows/verificar.yml`, en cada PR y en cada push a `main`, con Python 3.12 y Node 20.
-- [ ] **C3 · M** Terceros servidos desde el sitio: MapLibre y las tres fuentes en `compartido/vendor/`, con su archivo de licencias. *Acepta:* cero peticiones a `unpkg.com` y a `fonts.googleapis.com`.
+- [x] **C3 · M** Terceros servidos desde el sitio: MapLibre y las tres fuentes en `compartido/vendor/`, con su archivo de licencias. *Acepta:* cero peticiones a `unpkg.com` y a `fonts.googleapis.com`.
 - [x] **C4 · C** Registrar en `DECISIONES.md` las decisiones técnicas nuevas: herramientas de prueba solo para desarrollo, terceros servidos localmente y MapLibre en la Vía B. *Hecho:* D19, D20 y D21.
 
 ### Fase 2. Plataforma
@@ -175,32 +175,32 @@ Vía A:
 Vía B:
 
 - [x] **B1 · M** La Vía B usa tokens y componentes `sc-`: aviso de datos de prueba, botones con jerarquía, campos, expediente como `sc-hoja`. *Depende:* A2, A4. *Acepta:* `aceptacion.py` pasa y no queda un color suelto. *Hecho por Claude a pedido de Navarrete (PR de B1):* `aceptacion.py` en 7 PASA; en `via-b/` solo quedan la meta `theme-color` y la escala de datos de `compartido/lst-noche.js`. La Vía B tiene ya barra y pie comunes y "Saltar al contenido".
-- [ ] **B2 · G** Mapa de sectores con MapLibre y el estilo compartido; cada sector lleva color, patrón y etiqueta; foco y selección visibles. *Depende:* A9, C3. *Avance (Claude, a pedido de Navarrete):* MapLibre con el estilo compartido, selección visible y capa real de MODIS MOD11A2 nocturno desde NASA GIBS ya están; Leaflet se quitó. Falta el patrón y la etiqueta fija por sector.
-- [ ] **B3 · M** Tabla de sectores ordenable como alternativa al mapa: nombre, cambio por década, intervalo, p ajustado, población y estado. Abrir una fila abre su expediente. *Depende:* B1.
-- [ ] **B4 · G** Expediente rediseñado: insignia y lectura en lenguaje llano arriba; secciones con ancla; `ciclo-diario.js`, `variantes.js` y `zoom-ecostress.js` con tokens y tabla alternativa. *Depende:* B1, A12.
-- [ ] **B5 · M** Todos los estados: carga, CSV roto con mensaje claro, sector sin cálculo, datos parciales. *Depende:* B1.
-- [ ] **B6 · C** "Usar mi ubicación" abre el sector que contiene el punto o dice que queda fuera. *Depende:* B2.
-- [ ] **B7 · C** Edición de nombres con el patrón de diálogo, validación en línea y "Deshacer". *Depende:* B1.
-- [ ] **B8 · C** Estado en la dirección: sector y variante; el botón Atrás cierra el expediente.
-- [ ] **B9 · C** Ficha del sector imprimible en una página. *Depende:* B4.
+- [x] **B2 · G** Mapa de sectores con MapLibre y el estilo compartido; cada sector lleva color, patrón y etiqueta; foco y selección visibles. *Depende:* A9, C3. *Avance (Claude, a pedido de Navarrete):* MapLibre con el estilo compartido, selección visible y capa real de MODIS MOD11A2 nocturno desde NASA GIBS ya están; Leaflet se quitó. Falta el patrón y la etiqueta fija por sector. *Hecho por Claude:* cada sector lleva etiqueta fija (nombre y cambio por década), trama por estado (rayas si aumenta, puntos si disminuye, borde punteado sin cálculo) igual en la leyenda, y un anillo oscuro al seleccionarlo o al pasar por su fila de la tabla.
+- [x] **B3 · M** Tabla de sectores ordenable como alternativa al mapa: nombre, cambio por década, intervalo, p ajustado, población y estado. Abrir una fila abre su expediente. *Depende:* B1. *Hecho por Claude:* `sc-tabla--tarjetas` ordenable bajo el mapa; el nombre es un enlace `?sector=` que abre el expediente.
+- [x] **B4 · G** Expediente rediseñado: insignia y lectura en lenguaje llano arriba; secciones con ancla; `ciclo-diario.js`, `variantes.js` y `zoom-ecostress.js` con tokens y tabla alternativa. *Depende:* B1, A12. *Hecho por Claude:* insignia, lectura en lenguaje llano y cifras arriba; índice de secciones con ancla; ciclo diario, variantes y zoom con "Ver datos en tabla" (el zoom, como resumen de la rejilla).
+- [x] **B5 · M** Todos los estados: carga, CSV roto con mensaje claro, sector sin cálculo, datos parciales. *Depende:* B1. *Hecho por Claude:* esqueletos en la tabla y en la lectura de MODIS; CSV roto con aviso de error que nombra el archivo y "Reintentar"; sector sin cálculo con insignia propia; `ciclo_diario.csv` o `nivel.csv` ausentes dan "Datos parciales".
+- [x] **B6 · C** "Usar mi ubicación" abre el sector que contiene el punto o dice que queda fuera. *Depende:* B2. *Hecho por Claude:* redondeo a 0.01° (no 0.1°: los sectores miden 3 km y 0.1° los saltaría); fuera de los sectores dice cuál es el más cercano.
+- [x] **B7 · C** Edición de nombres con el patrón de diálogo, validación en línea y "Deshacer". *Depende:* B1. *Hecho por Claude:* diálogo `sc-dialogo`, error en línea para vacío y repetido, "Deshacer" en un `sc-toast`.
+- [x] **B8 · C** Estado en la dirección: sector y variante; el botón Atrás cierra el expediente. *Hecho por Claude:* `?sector=&variante=&anio=&periodo=`; abrir agrega una entrada al historial y Atrás cierra.
+- [x] **B9 · C** Ficha del sector imprimible en una página. *Depende:* B4. *Hecho por Claude:* botón "Imprimir ficha"; A4 en una página, probado con el PDF de Edge.
 
 ### Fase 4. Calidad
 
 - [ ] **C7 · M** axe en el catálogo y en cada ruta, dentro de las pruebas de punta a punta. *Acepta:* cero infracciones.
 - [ ] **C8 · M** Presupuestos de Lighthouse en la integración continua, con los umbrales de la sección 1.
-- [ ] **C9 · M** Seguridad: política de seguridad de contenido, el script en línea de `via-a/index.html` pasa a un archivo, y se revisan los nueve usos de `innerHTML`; los que reciben texto de la dirección, de un CSV o de un nombre editable pasan a `textContent`. *Acepta:* una prueba inyecta HTML en un nombre de sector y no se ejecuta.
-- [ ] **C10 · M** Sin red: con los dominios externos bloqueados, cada ruta abre, usa los respaldos y lo dice.
+- [x] **C9 · M** Seguridad: política de seguridad de contenido, el script en línea de `via-a/index.html` pasa a un archivo, y se revisan los nueve usos de `innerHTML`; los que reciben texto de la dirección, de un CSV o de un nombre editable pasan a `textContent`. *Acepta:* una prueba inyecta HTML en un nombre de sector y no se ejecuta.
+- [x] **C10 · M** Sin red: con los dominios externos bloqueados, cada ruta abre, usa los respaldos y lo dice.
 - [x] **A15 · M** Recorrido manual con teclado y lector de pantalla en las cinco rutas; correcciones. *Depende:* A11, B5.
 - [x] **A16 · M** `docs/calidad/9241-110.md` y `docs/calidad/25010.md` llenos, con enlace a la evidencia de cada fila. *Depende:* C7, C8. *Nota:* llenos con lo medido hoy; las filas de compatibilidad y Lighthouse se completan cuando lleguen C5, C7 y C8.
 - [ ] **B10 · M** Revisión de la Vía B en celular real: hoja inferior, alcance del pulgar, objetivos de 44 px. *Depende:* B4.
 
 ### Fase 5. Datos y publicación
 
-- [ ] **C11 · M** `revisar_poligonos.py`: identificadores, tipos, referencias, área mínima y traslapes.
-- [ ] **C12 · M** `metadatos.json` por conjunto de datos: fuente, producto, fecha ISO 8601, versión y completitud. La barra o el pie lo muestran.
+- [x] **C11 · M** `revisar_poligonos.py`: identificadores, tipos, referencias, área mínima y traslapes.
+- [ ] **C12 · M** `metadatos.json` por conjunto de datos: fuente, producto, fecha ISO 8601, versión y completitud. La barra o el pie lo muestran. *Avance:* los tres `metadatos.json` existen (`via-b/datos/reales/`, `via-b/datos/prueba/`, `via-a/datos/`); falta que la interfaz los muestre.
 - [ ] **C13 · M** Corrida con datos observados y pruebas de aceptación sobre `datos/reales/`. *Depende:* D15 cerrada y la exportación disponible.
-- [ ] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13.
-- [ ] **B11 · C** El aviso de datos de prueba aparece solo con `datos/prueba/`. *Depende:* C13.
+- [x] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13. Calculada sobre el export de GIBS con los polígonos esquemáticos; `procesar.py` la rehace cuando cierre D15.
+- [x] **B11 · C** El aviso de datos de prueba aparece solo con `datos/prueba/`. *Depende:* C13. *Verificado por Claude:* `datosDePrueba` sale de una expresión sobre `RUTA_DATOS`; con `datos/reales/` queda la advertencia de polígonos esquemáticos, no la de prueba.
 - [ ] **C15 · M** Publicación desde `main` con página 404 y caché correcta. *Depende:* C2, A6.
 
 ### Fase 6. Cierre

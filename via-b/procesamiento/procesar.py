@@ -10,7 +10,8 @@ Salida (carpeta --salida, por defecto via-b/datos/reales/):
   ciclo_diario.csv   ciclo diario 2003-2019, cuatro pasos y dos algoritmos, signo de Yale (Modelo J)
   yale.csv           cotejo con Yale por año (Modelo H)
   aire.csv           LST nocturna de la ciudad contra T2M_MIN de POWER (Modelo G)
-  resumen.json       parámetros, validez y avisos
+  resumen.json       parámetros, validez, pendiente mínima detectable por sector (C14) y avisos
+  metadatos.json     fuente, productos, fechas ISO 8601, versión y completitud (C12)
   nombres.json       copia de datos/prueba/nombres.json si no existe
 
 Uso:  python via-b/procesamiento/procesar.py [--export CARPETA] [--salida CARPETA] [--geojson ARCHIVO]
@@ -35,6 +36,8 @@ sys.path.insert(0, str(RAIZ))
 sys.path.insert(0, str(AQUI))
 from compartido.tendencia import tendencia, ajustar_fdr  # noqa: E402
 import parametros as P  # noqa: E402
+import metadatos  # noqa: E402
+from potencia import pendiente_minima, ruido_theil_sen  # noqa: E402
 
 ESQUEMA = json.loads((VIA_B / "datos" / "esquema.js").read_text(encoding="utf-8")
                      .split("export const ESQUEMA =", 1)[1].strip().removesuffix(";"))
@@ -71,21 +74,42 @@ def a_celsius(k):
 
 
 def cargar_lst(ruta, avisos):
-    """Devuelve lst[(poligono, producto, anio)] = °C, o NaN si no cumple cobertura."""
-    lst, conteo = {}, defaultdict(lambda: [0, 0])
+    """Devuelve lst[(poligono, producto, anio)] = °C, o NaN si no cumple cobertura (D03),
+    y la validez por producto con el motivo de cada descarte."""
+    lst = {}
+    conteo = defaultdict(lambda: {"validos": 0, "descartados": 0, "motivos": defaultdict(int),
+                                  "anios_descartados": defaultdict(list)})
     for r in leer_csv(ruta):
-        clave = (r["poligono"], r["producto"], int(float(r["anio"])))
+        anio = int(float(r["anio"]))
+        clave = (r["poligono"], r["producto"], anio)
         c = a_celsius(num(r["lst_k"]))
         validos, total, obs = num(r["pix_validos"]), num(r["pix_total"]), num(r["obs_media"])
         cobertura = validos / total if total and total > 0 else 0.0
-        ok = (not math.isnan(c) and cobertura >= P.COBERTURA_MIN
-              and not math.isnan(obs) and obs >= P.OBS_MIN[r["algoritmo"]])
-        lst[clave] = c if ok else math.nan
-        conteo[r["producto"]][0 if ok else 1] += 1
-    for prod, (ok, no) in sorted(conteo.items()):
-        if no:
-            avisos.append(f"{prod}: {no} de {ok + no} polígono-años sin cobertura suficiente")
-    return lst, {p: {"validos": v[0], "descartados": v[1]} for p, v in conteo.items()}
+        if math.isnan(c):
+            motivo = "sin_dato"
+        elif cobertura < P.COBERTURA_MIN:
+            motivo = "cobertura_menor_al_minimo"
+        elif math.isnan(obs) or obs < P.OBS_MIN[r["algoritmo"]]:
+            motivo = "observaciones_insuficientes"
+        else:
+            motivo = None
+        lst[clave] = c if motivo is None else math.nan
+        v = conteo[r["producto"]]
+        if motivo is None:
+            v["validos"] += 1
+        else:
+            v["descartados"] += 1
+            v["motivos"][motivo] += 1
+            v["anios_descartados"][anio].append(r["poligono"])
+    for prod, v in sorted(conteo.items()):
+        if v["descartados"]:
+            avisos.append(f"{prod}: {v['descartados']} de {v['validos'] + v['descartados']} "
+                          "polígono-años sin cobertura suficiente")
+    validez = {p: {"validos": v["validos"], "descartados": v["descartados"],
+                   "motivos": dict(sorted(v["motivos"].items())),
+                   "anios_descartados": {str(a): sorted(ps) for a, ps in sorted(v["anios_descartados"].items())}}
+               for p, v in conteo.items()}
+    return lst, validez
 
 
 def delta(lst, sector, ref, producto, anios):
@@ -252,22 +276,60 @@ def main():
     if not nombres.exists():
         shutil.copy(VIA_B / "datos" / "prueba" / "nombres.json", nombres)
 
+    # ---- Pendiente mínima detectable por sector (C14, 05-MODELOS.md 5.6) ----
     prim_res = [r for r in resultados if r["variante"] == "primario"]
+    anios_p = list(range(prim["anios"][0], prim["anios"][1] + 1))
+    m_fdr = sum(1 for r in prim_res if math.isfinite(r["p"]))
+    alfa_estricto = P.POTENCIA["alfa"] / m_fdr if m_fdr else math.nan
+    for r in prim_res:
+        d = delta(lst, r["sector"], prim["ref"], prim["producto"], anios_p)
+        validos_p = [an for an, x in zip(anios_p, d) if not math.isnan(x)]
+        r["ruido_c"] = ruido_theil_sen(anios_p, d) if math.isfinite(r["pendiente_c_decada"]) else math.nan
+        r["mde"] = (pendiente_minima(validos_p, r["ruido_c"], alfa_estricto, P.POTENCIA["objetivo"],
+                                     P.POTENCIA["simulaciones"], P.POTENCIA["semilla"])
+                    if math.isfinite(r["ruido_c"]) else math.nan)
+
     resumen = {
         "generado": datetime.now().isoformat(timespec="seconds"),
         "parametros": {"temporada_meses": [P.MES_INICIO, P.MES_FIN], "cobertura_min": P.COBERTURA_MIN,
                        "obs_min": P.OBS_MIN, "min_anios": P.MIN_ANIOS, "variantes": P.VARIANTES},
         "validez_por_producto": validez,
         "primario": [{"sector": r["sector"], "pendiente_c_decada": limpio(r["pendiente_c_decada"]),
-                      "p_fdr": limpio(r["p_fdr"]), "n_anios": r["n_anios"]} for r in prim_res],
+                      "p_fdr": limpio(r["p_fdr"]), "n_anios": r["n_anios"],
+                      "ruido_c": None if math.isnan(r["ruido_c"]) else round(r["ruido_c"], 4),
+                      "pendiente_min_detectable_c_decada": None if math.isnan(r["mde"]) else round(r["mde"], 3)}
+                     for r in prim_res],
+        "potencia": {
+            "metodo": ("05-MODELOS.md 5.6: ruido = desviación estándar de los residuos de Theil-Sen de la serie "
+                       "primaria (n − 2); series simuladas con los mismos años válidos, ruido gaussiano sin "
+                       "autocorrelación y Mann-Kendall sin corrección; la pendiente mínima detectable es la más chica "
+                       "que da p < alfa con el signo correcto en al menos el objetivo de las simulaciones"),
+            "objetivo_potencia": P.POTENCIA["objetivo"],
+            "alfa_fdr_mas_estricto": None if math.isnan(alfa_estricto) else alfa_estricto,
+            "sectores_en_fdr": m_fdr,
+            "simulaciones": P.POTENCIA["simulaciones"], "semilla": P.POTENCIA["semilla"],
+            "nota": ("Cota optimista: el semáforo usa p = máx(Mann-Kendall, Hamed-Rao) y pide IC 95 % sin cruzar "
+                     "cero (D16). Un sector gris con pendiente menor que esta cifra puede tener tendencia real"),
+        },
         "aire": aire,
         "avisos": avisos,
     }
     (a.salida / "resumen.json").write_text(json.dumps(resumen, ensure_ascii=False, indent=1), encoding="utf-8")
 
+    # ---- metadatos.json (C12) ----
+    usados = sorted({c["producto"] for c in P.VARIANTES.values()}
+                    | {f"{alg}_{sat}_{mom}" for _, sat, mom in P.CICLO_PASOS for alg in ("MOD11", "MOD21")})
+    ausentes = [u for u in usados if u not in validez]
+    metadatos.escribir(a.salida / "metadatos.json", metadatos.de_reales(
+        export=a.export, geojson=a.geojson, validez=validez,
+        poligonos=[f["properties"]["id"] for f in geo["features"]], anios=(P.ANIO_INICIO, P.ANIO_FIN),
+        temporada=(P.MES_INICIO, P.MES_FIN), primario=resumen["primario"], parametros=resumen["parametros"],
+        avisos_productos=ausentes))
+
     print(f"Listo en {a.salida}: {len(serie)} filas de serie, {len(resultados)} resultados, {len(ciclo)} de ciclo diario.")
     for r in prim_res:
-        print(f"  {r['sector']} primario: {limpio(r['pendiente_c_decada'])} °C/década, p_fdr {limpio(r['p_fdr'])}, n {r['n_anios']}")
+        print(f"  {r['sector']} primario: {limpio(r['pendiente_c_decada'])} °C/década, p_fdr {limpio(r['p_fdr'])}, "
+              f"n {r['n_anios']}, mínima detectable {limpio(r['mde'])} °C/década")
     for av in avisos:
         print("  AVISO:", av)
 
