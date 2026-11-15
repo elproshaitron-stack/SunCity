@@ -89,6 +89,9 @@ legend {
   -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
 }
 .donde .sc-chips { margin-top: var(--e-3); }
+.ubicar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-2) var(--e-3); margin-top: var(--e-3); }
+.ubicar-nota { flex: 1 1 12rem; font-size: var(--t-xs); color: var(--texto-2); }
+.ubicar-nota--error { color: var(--error); font-weight: 600; }
 .coords {
   display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--e-2);
   align-items: end; margin-top: var(--e-3);

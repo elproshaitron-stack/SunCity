@@ -639,10 +639,7 @@ sc-barra, sc-pie { display: contents; }
   display: inline-flex; align-items: center; gap: var(--e-2);
   margin-right: auto; color: inherit; font-weight: 700; text-decoration: none;
 }
-.sc-barra__sol {
-  width: 12px; height: 12px; border-radius: 50%;
-  background: var(--marca); box-shadow: 0 0 0 4px var(--marca-halo);
-}
+.sc-barra__logo { flex: none; width: 30px; height: 30px; object-fit: contain; }
 .sc-barra__nav { display: flex; align-items: center; gap: var(--e-1); margin: 0; padding: 0; list-style: none; }
 .sc-barra__nav a {
   display: inline-flex; align-items: center;

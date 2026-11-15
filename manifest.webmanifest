@@ -10,7 +10,7 @@
   "background_color": "#fbf6ec",
   "theme_color": "#0a1024",
   "icons": [
-    { "src": "compartido/marca/icono.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "compartido/marca/icono-48.png", "type": "image/png", "sizes": "48x48" },
     { "src": "compartido/marca/icono-192.png", "type": "image/png", "sizes": "192x192" },
     { "src": "compartido/marca/icono-512.png", "type": "image/png", "sizes": "512x512" },
     { "src": "compartido/marca/icono-adaptable-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
