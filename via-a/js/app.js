@@ -87,6 +87,7 @@
 
     $("ubicar").addEventListener("click", usarUbicacion);
     $("csv").addEventListener("click", descargarCSV);
+    $("imprimir").addEventListener("click", function () { window.print(); });
     $("enlace").addEventListener("click", copiarEnlace);
   }
 
@@ -203,6 +204,11 @@
     var lugarTxt = nombreLugar(l), sujeto = v.corta + textoTemporada(estado.mes);
     var a0 = s.anios[0], a1 = s.anios[s.anios.length - 1];
     terminarCarga();
+    // Encabezado de la hoja impresa
+    $("imp-contexto").textContent = lugarTxt.charAt(0).toUpperCase() + lugarTxt.slice(1) + " (" + num(l.lat, 2) + ", " + num(l.lon, 2) + ") · " +
+      v.nombre + " · " + (estado.mes ? Power.MESES[estado.mes - 1] + " de cada año" : "año completo");
+    $("imp-origen").textContent = "Consultado el " + new Date().toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" }) +
+      " · " + location.href;
     mostrarEstado("Datos de NASA POWER, " + a0 + "-" + a1 + ' <span class="sc-insignia sc-insignia--exploratorio origen">' +
       (estado.origen === "en vivo" ? "descargados ahora" : "copia guardada") + "</span>", "", true);
     if (estado.origen === "guardado") {

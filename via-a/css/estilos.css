@@ -248,6 +248,50 @@ legend {
   .glosario dd { margin-bottom: var(--e-2); }
 }
 
+/* ── Impresión: el resultado en una página ──────────────────── */
+.impresion { display: none; }
+
+@media print {
+  @page { size: A4; margin: 14mm; }
+  html, body { background: var(--blanco); }
+  body { font-size: 10.5pt; }
+
+  /* Fuera lo que no sirve en papel: navegación, globo, preguntas, acciones y ayudas */
+  sc-barra, .sc-saltar, .escenario, .preguntas, .acciones, .glosario, .estado, #esqueleto, #puente,
+  .sc-toasts, .grafica-ver-tabla, .sc-tabla-marco, .sc-aviso__acciones, .sc-pie__versiones { display: none !important; }
+
+  .app { display: block; min-height: 0; }
+  .panel { padding: 0; background: none; }
+  .resultado { padding-top: 0; }
+  .veredicto { padding-top: 0; }
+  .veredicto > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+
+  .impresion {
+    display: flex; align-items: center; gap: 10pt;
+    padding-bottom: 8pt; margin-bottom: 10pt; border-bottom: 1px solid var(--texto);
+  }
+  .impresion-marca { font-weight: 700; }
+  .impresion-contexto { font-size: 11pt; }
+  .impresion-origen { font-size: 8pt; color: var(--texto-2); word-break: break-all; }
+
+  .veredicto h2 { font-size: 24pt; margin: 6pt 0; }
+  .frase { max-width: none; }
+  .cifras { grid-template-columns: repeat(4, 1fr); margin: 10pt 0 6pt; }
+  .exploratorio { max-width: none; }
+  .figura { margin-top: 8pt; break-inside: avoid; }
+  .grafica svg { max-height: 58mm; width: 100%; }
+  .grafica > p { margin-top: 2pt; }
+  .aviso-datos { margin: 0 0 6pt; padding-top: 6pt; padding-bottom: 6pt; }
+  .aviso-datos .sc-aviso__texto { max-width: none; }
+  .escala { margin-top: 10pt; padding: 8pt 10pt; break-inside: avoid; }
+  .escala p { max-width: none; }
+  .panel .sc-pie { margin-top: 10pt; padding-top: 6pt; font-size: 8pt; }
+  .panel .sc-pie a { color: inherit; text-decoration: none; }
+
+  /* Las insignias y los avisos conservan su fondo; el resto va en tinta sobre blanco */
+  .sc-insignia, .sc-aviso, .sc-tarjeta--suave { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
   .punto-onda { display: none; }
