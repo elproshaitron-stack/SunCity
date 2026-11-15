@@ -207,7 +207,7 @@ Vía B:
 
 - [ ] **C16 · C** `CHANGELOG.md` y etiqueta `v1.0.0`. *Depende:* todo lo anterior.
 - [x] **A17 · C** Revisión final de documentación: ningún documento contradice al código.
-- [ ] **A18 · C** Las diez condiciones de la sección 1 marcadas, cada una con su evidencia.
+- [ ] **A18 · C** Las diez condiciones de la sección 1 marcadas, cada una con su evidencia. *Avance:* revisión hecha en `docs/calidad/condiciones.md` (1 cumple, 4 en parte, 5 no); se marca cuando las diez cumplan.
 
 ## 7. Orden y dependencias
 
