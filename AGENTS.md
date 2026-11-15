@@ -50,7 +50,7 @@ Si una tarea necesita un archivo de otro carril, no lo edites: abre un issue con
    python via-b/procesamiento/probar_procesamiento.py
    python via-b/pruebas/aceptacion.py
    ```
-   Cuando exista `verificar.py` (tarea C1), basta con `python verificar.py`.
+   O, en un solo paso, `python verificar.py`, que corre todo lo anterior y además busca colores fuera de los tokens y textos prohibidos. La integración continua lo corre en cada PR.
 5. Si tocaste interfaz, pruébala en un navegador real a 375 px y a 1366 px, y dilo en el PR con lo que viste.
 6. Abre un PR hacia `main` con el ID de la tarea en el título. En el mismo PR marca la casilla de la tarea en el tablero.
 7. No fusiones tu propio PR. A revisa los de B y C; B revisa los de A; C revisa la parte de pruebas de todos.

@@ -148,10 +148,10 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 - [x] **A3 · M** `compartido/catalogo.html`: cada componente, cada estado, en los dos temas, con el código que lo produce. *Depende:* A2. *Acepta:* es la referencia que usan B y las pruebas de C.
 - [x] **A4 · M** `compartido/componentes.js`: hoja, diálogo, toast, segmento con flechas, barra y pie. *Depende:* A2. *Acepta:* cada uno se maneja completo con teclado.
 - [x] **A5 · C** `compartido/iconos.svg` y su uso con `<use>`. *Acepta:* no queda un ícono dibujado en línea.
-- [ ] **C1 · M** `verificar.py`: todas las pruebas actuales, más la búsqueda de textos prohibidos y de colores fuera de los tokens. *Acepta:* código 0 en `main`; código 1 con cualquier fallo.
-- [ ] **C2 · C** Integración continua que corre `verificar.py` en cada PR. *Depende:* C1.
+- [x] **C1 · M** `verificar.py`: todas las pruebas actuales, más la búsqueda de textos prohibidos y de colores fuera de los tokens. *Acepta:* código 0 en `main`; código 1 con cualquier fallo. *Hecho por Claude a pedido de Navarrete:* reemplaza el borrador del PR #10. Las excepciones de color y de texto están en una lista dentro del script, cada una con su motivo; `aceptacion.py` sobre `datos/reales/` sale como aviso (D18). Al entrar daba código 1 por tres colores sueltos: dos en `via-a/js/globo.js` (recuadro de la celda) y el `rgb(` de `via-b/zoom-ecostress.js`.
+- [x] **C2 · C** Integración continua que corre `verificar.py` en cada PR. *Depende:* C1. *Hecho:* `.github/workflows/verificar.yml`, en cada PR y en cada push a `main`, con Python 3.12 y Node 20.
 - [ ] **C3 · M** Terceros servidos desde el sitio: MapLibre y las tres fuentes en `compartido/vendor/`, con su archivo de licencias. *Acepta:* cero peticiones a `unpkg.com` y a `fonts.googleapis.com`.
-- [ ] **C4 · C** Registrar en `DECISIONES.md` las decisiones técnicas nuevas: herramientas de prueba solo para desarrollo, terceros servidos localmente y MapLibre en la Vía B.
+- [x] **C4 · C** Registrar en `DECISIONES.md` las decisiones técnicas nuevas: herramientas de prueba solo para desarrollo, terceros servidos localmente y MapLibre en la Vía B. *Hecho:* D19, D20 y D21.
 
 ### Fase 2. Plataforma
 
