@@ -175,14 +175,14 @@ Vía A:
 Vía B:
 
 - [x] **B1 · M** La Vía B usa tokens y componentes `sc-`: aviso de datos de prueba, botones con jerarquía, campos, expediente como `sc-hoja`. *Depende:* A2, A4. *Acepta:* `aceptacion.py` pasa y no queda un color suelto. *Hecho por Claude a pedido de Navarrete (PR de B1):* `aceptacion.py` en 7 PASA; en `via-b/` solo quedan la meta `theme-color` y la escala de datos de `compartido/lst-noche.js`. La Vía B tiene ya barra y pie comunes y "Saltar al contenido".
-- [ ] **B2 · G** Mapa de sectores con MapLibre y el estilo compartido; cada sector lleva color, patrón y etiqueta; foco y selección visibles. *Depende:* A9, C3. *Avance (Claude, a pedido de Navarrete):* MapLibre con el estilo compartido, selección visible y capa real de MODIS MOD11A2 nocturno desde NASA GIBS ya están; Leaflet se quitó. Falta el patrón y la etiqueta fija por sector.
-- [ ] **B3 · M** Tabla de sectores ordenable como alternativa al mapa: nombre, cambio por década, intervalo, p ajustado, población y estado. Abrir una fila abre su expediente. *Depende:* B1.
-- [ ] **B4 · G** Expediente rediseñado: insignia y lectura en lenguaje llano arriba; secciones con ancla; `ciclo-diario.js`, `variantes.js` y `zoom-ecostress.js` con tokens y tabla alternativa. *Depende:* B1, A12.
-- [ ] **B5 · M** Todos los estados: carga, CSV roto con mensaje claro, sector sin cálculo, datos parciales. *Depende:* B1.
-- [ ] **B6 · C** "Usar mi ubicación" abre el sector que contiene el punto o dice que queda fuera. *Depende:* B2.
-- [ ] **B7 · C** Edición de nombres con el patrón de diálogo, validación en línea y "Deshacer". *Depende:* B1.
-- [ ] **B8 · C** Estado en la dirección: sector y variante; el botón Atrás cierra el expediente.
-- [ ] **B9 · C** Ficha del sector imprimible en una página. *Depende:* B4.
+- [x] **B2 · G** Mapa de sectores con MapLibre y el estilo compartido; cada sector lleva color, patrón y etiqueta; foco y selección visibles. *Depende:* A9, C3. *Avance (Claude, a pedido de Navarrete):* MapLibre con el estilo compartido, selección visible y capa real de MODIS MOD11A2 nocturno desde NASA GIBS ya están; Leaflet se quitó. Falta el patrón y la etiqueta fija por sector. *Hecho por Claude:* cada sector lleva etiqueta fija (nombre y cambio por década), trama por estado (rayas si aumenta, puntos si disminuye, borde punteado sin cálculo) igual en la leyenda, y un anillo oscuro al seleccionarlo o al pasar por su fila de la tabla.
+- [x] **B3 · M** Tabla de sectores ordenable como alternativa al mapa: nombre, cambio por década, intervalo, p ajustado, población y estado. Abrir una fila abre su expediente. *Depende:* B1. *Hecho por Claude:* `sc-tabla--tarjetas` ordenable bajo el mapa; el nombre es un enlace `?sector=` que abre el expediente.
+- [x] **B4 · G** Expediente rediseñado: insignia y lectura en lenguaje llano arriba; secciones con ancla; `ciclo-diario.js`, `variantes.js` y `zoom-ecostress.js` con tokens y tabla alternativa. *Depende:* B1, A12. *Hecho por Claude:* insignia, lectura en lenguaje llano y cifras arriba; índice de secciones con ancla; ciclo diario, variantes y zoom con "Ver datos en tabla" (el zoom, como resumen de la rejilla).
+- [x] **B5 · M** Todos los estados: carga, CSV roto con mensaje claro, sector sin cálculo, datos parciales. *Depende:* B1. *Hecho por Claude:* esqueletos en la tabla y en la lectura de MODIS; CSV roto con aviso de error que nombra el archivo y "Reintentar"; sector sin cálculo con insignia propia; `ciclo_diario.csv` o `nivel.csv` ausentes dan "Datos parciales".
+- [x] **B6 · C** "Usar mi ubicación" abre el sector que contiene el punto o dice que queda fuera. *Depende:* B2. *Hecho por Claude:* redondeo a 0.01° (no 0.1°: los sectores miden 3 km y 0.1° los saltaría); fuera de los sectores dice cuál es el más cercano.
+- [x] **B7 · C** Edición de nombres con el patrón de diálogo, validación en línea y "Deshacer". *Depende:* B1. *Hecho por Claude:* diálogo `sc-dialogo`, error en línea para vacío y repetido, "Deshacer" en un `sc-toast`.
+- [x] **B8 · C** Estado en la dirección: sector y variante; el botón Atrás cierra el expediente. *Hecho por Claude:* `?sector=&variante=&anio=&periodo=`; abrir agrega una entrada al historial y Atrás cierra.
+- [x] **B9 · C** Ficha del sector imprimible en una página. *Depende:* B4. *Hecho por Claude:* botón "Imprimir ficha"; A4 en una página, probado con el PDF de Edge.
 
 ### Fase 4. Calidad
 
@@ -200,7 +200,7 @@ Vía B:
 - [ ] **C12 · M** `metadatos.json` por conjunto de datos: fuente, producto, fecha ISO 8601, versión y completitud. La barra o el pie lo muestran.
 - [ ] **C13 · M** Corrida con datos observados y pruebas de aceptación sobre `datos/reales/`. *Depende:* D15 cerrada y la exportación disponible.
 - [ ] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13.
-- [ ] **B11 · C** El aviso de datos de prueba aparece solo con `datos/prueba/`. *Depende:* C13.
+- [x] **B11 · C** El aviso de datos de prueba aparece solo con `datos/prueba/`. *Depende:* C13. *Verificado por Claude:* `datosDePrueba` sale de una expresión sobre `RUTA_DATOS`; con `datos/reales/` queda la advertencia de polígonos esquemáticos, no la de prueba.
 - [ ] **C15 · M** Publicación desde `main` con página 404 y caché correcta. *Depende:* C2, A6.
 
 ### Fase 6. Cierre
