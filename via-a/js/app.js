@@ -18,7 +18,11 @@
   var estado = { lugar: null, variable: "T2M_MIN", mes: 0, datos: null, origen: "", serie: null, res: null };
   var cache = {};
   var pedido = 0;
-  var mapa = null, marcador = null;
+  var globo = null;
+
+  // Etiquetas cortas de los botones; el nombre completo y la definición van debajo.
+  var ETIQUETAS = { T2M_MIN: "Mínima del aire", T2M_MAX: "Máxima del aire", T2M: "Media del aire",
+    TS: "Superficie", PRECTOTCORR: "Precipitación" };
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -34,31 +38,35 @@
 
   /* ---------- Preguntas ---------- */
   function armarControles() {
-    var sel = $("ciudad");
-    sel.innerHTML = '<option value="">Elegir…</option>' + CIUDADES.map(function (c) {
-      return '<option value="' + c.id + '">' + c.nombre + "</option>";
+    var ciu = $("ciudades");
+    ciu.innerHTML = CIUDADES.map(function (c) {
+      return '<button type="button" class="chip" data-ciudad="' + c.id + '" aria-pressed="false">' + c.nombre + "</button>";
     }).join("");
-    sel.addEventListener("change", function () {
-      var c = CIUDADES.filter(function (x) { return x.id === sel.value; })[0];
+    ciu.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-ciudad]");
+      if (!b) return;
+      var c = CIUDADES.filter(function (x) { return x.id === b.getAttribute("data-ciudad"); })[0];
       if (c) fijarLugar({ lat: c.lat, lon: c.lon, nombre: c.nombre, ciudad: c }, true);
     });
 
     var cont = $("variables");
     cont.innerHTML = Object.keys(Power.VARIABLES).map(function (k) {
-      var v = Power.VARIABLES[k];
-      return '<label class="opcion"><input type="radio" name="variable" value="' + k + '">' +
-        '<span class="nom">' + v.nombre + "<code>" + k + "</code></span>" +
-        '<span class="def">' + v.definicion + "</span></label>";
+      return '<label class="chip"><input type="radio" name="variable" value="' + k + '">' +
+        "<span>" + ETIQUETAS[k] + "</span></label>";
     }).join("");
     cont.addEventListener("change", function (e) {
-      if (e.target.name === "variable") { estado.variable = e.target.value; calcular(); }
+      if (e.target.name === "variable") { estado.variable = e.target.value; pintarDefinicion(); calcular(); }
     });
 
     var tem = $("temporada");
-    tem.innerHTML = '<option value="0">Año completo</option>' + Power.MESES.map(function (m, i) {
-      return '<option value="' + (i + 1) + '">Solo ' + m + " de cada año</option>";
-    }).join("");
-    tem.addEventListener("change", function () { estado.mes = +tem.value; calcular(); });
+    tem.innerHTML = '<label class="mes mes--anio"><input type="radio" name="temporada" value="0"><span>Año completo</span></label>' +
+      Power.MESES.map(function (m, i) {
+        return '<label class="mes" title="Solo ' + m + ' de cada año"><input type="radio" name="temporada" value="' + (i + 1) +
+          '" aria-label="Solo ' + m + ' de cada año"><span aria-hidden="true">' + m.slice(0, 3) + "</span></label>";
+      }).join("");
+    tem.addEventListener("change", function (e) {
+      if (e.target.name === "temporada") { estado.mes = +e.target.value; calcular(); }
+    });
 
     $("ir").addEventListener("click", function () {
       var lat = parseFloat($("lat").value), lon = parseFloat($("lon").value);
@@ -76,35 +84,37 @@
   function sincronizarControles() {
     var r = document.querySelector('input[name="variable"][value="' + estado.variable + '"]');
     if (r) r.checked = true;
-    $("temporada").value = String(estado.mes);
+    var t = document.querySelector('input[name="temporada"][value="' + estado.mes + '"]');
+    if (t) t.checked = true;
+    pintarDefinicion();
     if (estado.lugar) {
       $("lat").value = estado.lugar.lat.toFixed(2);
       $("lon").value = estado.lugar.lon.toFixed(2);
-      $("ciudad").value = estado.lugar.ciudad ? estado.lugar.ciudad.id : "";
+      var id = estado.lugar.ciudad ? estado.lugar.ciudad.id : "";
+      Array.prototype.forEach.call(document.querySelectorAll("[data-ciudad]"), function (b) {
+        b.setAttribute("aria-pressed", String(b.getAttribute("data-ciudad") === id));
+      });
     }
   }
 
-  /* ---------- Mapa ---------- */
+  function pintarDefinicion() {
+    var v = Power.VARIABLES[estado.variable];
+    $("definicion").innerHTML = "<strong>" + v.nombre + "</strong> <code>" + estado.variable + "</code> " + v.definicion;
+  }
+
+  /* ---------- Globo ---------- */
   function armarMapa() {
-    if (typeof L === "undefined") {
-      $("mapa").innerHTML = '<p class="sin-mapa">El mapa no cargó. Escribe la latitud y la longitud abajo o elige una ciudad de ejemplo.</p>';
-      return;
-    }
-    mapa = L.map("mapa", { scrollWheelZoom: false }).setView([HERMOSILLO.lat, HERMOSILLO.lon], 5);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 12, attribution: "© OpenStreetMap"
-    }).addTo(mapa);
-    mapa.on("click", function (e) {
-      fijarLugar({ lat: e.latlng.lat, lon: L.Util.wrapNum(e.latlng.lng, [-180, 180], true) }, false);
+    globo = Globo.crear("mapa", {
+      alElegir: function (lat, lon) { fijarLugar({ lat: lat, lon: lon }, false); }
     });
   }
 
   function moverMarcador(centrar) {
-    if (!mapa || !estado.lugar) return;
-    var ll = [estado.lugar.lat, estado.lugar.lon];
-    if (!marcador) marcador = L.marker(ll, { keyboard: false }).addTo(mapa);
-    else marcador.setLatLng(ll);
-    if (centrar) mapa.setView(ll, Math.max(mapa.getZoom(), 6));
+    if (!estado.lugar) return;
+    var c = Globo.celda(estado.lugar.lat, estado.lugar.lon);
+    $("celda-texto").textContent = "El recuadro marca la celda aproximada de MERRA-2: unos " +
+      Math.round(c.anchoKm) + " × " + Math.round(c.altoKm) + " km aquí.";
+    if (globo) globo.mover(estado.lugar.lat, estado.lugar.lon, centrar);
   }
 
   /* ---------- Datos ---------- */
