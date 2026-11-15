@@ -88,6 +88,18 @@ select {
   outline-offset: 2px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Componentes semánticos sc- */
 .sc-aviso {
   position: fixed;
@@ -103,6 +115,76 @@ select {
   font-size: var(--t-xs);
   font-weight: 700;
   letter-spacing: .04em;
+}
+
+.sc-aviso--error {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  height: auto;
+  min-height: var(--tactil, 44px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  padding: var(--e-3) var(--e-4);
+  margin: var(--e-3) 0 var(--e-4);
+  border: 1px solid var(--error);
+  border-radius: var(--r-md);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-size: var(--t-sm);
+  letter-spacing: normal;
+  font-weight: normal;
+}
+
+.sc-aviso--error[hidden] {
+  display: none;
+}
+
+.sc-aviso--error .sc-aviso-cuerpo {
+  flex: 1;
+  min-width: 200px;
+}
+
+.sc-aviso--error .sc-aviso-titulo {
+  display: block;
+  color: var(--error);
+  font-weight: 700;
+  font-size: var(--t-sm);
+  margin-bottom: var(--e-1);
+}
+
+.sc-aviso--error .sc-aviso-mensaje {
+  margin: 0;
+  color: var(--texto-2);
+  font-size: var(--t-xs);
+}
+
+.sc-aviso--advertencia {
+  position: relative;
+  padding: var(--e-3) var(--e-4);
+  margin: var(--e-2) 0 var(--e-3);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--foco);
+  border-radius: var(--r-sm);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-size: var(--t-xs);
+}
+
+.sc-aviso--info {
+  position: relative;
+  padding: var(--e-3) var(--e-4);
+  margin: var(--e-2) 0 var(--e-3);
+  border: 1px solid var(--linea);
+  border-left: 4px solid var(--dato);
+  border-radius: var(--r-sm);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-size: var(--t-xs);
 }
 
 .sc-boton {
@@ -156,6 +238,50 @@ select {
   cursor: not-allowed;
 }
 
+/* Conmutador de vistas sc-segmento */
+.sc-segmento {
+  display: inline-flex;
+  align-items: center;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--r-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.sc-segmento-opcion {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e-1);
+  min-height: var(--tactil, 44px);
+  min-width: var(--tactil, 44px);
+  padding: 0 var(--e-3);
+  border-radius: calc(var(--r-sm) - 2px);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--texto-2);
+  cursor: pointer;
+  transition: background var(--dur, 180ms) ease, color var(--dur, 180ms) ease;
+  box-sizing: border-box;
+}
+
+.sc-segmento-opcion:hover {
+  color: var(--texto);
+}
+
+.sc-segmento-opcion:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}
+
+.sc-segmento-opcion.activa,
+.sc-segmento-opcion[aria-selected="true"] {
+  background: var(--accion);
+  color: var(--sobre-accion);
+}
+
 .sc-campo {
   font: inherit;
   min-height: var(--tactil, 44px);
@@ -195,6 +321,12 @@ select {
   background: var(--superficie-2);
   color: var(--texto);
   border: 1px solid var(--borde);
+}
+
+.sc-insignia--sin-calculo {
+  background: var(--superficie-2);
+  color: var(--texto-2);
+  border: 1px dashed var(--borde);
 }
 
 .sc-cifra {
@@ -345,8 +477,13 @@ p {
   align-items: start;
 }
 
+.vista-panel[hidden] {
+  display: none !important;
+}
+
 /* Panel del Mapa */
 .mapa-panel {
+  position: relative;
   border: 1px solid var(--linea);
   border-radius: var(--r-md);
   overflow: hidden;
@@ -357,6 +494,75 @@ p {
   height: 52dvh;
   min-height: 330px;
   background: var(--superficie-2);
+}
+
+/* ── Esqueletos de carga (Task B5) ─────────────────────────── */
+@keyframes pulso-esqueleto {
+  0% {
+    opacity: .5;
+    background-color: var(--superficie-2);
+  }
+  50% {
+    opacity: 1;
+    background-color: var(--linea);
+  }
+  100% {
+    opacity: .5;
+    background-color: var(--superficie-2);
+  }
+}
+
+.sc-esqueleto {
+  background-color: var(--superficie-2);
+  border-radius: var(--r-sm);
+  animation: pulso-esqueleto 1.5s ease-in-out infinite;
+}
+
+.sc-esqueleto--mapa {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-escenario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--superficie-2);
+  pointer-events: none;
+}
+
+.sc-esqueleto--mapa[hidden] {
+  display: none;
+}
+
+.sc-esqueleto-forma {
+  width: 60%;
+  height: 50%;
+  border-radius: var(--r-md);
+  border: 2px dashed var(--borde);
+  background: var(--superficie);
+}
+
+.sc-esqueleto--tabla {
+  padding: var(--e-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-3);
+}
+
+.sc-esqueleto--tabla[hidden] {
+  display: none;
+}
+
+.sc-esqueleto-fila {
+  height: var(--tactil, 44px);
+  width: 100%;
+  border-radius: var(--r-sm);
+  background: var(--superficie-2);
+  animation: pulso-esqueleto 1.5s ease-in-out infinite;
+}
+
+.sc-esqueleto-fila--cabecera {
+  height: 36px;
+  background: var(--linea);
 }
 
 /* Controles de zoom Leaflet con objetivo táctil de 44 px */
@@ -415,6 +621,137 @@ p {
   font-size: var(--t-2xs);
   margin: 0;
   padding: 0 var(--e-4) var(--e-4);
+}
+
+/* Panel de la Tabla Accesible (Task B3) */
+.tabla-panel {
+  position: relative;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--superficie-elevada);
+}
+
+.sc-tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sc-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--t-sm);
+}
+
+.sc-tabla caption {
+  padding: var(--e-3) var(--e-4);
+  font-size: var(--t-xs);
+  color: var(--texto-2);
+  text-align: left;
+  border-bottom: 1px solid var(--linea);
+}
+
+.sc-tabla thead {
+  background: var(--superficie-2);
+  border-bottom: 1px solid var(--linea);
+}
+
+.sc-tabla th,
+.sc-tabla td {
+  padding: var(--e-2) var(--e-3);
+  border-bottom: 1px solid var(--linea);
+  vertical-align: middle;
+}
+
+.th-izq, .td-izq { text-align: left; }
+.th-der, .td-der { text-align: right; }
+.th-cen, .td-cen { text-align: center; }
+
+.td-cifra {
+  font-family: var(--f-dato);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.td-sector {
+  font-weight: 600;
+  color: var(--texto);
+}
+
+.sector-nombre {
+  display: inline-block;
+  margin-right: var(--e-2);
+}
+
+.sector-id {
+  font-family: var(--f-dato);
+  font-size: var(--t-2xs);
+  color: var(--texto-2);
+  font-weight: normal;
+}
+
+.btn-ordenar {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-1);
+  min-height: var(--tactil, 44px);
+  min-width: var(--tactil, 44px);
+  padding: 0 var(--e-2);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: var(--t-xs);
+  color: var(--texto);
+  border-radius: var(--r-sm);
+  box-sizing: border-box;
+}
+
+.th-der .btn-ordenar {
+  flex-direction: row-reverse;
+}
+
+.btn-ordenar:hover {
+  background: var(--superficie-2);
+}
+
+.btn-ordenar:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}
+
+.indicador-orden {
+  font-size: var(--t-xs);
+  color: var(--texto-2);
+}
+
+.fila-sector {
+  cursor: pointer;
+  min-height: var(--tactil, 44px);
+  transition: background-color var(--dur, 180ms) ease;
+}
+
+.fila-sector:hover {
+  background: var(--superficie-2);
+}
+
+.fila-sector:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: -2px;
+}
+
+.fila-sector.fila-seleccionada {
+  background: var(--superficie-2);
+  border-left: 4px solid var(--dato);
+}
+
+.pie-tabla {
+  font-size: var(--t-2xs);
+  margin: 0;
+  padding: var(--e-3) var(--e-4);
+  color: var(--texto-2);
+  border-top: 1px solid var(--linea);
 }
 
 /* Expediente y Hoja */
@@ -596,6 +933,87 @@ dd {
   touch-action: manipulation;
 }
 
+/* Transformación a tarjetas en celular (< 768 px) */
+@media (max-width: 767px) {
+  .sc-tabla thead {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--e-2) var(--e-3);
+    background: var(--superficie-2);
+    border-bottom: 1px solid var(--linea);
+  }
+
+  .sc-tabla thead tr {
+    display: flex;
+    gap: var(--e-2);
+    width: max-content;
+  }
+
+  .sc-tabla thead th {
+    display: block;
+    padding: 0;
+    border: none;
+  }
+
+  .btn-ordenar {
+    padding: var(--e-1) var(--e-3);
+    border: 1px solid var(--borde);
+    border-radius: var(--r-pill);
+    background: var(--superficie);
+    white-space: nowrap;
+  }
+
+  .sc-tabla tbody {
+    display: block;
+    padding: var(--e-3);
+  }
+
+  .fila-sector {
+    display: block;
+    margin-bottom: var(--e-3);
+    border: 1px solid var(--linea);
+    border-radius: var(--r-md);
+    background: var(--superficie);
+    padding: var(--e-3);
+  }
+
+  .fila-sector.fila-seleccionada {
+    border-left: 4px solid var(--dato);
+    background: var(--superficie-2);
+  }
+
+  .sc-tabla td,
+  .sc-tabla th[scope="row"] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--e-2) 0;
+    border-bottom: 1px solid var(--linea);
+    text-align: right;
+  }
+
+  .sc-tabla td:last-child {
+    border-bottom: none;
+  }
+
+  .sc-tabla td::before {
+    content: attr(data-etiqueta);
+    font-weight: 500;
+    color: var(--texto-2);
+    font-size: var(--t-xs);
+    text-align: left;
+    margin-right: var(--e-2);
+  }
+
+  .sc-tabla th[scope="row"] {
+    text-align: left;
+    border-bottom: 2px solid var(--linea);
+    padding-bottom: var(--e-2);
+    margin-bottom: var(--e-1);
+  }
+}
+
 /* Ergonomía móvil (< 900 px, ej. 375 px) */
 @media (max-width: 899px) {
   #expediente {
@@ -697,5 +1115,11 @@ dd {
 @media (prefers-reduced-motion: reduce) {
   #expediente {
     transition: none !important;
+  }
+
+  .sc-esqueleto,
+  .sc-esqueleto-fila {
+    animation: none !important;
+    opacity: .8 !important;
   }
 }
