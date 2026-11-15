@@ -2,6 +2,7 @@
 import csv
 import json
 from pathlib import Path
+import re
 import sys
 
 import numpy as np
@@ -14,6 +15,14 @@ from compartido.tendencia import tendencia, ajustar_fdr
 ESQUEMA = json.loads((CARPETA.parent / 'esquema.js').read_text(encoding='utf-8').split('export const ESQUEMA =', 1)[1].strip().removesuffix(';'))
 
 
+def leer_pasos_aqua():
+    config = (CARPETA.parents[1] / 'config.js').read_text(encoding='utf-8')
+    hallazgo = re.search(r'^\s*export\s+const\s+pasosAqua\s*=\s*([\'\"])(.*?)\1\s*;', config, re.M)
+    if not hallazgo or hallazgo.group(2) not in {'rango', 'solo_mod11'}:
+        raise ValueError('config.js: pasosAqua debe ser rango o solo_mod11')
+    return hallazgo.group(2)
+
+
 def escribir(nombre, esquema, filas):
     with (CARPETA / nombre).open('w', encoding='utf-8', newline='') as archivo:
         salida = csv.DictWriter(archivo, fieldnames=list(esquema.values()))
@@ -22,7 +31,9 @@ def escribir(nombre, esquema, filas):
 
 
 def generar():
+    pasos_aqua = leer_pasos_aqua()
     rng = np.random.default_rng(2027)
+    rng_aqua = np.random.default_rng(2028)
     anios = np.arange(2001, 2026)
     series, resultados, datos, ciclo, niveles = [], [], {}, [], []
     for i, (pendiente, ruido) in enumerate([(0.09, 0.12), (0, 0.55), (-0.08, 0.12), (0.035, 0.3), (0.005, 0.5), (0.065, 0.18)], 1):
@@ -43,6 +54,8 @@ def generar():
             ciclo.append(dict(sector=sector, paso=paso, producto='MOD11', valor=mod11, yale_signo=signo if paso in ('terra_1030', 'aqua_1330') else ''))
             if paso.startswith('terra'):
                 ciclo.append(dict(sector=sector, paso=paso, producto='MOD21', valor=round(mod11 + float(rng.uniform(-0.18, 0.22)), 3), yale_signo=signo if paso == 'terra_1030' else ''))
+            elif pasos_aqua == 'rango':
+                ciclo.append(dict(sector=sector, paso=paso, producto='MOD21', valor=round(mod11 + float(rng_aqua.uniform(-0.18, 0.22)), 3), yale_signo=signo if paso == 'aqua_1330' else ''))
     for variante in ESQUEMA['variantes']:
         grupo = []
         for sector, valores in datos.items():
