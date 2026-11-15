@@ -21,6 +21,19 @@ class Manejador(SimpleHTTPRequestHandler):
         self.send_header('Cache-Control', 'no-store')
         super().end_headers()
 
+    def send_error(self, code, message=None, explain=None):
+        # Igual que en el sitio publicado: una ruta que no existe muestra 404.html
+        pagina = RAIZ / '404.html'
+        if code != 404 or self.command not in ('GET', 'HEAD') or not pagina.is_file():
+            return super().send_error(code, message, explain)
+        cuerpo = pagina.read_bytes()
+        self.send_response(404)
+        self.send_header('Content-Type', 'text/html; charset=utf-8')
+        self.send_header('Content-Length', str(len(cuerpo)))
+        self.end_headers()
+        if self.command == 'GET':
+            self.wfile.write(cuerpo)
+
 
 def main():
     argumentos = argparse.ArgumentParser(description=__doc__)
@@ -37,6 +50,8 @@ def main():
         '.json': 'application/json',
         '.csv': 'text/csv',
         '.svg': 'image/svg+xml',
+        '.webmanifest': 'application/manifest+json',
+        '.md': 'text/markdown; charset=utf-8',
     }.items():
         mimetypes.add_type(tipo, extension)
 
