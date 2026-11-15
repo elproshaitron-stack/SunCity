@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SunCity · Método, glosario y fuentes</title>
+  <meta name="description" content="Cómo calcula SunCity: datos, Theil-Sen y Mann-Kendall, cómo leer un resultado, glosario, límites y fuentes.">
+  <meta name="theme-color" content="#fbf6ec">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a1024'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23dcc195'/%3E%3Ccircle cx='19' cy='13' r='3' fill='%23ff5a1f'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../compartido/tokens.css">
+  <link rel="stylesheet" href="../compartido/componentes.css">
+  <script src="../compartido/componentes.js" defer></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: var(--f-texto); font-size: var(--t-base); line-height: var(--lh-texto);
+      color: var(--texto); background: var(--superficie); font-synthesis: none;
+    }
+    main:focus { outline: none; }
+    .metodo {
+      display: grid; grid-template-columns: 15rem minmax(0, 46rem); gap: var(--e-7);
+      width: min(72rem, 100% - 2 * clamp(var(--e-4), 4vw, var(--e-7))); margin: 0 auto;
+      padding: var(--e-7) 0 var(--e-8);
+    }
+    .indice { position: sticky; top: calc(var(--alto-barra) + var(--e-5)); align-self: start; font-size: var(--t-sm); }
+    .indice p { margin: 0 0 var(--e-2); font-size: var(--t-xs); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--texto-2); }
+    .indice ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+    .indice a { display: block; padding: var(--e-1) var(--e-2); border-left: 2px solid var(--linea); color: var(--texto-2); text-decoration: none; }
+    .indice a:hover { color: var(--texto); border-left-color: var(--texto); }
+    .indice a[aria-current="true"] { color: var(--texto); border-left-color: var(--accion); font-weight: 600; }
+    .indice a:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
+
+    /* Texto largo: anchos de lectura y ritmo vertical */
+    .doc h1 { margin: 0 0 var(--e-4); font-family: var(--f-titulo); font-weight: 500; font-size: var(--t-3xl); line-height: var(--lh-titulo); letter-spacing: -.02em; }
+    .doc h2 { margin: var(--e-7) 0 var(--e-3); padding-top: var(--e-4); border-top: 1px solid var(--linea); font-family: var(--f-titulo); font-weight: 600; font-size: var(--t-xl); letter-spacing: -.01em; scroll-margin-top: calc(var(--alto-barra) + var(--e-4)); }
+    .doc h3 { margin: var(--e-5) 0 var(--e-2); font-size: var(--t-lg); font-weight: 700; scroll-margin-top: calc(var(--alto-barra) + var(--e-4)); }
+    .doc p, .doc li { max-width: 62ch; }
+    .doc p { margin: 0 0 var(--e-3); }
+    .doc ul, .doc ol { margin: 0 0 var(--e-3); padding-left: var(--e-5); display: grid; gap: var(--e-1); }
+    .doc code { font-family: var(--f-dato); font-size: .875em; padding: 1px var(--e-1); border: 1px solid var(--linea); border-radius: var(--r-sm); background: var(--superficie-2); }
+    .doc a { color: var(--enlace); text-underline-offset: 3px; }
+    .doc .sc-tabla-marco { margin: var(--e-2) 0 var(--e-4); }
+    .doc .sc-tabla td, .doc .sc-tabla th { min-width: 8rem; }
+    .doc .sc-tabla tbody th { font-weight: 600; }
+    .doc .entrada { font-size: var(--t-lg); color: var(--texto-2); }
+
+    @media (max-width: 900px) {
+      .metodo { grid-template-columns: minmax(0, 1fr); gap: var(--e-5); padding-top: var(--e-5); }
+      .indice { position: static; }
+      .indice ol { display: flex; flex-wrap: wrap; gap: var(--e-1) var(--e-3); }
+      .indice a { border-left: 0; padding: var(--e-1) 0; }
+    }
+  </style>
+</head>
+<body>
+  <sc-barra raiz="../" actual="metodo" contenido="contenido"><a href="../">SunCity</a></sc-barra>
+
+  <div class="metodo">
+    <nav class="indice" aria-labelledby="indice-t" hidden><p id="indice-t">En esta página</p><ol id="indice"></ol></nav>
+
+    <main id="contenido" class="doc" tabindex="-1" aria-busy="true">
+      <h1>Método</h1>
+      <div id="texto">
+        <span class="sc-esqueleto sc-esqueleto--linea" aria-hidden="true"></span>
+        <span class="sc-esqueleto sc-esqueleto--linea" aria-hidden="true"></span>
+        <span class="sc-esqueleto sc-esqueleto--bloque" aria-hidden="true"></span>
+      </div>
+      <noscript><p>Esta página muestra el archivo <a href="../docs/METODO.md">docs/METODO.md</a>. Sin JavaScript puedes leerlo ahí, como texto.</p></noscript>
+    </main>
+  </div>
+
+  <sc-pie raiz="../"><p>Este texto sale de <a href="../docs/METODO.md">docs/METODO.md</a>, la única fuente del método.</p></sc-pie>
+
+  <script>
+    /*
+     * Muestra docs/METODO.md. Lector de Markdown mínimo, solo para lo que usa ese archivo:
+     * títulos, párrafos, listas, tablas, negritas, cursivas, código y enlaces. Todo el texto se escapa
+     * antes de aplicar el formato, así que el archivo no puede inyectar HTML.
+     */
+    (function () {
+      "use strict";
+      var FUENTE = "../docs/METODO.md";
+      var texto = document.getElementById("texto");
+      var contenido = document.getElementById("contenido");
+
+      function escapar(s) {
+        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+      function enLinea(s) {
+        var codigos = [];
+        s = escapar(s).replace(/`([^`]+)`/g, function (_, c) { codigos.push(c); return "\u0000" + (codigos.length - 1) + "\u0000"; });
+        s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (_, t, href) {
+          var url = new URL(href.replace(/&amp;/g, "&"), new URL(FUENTE, location.href));
+          var externo = url.origin !== location.origin;
+          // Los otros documentos de docs/ se abren como archivo; el propio método no se enlaza a sí mismo
+          return '<a href="' + escapar(url.href) + '"' + (externo ? ' rel="noopener"' : "") + ">" + t + "</a>";
+        });
+        s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>");
+        return s.replace(/\u0000(\d+)\u0000/g, function (_, i) { return "<code>" + codigos[+i] + "</code>"; });
+      }
+      function slug(s) {
+        return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      }
+      function celdas(linea) { return linea.trim().replace(/^\||\|$/g, "").split("|").map(function (c) { return c.trim(); }); }
+
+      function convertir(md) {
+        var lineas = md.replace(/\r/g, "").split("\n");
+        var html = [], i = 0, primerParrafo = true, usados = {};
+        while (i < lineas.length) {
+          var l = lineas[i];
+          if (!l.trim()) { i++; continue; }
+          var h = /^(#{1,3})\s+(.*)$/.exec(l);
+          if (h) {
+            var nivel = h[1].length;
+            if (nivel > 1) {
+              var id = slug(h[2]); if (usados[id]) id += "-" + (++usados[id]); else usados[id] = 1;
+              html.push("<h" + nivel + ' id="' + id + '">' + enLinea(h[2]) + "</h" + nivel + ">");
+            }
+            i++; continue; // el h1 ya está en la página
+          }
+          if (/^\|/.test(l) && i + 1 < lineas.length && /^\|\s*:?-/.test(lineas[i + 1])) {
+            var cab = celdas(l); i += 2;
+            var filas = [];
+            while (i < lineas.length && /^\|/.test(lineas[i])) { filas.push(celdas(lineas[i])); i++; }
+            var t = '<div class="sc-tabla-marco"><table class="sc-tabla sc-tabla--tarjetas"><thead><tr>' +
+              cab.map(function (c) { return '<th scope="col">' + enLinea(c) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+              filas.map(function (f) {
+                // La primera columna nombra la fila: es su encabezado
+                return "<tr>" + f.map(function (c, k) {
+                  if (k === 0) return '<th scope="row">' + enLinea(c) + "</th>";
+                  return '<td data-etiqueta="' + escapar(cab[k] || "") + '">' + enLinea(c) + "</td>";
+                }).join("") + "</tr>";
+              }).join("") + "</tbody></table></div>";
+            html.push(t); continue;
+          }
+          var lista = /^(\s*)([-*]|\d+\.)\s+/.exec(l);
+          if (lista) {
+            var ordenada = /\d/.test(lista[2]), items = [];
+            while (i < lineas.length && /^\s*([-*]|\d+\.)\s+/.test(lineas[i])) { items.push(lineas[i].replace(/^\s*([-*]|\d+\.)\s+/, "")); i++; }
+            var tag = ordenada ? "ol" : "ul";
+            html.push("<" + tag + ">" + items.map(function (x) { return "<li>" + enLinea(x) + "</li>"; }).join("") + "</" + tag + ">");
+            continue;
+          }
+          var parrafo = [];
+          while (i < lineas.length && lineas[i].trim() && !/^(#|\||\s*([-*]|\d+\.)\s)/.test(lineas[i])) { parrafo.push(lineas[i].trim()); i++; }
+          // El primer párrafo habla del archivo y de los documentos técnicos: en la página va como nota al final
+          if (primerParrafo) { primerParrafo = false; html.unshift('<p class="entrada">Cómo calcula SunCity, cómo leer un resultado y qué no puede decir. Al final están las fuentes y los documentos técnicos.</p>'); html.push('<aside class="sc-aviso" id="nota-fuente"><p class="sc-aviso__texto">' + enLinea(parrafo.join(" ")) + "</p></aside>"); continue; }
+          html.push("<p>" + enLinea(parrafo.join(" ")) + "</p>");
+        }
+        return html.join("\n");
+      }
+
+      function indice() {
+        var lista = document.getElementById("indice");
+        var h2s = Array.prototype.slice.call(texto.querySelectorAll("h2"));
+        h2s.forEach(function (h) {
+          var li = document.createElement("li"), a = document.createElement("a");
+          a.href = "#" + h.id; a.textContent = h.textContent; li.appendChild(a); lista.appendChild(li);
+        });
+        lista.parentElement.hidden = false;
+        // Marca en el índice la sección que se está leyendo: la última cuyo título ya pasó el tercio de la pantalla
+        var enlaces = Array.prototype.slice.call(lista.querySelectorAll("a"));
+        var pendiente = false;
+        function marcar() {
+          pendiente = false;
+          var actual = h2s[0];
+          h2s.forEach(function (h) { if (h.getBoundingClientRect().top < innerHeight / 3) actual = h; });
+          enlaces.forEach(function (a) {
+            if (a.getAttribute("href") === "#" + actual.id) a.setAttribute("aria-current", "true");
+            else a.removeAttribute("aria-current");
+          });
+        }
+        addEventListener("scroll", function () { if (!pendiente) { pendiente = true; requestAnimationFrame(marcar); } }, { passive: true });
+        marcar();
+      }
+
+      fetch(FUENTE, { cache: "no-cache" })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+        .then(function (md) {
+          texto.innerHTML = convertir(md);
+          // La nota sobre el archivo fuente va al final, antes del pie
+          var nota = document.getElementById("nota-fuente"); if (nota) texto.appendChild(nota);
+          contenido.removeAttribute("aria-busy");
+          indice();
+          if (location.hash) { var destino = document.getElementById(location.hash.slice(1)); if (destino) destino.scrollIntoView(); }
+        })
+        .catch(function () {
+          contenido.removeAttribute("aria-busy");
+          texto.innerHTML = '<div class="sc-aviso sc-aviso--error" role="alert"><p class="sc-aviso__titulo">No se pudo cargar el método</p>' +
+            '<p class="sc-aviso__texto">Revisa tu conexión y vuelve a intentarlo, o lee el archivo <a href="' + FUENTE + '">docs/METODO.md</a> directamente.</p>' +
+            '<div class="sc-aviso__acciones"><button class="sc-boton sc-boton--secundario sc-boton--compacto" type="button" onclick="location.reload()">Reintentar</button></div></div>';
+        });
+    })();
+  </script>
+</body>
+</html>
