@@ -6,10 +6,19 @@ import {dibujarVariantes} from './variantes.js';
 import {nombreSector, guardarNombre, nombresPersonalizados} from './nombres.js';
 import {dibujarCicloDiario} from './ciclo-diario.js';
 import {dibujarZoom} from './zoom-ecostress.js';
+import * as LST from '../compartido/lst-noche.js';
 
 const $ = id => document.getElementById(id);
 const colores = {rojo:'#bd4b3e', azul:'#347baf', gris:'#8b9697'};
 const base = new URL(RUTA_DATOS, import.meta.url);
+const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmtC = v => `${v.toFixed(1)} °C`;
+const fmtDif = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)} °C`;
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function nombrePeriodo({inicio, fin}) {
+  const [, m1, d1] = inicio.split('-').map(Number), [, m2, d2] = fin.split('-').map(Number);
+  return m1 === m2 ? `${d1} al ${d2} de ${MESES[m1 - 1]}` : `${d1} de ${MESES[m1 - 1]} al ${d2} de ${MESES[m2 - 1]}`;
+}
 
 function leerCSV(texto, esquema) {
   const filas = []; let fila = [], campo = '', comillas = false;
@@ -45,7 +54,6 @@ async function cargar(nombre, json = false) {
 }
 
 async function iniciar() {
-  if (!window.L) throw new Error('No se pudo cargar Leaflet. Revisa la conexión y vuelve a cargar.');
   const [geojson, csvSerie, csvResultados, csvCiclo, csvNivel, zoom, nombres] = await Promise.all([cargar('sectores.geojson', true), cargar('serie.csv'), cargar('resultados.csv'), cargar('ciclo_diario.csv'), cargar('nivel.csv'), sectorPrioritario ? cargar('ecostress_zoom.json', true).catch(() => null) : Promise.resolve(null), cargar('nombres.json', true).catch(() => null)]);
   const configNombres = nombres && Array.isArray(nombres.centro) && Number.isFinite(nombres.radio_centro_km) && typeof nombres.ciudad === 'string'
     ? nombres : {ciudad:'Hermosillo', centro:[29.0729, -110.9559], radio_centro_km:2, sectores:{}};
@@ -58,21 +66,172 @@ async function iniciar() {
   const primarios = new Map(resultados.filter(r => r.variante === ESQUEMA.variantes[0]).map(r => [r.sector, r]));
   const sectores = geojson.features.filter(f => f.properties.tipo === 'sector');
   for (const f of sectores) if (!primarios.has(f.properties.id)) throw new Error(`Falta el resultado primario del sector ${f.properties.id}.`);
-  const mapa = L.map('mapa', {zoomControl:false});
-  L.control.zoom({position:'topleft', zoomInTitle:'Acercar', zoomOutTitle:'Alejar'}).addTo(mapa);
-  const mosaicos = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(mapa);
-  mosaicos.on('tileerror', () => { $('estado').textContent = 'El mapa base no está disponible; los sectores siguen siendo seleccionables.'; });
+  // Color del semáforo como propiedad, para que el mapa lo lea
+  for (const f of sectores) f.properties.color = colores[semaforo(primarios.get(f.properties.id))];
+  const referencias = geojson.features.filter(f => f.properties.tipo === 'referencia');
   let seleccionado = null;
-  const estilo = f => f.properties.tipo === 'referencia'
-    ? {color:'#7a693c', fillColor:'#e2c987', fillOpacity:.15, weight:2, dashArray:'6 5'}
-    : {color:f.properties.id === seleccionado ? '#183f31' : '#fffef9', weight:f.properties.id === seleccionado ? 4 : 2, fillColor:colores[semaforo(primarios.get(f.properties.id))], fillOpacity:.45};
-  const capas = new Map();
-  const geometria = L.geoJSON(geojson, {style:estilo, onEachFeature(f, capa) {
-    const etiqueta = document.createElement('span'); etiqueta.textContent = f.properties.tipo === 'sector' ? nombreDe(f).nombre : f.properties.nombre; capa.bindTooltip(etiqueta);
-    if (f.properties.tipo === 'sector') { capas.set(f.properties.id, capa); capa.on('click', () => abrir(f.properties.id)); }
-  }}).addTo(mapa);
-  mapa.fitBounds(geometria.getBounds(), {padding:[24,24]});
-  new ResizeObserver(() => mapa.invalidateSize()).observe($('mapa'));
+
+  // ── Periodo de MODIS: año y compuesto de 8 días dentro de la temporada (D14: junio a agosto) ──
+  const hoy = new Date();
+  const ultimoAnio = hoy.getUTCMonth() >= 8 ? hoy.getUTCFullYear() : hoy.getUTCFullYear() - 1;
+  for (let a = ultimoAnio; a >= 2001; a--) { const o = document.createElement('option'); o.value = a; o.textContent = a; $('lst-anio').append(o); }
+  $('lst-anio').value = '2019'; // último año del periodo primario, antes de la deriva de Terra
+  let periodo = null;
+  function llenarPeriodos(elegir) {
+    const lista = LST.periodos(Number($('lst-anio').value));
+    $('lst-periodo').replaceChildren(...lista.map(p => { const o = document.createElement('option'); o.value = p.inicio; o.textContent = nombrePeriodo(p); o.dataset.fin = p.fin; return o; }));
+    const julio = lista.findIndex(p => p.inicio.slice(5, 7) === '07');
+    $('lst-periodo').selectedIndex = Math.min(lista.length - 1, elegir ?? julio + 1);
+    periodo = {inicio: $('lst-periodo').value, fin: $('lst-periodo').selectedOptions[0].dataset.fin};
+  }
+  llenarPeriodos();
+  const textoPeriodo = () => `${nombrePeriodo(periodo)} de ${periodo.inicio.slice(0, 4)}`;
+
+  // Leyenda: la escala propia de la capa, con el rango del periodo (percentiles 2 y 98 del área)
+  $('lst-gradiente').style.background = `linear-gradient(to right, ${LST.ESCALA.join(', ')})`;
+  function pintarLeyenda(rango) {
+    $('lst-min').textContent = rango ? `${rango[0]} °C` : '';
+    $('lst-max').textContent = rango ? `${rango[1]} °C` : '';
+  }
+
+  // ── Mapa (MapLibre). Sin mapa, el selector sigue abriendo cada sector ──
+  let mapa = null, mapaListo = false, alCargar = null;
+  const caja = geojson.features.flatMap(f => f.geometry.coordinates[0])
+    .reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)], [180, 90, -180, -90]);
+  // Área de la capa de MODIS: la ciudad, sus desiertos de referencia y unos 18 km alrededor
+  const AREA = [caja[0] - .18, caja[1] - .18, caja[2] + .18, caja[3] + .18];
+  const esquinasArea = [[AREA[0], AREA[3]], [AREA[2], AREA[3]], [AREA[2], AREA[1]], [AREA[0], AREA[1]]];
+  const vacia = Object.assign(document.createElement('canvas'), {width:1, height:1}).toDataURL();
+  try {
+    if (typeof maplibregl === 'undefined' || typeof MapaEstilo === 'undefined') throw new Error('sin MapLibre');
+    const estilo = MapaEstilo.base({proyeccion:'mercator'});
+    estilo.sources.lst = {type:'image', url:vacia, coordinates:esquinasArea};
+    estilo.sources.zonas = {type:'geojson', data:geojson, promoteId:'id'};
+    const esSector = ['==', ['get', 'tipo'], 'sector'], esReferencia = ['==', ['get', 'tipo'], 'referencia'];
+    const elegido = ['boolean', ['feature-state', 'elegido'], false];
+    MapaEstilo.insertarAntes(estilo, MapaEstilo.PRIMERA_LINEA, [
+      {id:'lst', type:'raster', source:'lst', paint:{'raster-opacity':.8, 'raster-resampling':'nearest', 'raster-fade-duration':0}}
+    ]);
+    MapaEstilo.insertarAntes(estilo, MapaEstilo.PRIMER_NOMBRE, [
+      {id:'referencias', type:'fill', source:'zonas', filter:esReferencia, paint:{'fill-color':'#f4ecd7', 'fill-opacity':.18}},
+      {id:'referencias-borde', type:'line', source:'zonas', filter:esReferencia, paint:{'line-color':'#3a2a18', 'line-width':2, 'line-dasharray':[3, 2]}},
+      {id:'sectores', type:'fill', source:'zonas', filter:esSector, paint:{'fill-color':'#fffef9', 'fill-opacity':['case', elegido, .22, 0]}},
+      {id:'sectores-contorno', type:'line', source:'zonas', filter:esSector, paint:{'line-color':'#fffef9', 'line-width':['case', elegido, 7, 5]}},
+      {id:'sectores-borde', type:'line', source:'zonas', filter:esSector, paint:{'line-color':['case', elegido, '#10251f', ['get', 'color']], 'line-width':['case', elegido, 3.5, 2.5]}}
+    ]);
+    const angosto = matchMedia('(max-width: 900px)').matches;
+    mapa = new maplibregl.Map({
+      container:'mapa', style:estilo, bounds:caja, fitBoundsOptions:{padding:32}, maxZoom:14, minZoom:8,
+      maxBounds:[[AREA[0] - .25, AREA[1] - .25], [AREA[2] + .25, AREA[3] + .25]],
+      attributionControl:false, cooperativeGestures:angosto, dragRotate:false,
+      locale:{'NavigationControl.ZoomIn':'Acercar', 'NavigationControl.ZoomOut':'Alejar', 'AttributionControl.ToggleAttribution':'Créditos del mapa',
+        'CooperativeGesturesHandler.WindowsHelpText':'Usa Ctrl + rueda para acercar el mapa', 'CooperativeGesturesHandler.MacHelpText':'Usa ⌘ + rueda para acercar el mapa',
+        'CooperativeGesturesHandler.MobileHelpText':'Usa dos dedos para mover el mapa'}
+    });
+    mapa.addControl(new maplibregl.NavigationControl({showCompass:false}), 'top-left');
+    mapa.addControl(new maplibregl.AttributionControl({compact:true, customAttribution:LST.ATRIBUCION}), 'bottom-right');
+    mapa.touchZoomRotate.disableRotation();
+    mapa.on('error', e => { if (/openfreemap/.test(String(e?.error?.url || e?.error?.message || ''))) $('estado').textContent = 'El mapa base no está disponible; los sectores siguen siendo seleccionables.'; });
+    new ResizeObserver(() => mapa.resize()).observe($('mapa'));
+    window.mapaHermosillo = mapa; // para depurar desde la consola
+    mapa.on('load', () => { mapaListo = true; if (alCargar) { alCargar(); alCargar = null; } });
+  } catch {
+    mapa = null;
+    $('mapa').classList.add('sin-mapa');
+    $('mapa').textContent = 'El mapa no cargó. Usa el selector "Explorar un sector" para abrir cada expediente.';
+    $('capa-nasa').hidden = true;
+  }
+
+  let turnoCapa = 0;
+  async function pintarCapa() {
+    const turno = ++turnoCapa;
+    pintarLeyenda(null);
+    try {
+      const img = await LST.imagen(periodo.inicio, AREA);
+      if (turno !== turnoCapa) return;
+      pintarLeyenda(img.rango);
+      if (mapa) {
+        const fuente = () => mapa.getSource('lst')?.updateImage({url:img.url || vacia, coordinates:img.coordenadas || esquinasArea});
+        if (mapaListo) fuente(); else alCargar = fuente;
+      }
+      if (!img.n) $('lst-lectura').textContent = `El compuesto de ${textoPeriodo()} no tiene datos en esta zona (nubes). Prueba otro periodo.`;
+    } catch {
+      if (turno === turnoCapa) $('lst-lectura').textContent = 'No se pudo leer la capa de NASA GIBS. Revisa la conexión y vuelve a elegir el periodo.';
+    }
+  }
+  pintarCapa();
+
+  // Lectura del punto bajo el cursor o el dedo
+  const etiqueta = mapa && new maplibregl.Popup({closeButton:false, closeOnClick:false, offset:12, className:'popup-sector'});
+  const sectorDe = f => f?.properties.tipo === 'sector' ? sectores.find(s => s.properties.id === f.properties.id) : null;
+  let turnoLectura = 0;
+  async function leerPunto(lngLat, sector) {
+    const turno = ++turnoLectura;
+    const donde = sector ? `${nombreDe(sector).nombre}: ` : '';
+    try {
+      const v = await LST.valorEn(periodo.inicio, lngLat.lng, lngLat.lat);
+      if (turno !== turnoLectura) return;
+      $('lst-lectura').textContent = v === null
+        ? `${donde}sin dato en este punto en ${textoPeriodo()} (nubes o hueco del compuesto).`
+        : `${donde}${fmtC(v)} de noche en este punto, ${textoPeriodo()}.`;
+    } catch { if (turno === turnoLectura) $('lst-lectura').textContent = 'No se pudo leer el valor de NASA GIBS en este punto.'; }
+  }
+  if (mapa) {
+    let cuadro = null, ultimo = null;
+    mapa.on('mousemove', e => {
+      const f = mapa.queryRenderedFeatures(e.point, {layers:['sectores', 'referencias']})[0];
+      mapa.getCanvas().style.cursor = f?.properties.tipo === 'sector' ? 'pointer' : '';
+      if (f) etiqueta.setLngLat(e.lngLat).setText(f.properties.tipo === 'sector' ? nombreDe(sectorDe(f)).nombre : f.properties.nombre).addTo(mapa);
+      else etiqueta.remove();
+      ultimo = [e.lngLat, sectorDe(f)];
+      if (!cuadro) cuadro = requestAnimationFrame(() => { cuadro = null; leerPunto(...ultimo); });
+    });
+    mapa.on('mouseout', () => etiqueta.remove());
+    mapa.on('click', e => {
+      const f = mapa.queryRenderedFeatures(e.point, {layers:['sectores']})[0];
+      leerPunto(e.lngLat, sectorDe(f));
+      if (f) abrir(f.properties.id);
+    });
+  }
+
+  function cambiarPeriodo() {
+    periodo = {inicio: $('lst-periodo').value, fin: $('lst-periodo').selectedOptions[0].dataset.fin};
+    pintarCapa();
+    $('lst-lectura').textContent = `Periodo: ${textoPeriodo()}. Pasa el cursor o toca el mapa para leer la temperatura.`;
+    if (seleccionado) leerSector(seleccionado);
+  }
+  $('lst-anio').addEventListener('change', () => { llenarPeriodos($('lst-periodo').selectedIndex); cambiarPeriodo(); });
+  $('lst-periodo').addEventListener('change', cambiarPeriodo);
+  $('lst-ver').addEventListener('change', e => { if (mapa?.getLayer('lst')) mapa.setLayoutProperty('lst', 'visibility', e.target.checked ? 'visible' : 'none'); });
+
+  // Sección 00 del expediente: el sector y los desiertos en el periodo elegido, con datos reales de MODIS
+  let turnoSector = 0;
+  async function leerSector(id) {
+    const turno = ++turnoSector, f = sectores.find(s => s.properties.id === id);
+    const destino = $('modis-lectura');
+    $('modis-periodo').textContent = `Temperatura de la superficie de noche medida por MODIS Terra, ${textoPeriodo()}. Media de los píxeles de 1 km cuyo centro cae dentro de cada polígono.`;
+    destino.replaceChildren(Object.assign(document.createElement('p'), {textContent:'Leyendo el compuesto de NASA GIBS…'}));
+    try {
+      const [sector, ...refs] = await Promise.all([LST.mediaEn(periodo.inicio, f.geometry), ...referencias.map(r => LST.mediaEn(periodo.inicio, r.geometry))]);
+      if (turno !== turnoSector) return;
+      const dl = document.createElement('dl');
+      const fila = (t, v) => { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = t; dd.textContent = v; dl.append(dt, dd); };
+      const valor = m => m.media === null ? 'Sin dato (nubes)' : `${fmtC(m.media)} · ${m.n} de ${m.total} píxeles`;
+      fila('Este sector', valor(sector));
+      referencias.forEach((r, k) => fila(r.properties.nombre, valor(refs[k])));
+      const p = document.createElement('p');
+      const refA = refs[0];
+      p.textContent = sector.media !== null && refA && refA.media !== null
+        ? `Diferencia con ${referencias[0].properties.nombre}: ${fmtDif(sector.media - refA.media)} en este periodo. Es un solo compuesto de 8 días, no una tendencia.`
+        : 'No hay dato suficiente en este periodo para comparar el sector con su desierto. Prueba otro periodo.';
+      const partes = [dl, p];
+      if (datosDePrueba) { const aviso = document.createElement('p'); aviso.className = 'nota'; aviso.textContent = 'Las temperaturas son reales; el polígono del sector todavía es de prueba (D15).'; partes.push(aviso); }
+      destino.replaceChildren(...partes);
+    } catch {
+      if (turno === turnoSector) destino.replaceChildren(Object.assign(document.createElement('p'), {textContent:'No se pudo leer el compuesto de NASA GIBS. Revisa la conexión o prueba otro periodo.'}));
+    }
+  }
+
   sectores.forEach(f => { const o = document.createElement('option'); o.value = f.properties.id; o.textContent = nombreDe(f).nombre; $('sector').append(o); });
   $('sector').disabled = false;
   $('exportar-nombres').disabled = false;
@@ -88,8 +247,6 @@ async function iniciar() {
     sectores.forEach(f => {
       const nombre = nombreDe(f).nombre;
       $('sector').querySelector(`option[value="${f.properties.id}"]`).textContent = nombre;
-      const etiqueta = document.createElement('span'); etiqueta.textContent = nombre;
-      capas.get(f.properties.id).setTooltipContent(etiqueta);
     });
     if (seleccionado) {
       const {nombre, origen} = nombreDe(sectores.find(f => f.properties.id === seleccionado));
@@ -120,14 +277,17 @@ async function iniciar() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('expediente').hidden) cerrar(); });
   function cerrar() {
     $('expediente').hidden = true; editar(false); seleccionado = null; $('sector').value = '';
-    geometria.setStyle(estilo); $('sector').focus();
+    if (mapa) sectores.forEach(f => mapa.setFeatureState({source:'zonas', id:f.properties.id}, {elegido:false}));
+    $('sector').focus();
   }
   function abrir(id) {
     const f = sectores.find(f => f.properties.id === id), r = primarios.get(id);
     const datos = series.filter(s => s.sector === id).sort((a,b) => a.anio - b.anio);
     const color = semaforo(r);
     seleccionado = id; $('sector').value = id; editar(false); refrescarNombres();
-    $('expediente').hidden = false; $('expediente').scrollTop = 0; geometria.setStyle(estilo);
+    $('expediente').hidden = false; $('expediente').scrollTop = 0;
+    if (mapa) sectores.forEach(s => mapa.setFeatureState({source:'zonas', id:s.properties.id}, {elegido:s.properties.id === id}));
+    leerSector(id);
     dibujarSerieAnual($('serie-anual'), {anios:datos.map(d => d.anio), valores:datos.map(d => d.valor), resultado:r, unidad:'°C', aniosPunteados:datos.filter(d => d.anio > 2019).map(d => d.anio)});
     dibujarVariantes($('curva-variantes'), resultados.filter(fila => fila.sector === id), ESQUEMA.variantes);
     dibujarCicloDiario($('ciclo-diario'), ciclo.filter(fila => fila.sector === id), pasosAqua);
@@ -167,7 +327,12 @@ async function iniciar() {
       ? 'El sector prioritario todavía no tiene datos de ECOSTRESS.'
       : 'El zoom a 70 m solo se muestra en el sector prioritario.';
     $('titulo-sector').focus({preventScroll:true});
-    requestAnimationFrame(() => { mapa.invalidateSize(); mapa.panTo(capas.get(id).getBounds().getCenter()); });
+    if (mapa) requestAnimationFrame(() => {
+      mapa.resize();
+      const anillo = f.geometry.coordinates[0];
+      const centro = [anillo.reduce((a, q) => a + q[0], 0) / anillo.length, anillo.reduce((a, q) => a + q[1], 0) / anillo.length];
+      mapa[quieto ? 'jumpTo' : 'easeTo']({center:centro});
+    });
   }
   $('estado').textContent = `${sectores.length} sectores${datosDePrueba ? ' de prueba' : ''} · Toca un polígono o usa el selector.`;
   const idEnlace = new URLSearchParams(location.search).get('sector');

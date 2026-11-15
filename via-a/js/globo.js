@@ -1,7 +1,7 @@
 /*
  * Globo 3D para elegir un punto (MapLibre GL JS, proyección de globo).
  * Mosaicos vectoriales de OpenFreeMap (esquema OpenMapTiles), sin clave.
- * El estilo es propio: continentes de arena sobre océano de noche.
+ * El estilo vive en compartido/mapa-estilo.js: continentes de arena sobre océano de noche.
  *
  *   var g = Globo.crear("mapa", { alElegir: function (lat, lon) {} });
  *   g.mover(lat, lon, centrar)   mueve el marcador y la celda; centrar = volar hasta ahí
@@ -35,71 +35,16 @@
     ]] } };
   }
 
-  var NOMBRE = ["coalesce", ["get", "name:es"], ["get", "name:latin"], ["get", "name"]];
-
+  // El estilo base es común a las dos vías (compartido/mapa-estilo.js); aquí solo se suma la celda.
   function estilo() {
-    return {
-      version: 8,
-      projection: { type: "globe" },
-      glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
-      sources: {
-        omt: { type: "vector", url: "https://tiles.openfreemap.org/planet",
-          attribution: '<a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> © <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener">OpenMapTiles</a> Datos de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' },
-        celda: { type: "geojson", data: { type: "FeatureCollection", features: [] } }
-      },
-      sky: {
-        "sky-color": "#0a1024",
-        "horizon-color": "#f2b27a",
-        "fog-color": "#0a1024",
-        "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 3, 1, 5, 0]
-      },
-      light: { anchor: "map", position: [1.5, 90, 80] },
-      layers: [
-        { id: "tierra", type: "background", paint: { "background-color": "#dcc195" } },
-        { id: "vegetacion", type: "fill", source: "omt", "source-layer": "landcover",
-          filter: ["in", ["get", "class"], ["literal", ["wood", "grass", "farmland"]]],
-          paint: { "fill-color": "#b9ad7c", "fill-opacity": 0.55 } },
-        { id: "hielo", type: "fill", source: "omt", "source-layer": "landcover",
-          filter: ["==", ["get", "class"], "ice"],
-          paint: { "fill-color": "#f4efe4" } },
-        { id: "ciudad", type: "fill", source: "omt", "source-layer": "landuse", minzoom: 6,
-          filter: ["in", ["get", "class"], ["literal", ["residential", "commercial", "industrial"]]],
-          paint: { "fill-color": "#b98f62", "fill-opacity": 0.6 } },
-        { id: "agua", type: "fill", source: "omt", "source-layer": "water",
-          paint: { "fill-color": "#12224a" } },
-        { id: "rios", type: "line", source: "omt", "source-layer": "waterway", minzoom: 6,
-          paint: { "line-color": "#12224a", "line-width": 1 } },
-        { id: "caminos", type: "line", source: "omt", "source-layer": "transportation", minzoom: 6,
-          filter: ["in", ["get", "class"], ["literal", ["motorway", "trunk", "primary"]]],
-          layout: { "line-cap": "round", "line-join": "round" },
-          paint: { "line-color": "#8a6b47", "line-opacity": 0.55,
-            "line-width": ["interpolate", ["linear"], ["zoom"], 6, 0.6, 11, 2.2] } },
-        { id: "estados", type: "line", source: "omt", "source-layer": "boundary", minzoom: 3,
-          filter: ["all", ["==", ["get", "admin_level"], 4], ["!=", ["get", "maritime"], 1]],
-          paint: { "line-color": "#8a6b47", "line-opacity": 0.6, "line-width": 0.7, "line-dasharray": [3, 2] } },
-        { id: "paises", type: "line", source: "omt", "source-layer": "boundary",
-          filter: ["all", ["==", ["get", "admin_level"], 2], ["!=", ["get", "maritime"], 1]],
-          paint: { "line-color": "#6e5132",
-            "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.5, 6, 1.4] } },
-        { id: "celda-relleno", type: "fill", source: "celda",
-          paint: { "fill-color": "#ff5a1f", "fill-opacity": 0.16 } },
-        { id: "celda-borde", type: "line", source: "celda",
-          paint: { "line-color": "#d63f0c", "line-width": 2, "line-dasharray": [2, 1.5] } },
-        { id: "nombre-ciudad", type: "symbol", source: "omt", "source-layer": "place", minzoom: 4,
-          filter: ["all", ["==", ["get", "class"], "city"],
-            ["<=", ["get", "rank"], ["interpolate", ["linear"], ["zoom"], 4, 3, 7, 9, 9, 20]]],
-          layout: { "text-field": NOMBRE, "text-font": ["Noto Sans Regular"],
-            "text-size": ["interpolate", ["linear"], ["zoom"], 4, 11, 9, 15], "text-max-width": 8 },
-          paint: { "text-color": "#3a2a18", "text-halo-color": "rgba(236, 216, 180, .9)", "text-halo-width": 1.4 } },
-        { id: "nombre-pais", type: "symbol", source: "omt", "source-layer": "place", maxzoom: 7,
-          filter: ["all", ["==", ["get", "class"], "country"],
-            ["<=", ["get", "rank"], ["interpolate", ["linear"], ["zoom"], 1, 1, 3, 3, 5, 6]]],
-          layout: { "text-field": NOMBRE, "text-font": ["Noto Sans Bold"], "text-transform": "uppercase",
-            "text-letter-spacing": 0.12, "text-max-width": 7,
-            "text-size": ["interpolate", ["linear"], ["zoom"], 1, 9, 5, 14] },
-          paint: { "text-color": "#4a3520", "text-halo-color": "rgba(236, 216, 180, .85)", "text-halo-width": 1.2 } }
-      ]
-    };
+    var e = MapaEstilo.base({ proyeccion: "globe" });
+    e.sources.celda = { type: "geojson", data: { type: "FeatureCollection", features: [] } };
+    return MapaEstilo.insertarAntes(e, MapaEstilo.PRIMER_NOMBRE, [
+      { id: "celda-relleno", type: "fill", source: "celda",
+        paint: { "fill-color": "#ff5a1f", "fill-opacity": 0.16 } },
+      { id: "celda-borde", type: "line", source: "celda",
+        paint: { "line-color": "#d63f0c", "line-width": 2, "line-dasharray": [2, 1.5] } }
+    ]);
   }
 
   function crear(idContenedor, opciones) {
@@ -109,7 +54,7 @@
       cont.innerHTML = '<p class="sin-mapa">El globo no cargó. Escribe la latitud y la longitud o elige una ciudad de ejemplo.</p>';
       return null;
     };
-    if (typeof maplibregl === "undefined") return aviso();
+    if (typeof maplibregl === "undefined" || typeof MapaEstilo === "undefined") return aviso();
 
     var quieto = raiz.matchMedia && raiz.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var angosto = raiz.matchMedia && raiz.matchMedia("(max-width: 900px)").matches;
