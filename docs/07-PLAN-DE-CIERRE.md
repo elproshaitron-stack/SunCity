@@ -207,7 +207,7 @@ Vía B:
 
 - [ ] **C16 · C** `CHANGELOG.md` y etiqueta `v1.0.0`. *Depende:* todo lo anterior.
 - [x] **A17 · C** Revisión final de documentación: ningún documento contradice al código.
-- [ ] **A18 · C** Las diez condiciones de la sección 1 marcadas, cada una con su evidencia. *Avance:* revisión hecha en `docs/calidad/condiciones.md` (1 cumple, 4 en parte, 5 no); se marca cuando las diez cumplan.
+- [ ] **A18 · C** Las diez condiciones de la sección 1 marcadas, cada una con su evidencia. *Avance:* revisión hecha en `docs/calidad/condiciones.md` con evidencia por condición. Se marca cuando las diez cumplan.
 
 ## 7. Orden y dependencias
 
@@ -226,10 +226,20 @@ flowchart LR
     C5 --> C6
     B4 --> A15[A15 teclado y lector]
     C7 --> A16[A16 evidencia ISO]
+    C8[C8 Lighthouse] --> A16
     A16 --> A18[A18 cierre]
+    D15[D15 geometrías definitivas] --> C13[C13 aceptación observada]
+    C13 --> A18
+    C15[C15 publicación] --> C16[C16 versión]
+    C16 --> A18
 ```
 
-Camino crítico: A1, A2, B1, B4, A15, A16, A18. Mientras A hace los cimientos, C avanza con C1 a C4 y B con B8, que no depende de nadie.
+Al 24 de noviembre de 2026, dos frentes pueden avanzar en paralelo para cerrar A18:
+
+- **Calidad.** El verificador básico pasó en la [corrida del PR #41](https://github.com/elproshaitron-stack/SunCity/actions/runs/45486922614). El [PR #36](https://github.com/elproshaitron-stack/SunCity/pull/36) contiene trabajo de C5–C8 y tiene conflictos con `main`. Tras resolverlos, hace falta verificar la matriz de navegadores y tamaños, axe y Lighthouse, además de registrar el recorrido con lector de pantalla y la revisión en celular real.
+- **Datos.** Navarrete y Mario resuelven D15 y entregan los polígonos y exportaciones. C13 termina cuando pasa la aceptación observada y quedan registradas la procedencia, la completitud y la revisión del procesamiento. C12 pide que la procedencia también sea visible en la interfaz.
+
+Antes de ampliar a otra ciudad, se propone que otra persona reconstruya los resultados de Hermosillo a partir de insumos versionados y compare la pendiente, el intervalo y el estado de cada sector. La siguiente ciudad sería un piloto de portabilidad con cobertura y referencias desérticas revisadas localmente.
 
 Carga por persona: A 18 tareas, B 11, C 16. Si A se atrasa, A5, A8 y A14 pueden pasar a C sin tocar el camino crítico.
 
@@ -241,4 +251,4 @@ Carga por persona: A 18 tareas, B 11, C 16. Si A se atrasa, A5, A8 y A14 pueden 
 | El cambio de mapa en la Vía B rompe algo que ya funciona | Ya ocurrió el cambio (PR #20): Leaflet salió y `aceptacion.py` sigue en 7 PASA. El enlace `?sector=` se rompió y se arregló en el PR #23 |
 | Las pruebas de punta a punta fallan por el mapa | Las pruebas sirven mosaicos locales de `pruebas/e2e/`, no de internet |
 | Servir las fuentes y el mapa desde el sitio lo hace pesado | Fuentes en WOFF2 solo con los pesos usados; el mapa se carga después del primer dibujo |
-| Los datos observados no llegan | La 1.0 se publica con el aviso de datos de prueba visible y la condición 10 abierta; el resto del plan no depende de ella |
+| Los datos observados no llegan | La condición 10 permanece abierta y se pospone la etiqueta 1.0. El equipo puede seguir evaluando la versión 0.9 con los límites de D18 visibles |

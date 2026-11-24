@@ -2,10 +2,10 @@
 
 Herramienta para responder **qué variable climática cambia en una región, cuánto por década y si el cambio es significativo**. Proyecto del equipo para NASA Space Apps Challenge 2026, sede Hermosillo (14 y 15 de noviembre de 2026).
 
-> **Estado al 15 de noviembre de 2026 (versión 0.9.0):**
+> **Estado revisado el 24 de noviembre de 2026 (versión 0.9.0):**
 > - **Vía A, real.** Consulta en vivo NASA POWER (MERRA-2, 1981-2025) para cualquier punto del planeta, con copia guardada de Hermosillo y Mexicali.
 > - **Vía B, datos reales de MODIS.** El mapa y, desde D18, las series, las tendencias, el semáforo y el ciclo diario salen de MODIS MOD11 (NASA GIBS), procesado con `via-b/procesamiento/`.
-> - **Vía B, lo que sigue pendiente.** Los polígonos de los sectores y de las referencias de desierto todavía son los esquemáticos (D15); los resultados cambiarán con los definitivos. Faltan MOD21, población, Yale y el acercamiento de ECOSTRESS, que GIBS no publica.
+> - **Vía B, lo que sigue pendiente.** Los polígonos de los sectores y de las referencias de desierto todavía son los esquemáticos (D15); los resultados cambiarán con los definitivos. Faltan MOD21, población, Yale y el acercamiento de ECOSTRESS. Los archivos de origen cubren los veranos de 2001 a 2025 según disponibilidad del producto. La tendencia primaria usa 2001–2019. Consulta los [metadatos](via-b/datos/reales/metadatos.json), el [plan de cierre](docs/07-PLAN-DE-CIERRE.md) y la [evidencia para la 1.0](docs/calidad/condiciones.md).
 
 ## Qué se entrega
 
@@ -15,7 +15,7 @@ Una sola herramienta con dos niveles que comparten el mismo cálculo de tendenci
 |---|---|---|
 | Desarrollador | Navarrete | Mario |
 | Pregunta | ¿Qué variable cambia en mi región, cuánto, y es significativo? | ¿Qué sectores se calientan de noche más rápido que su desierto? |
-| Datos | NASA POWER (MERRA-2), 1981–2025, sin clave | MODIS a 1 km, 2001–2019; ECOSTRESS a 70 m |
+| Datos | NASA POWER (MERRA-2), 1981–2025, sin clave | MOD11 de Terra y Aqua vía GIBS, a 1 km. ECOSTRESS a 70 m pendiente para el acercamiento |
 | Escala | Celda de reanálisis: no distingue una ciudad | Sector de 9 km² o más |
 | Cálculo | Theil-Sen + Mann-Kendall en el navegador | La misma función en Python, con variantes y FDR |
 
