@@ -8,7 +8,7 @@ npx playwright install chromium firefox webkit
 npm run flujos
 ```
 
-Playwright inicia el servidor local. Los nueve flujos se ejecutan a 375, 768 y 1366 px en Chromium, Firefox y WebKit. NASA POWER responde con la serie guardada de Hermosillo y se bloquean las demás peticiones externas. El informe queda en `informe/`. Para comprobar un motor, ejecuta `npx playwright test --project='webkit-*'`.
+Playwright inicia el servidor local. Los flujos se ejecutan a 375, 768 y 1366 px en Chromium, Firefox y WebKit. NASA POWER responde con la serie guardada de Hermosillo y se bloquean las demás peticiones externas. El informe queda en `informe/`. Para comprobar un motor, ejecuta `npx playwright test --project='webkit-*'`.
 
 La integración continua ejecuta los tres motores por separado y guarda sus informes en GitHub Actions.
 

@@ -168,3 +168,71 @@ test('las dos vías muestran la procedencia de sus datos', async ({ page }) => {
     expect(new URL(enlace, page.url()).pathname).toBe(archivo);
   }
 });
+
+test('Vía A muestra la carga y avisa si POWER devuelve una serie vacía', async ({ page }) => {
+  let completar;
+  const esperando = new Promise((resolver) => { completar = resolver; });
+  await page.route('https://power.larc.nasa.gov/**', async (ruta) => {
+    await esperando;
+    await ruta.fulfill({
+      json: { properties: { parameter: { T2M: {} } } },
+      headers: { 'access-control-allow-origin': '*' },
+    });
+  });
+
+  try {
+    await page.goto('/via-a/#lat=10.00&lon=10.00&var=T2M&mes=0');
+    await expect(page.locator('#esqueleto')).toBeVisible();
+  } finally {
+    completar();
+  }
+  await expect(page.getByText('Sin datos para este punto', { exact: true })).toBeVisible();
+  await expect(veredicto(page)).toBeHidden();
+});
+
+test('Vía B se recupera de un CSV dañado y explica los datos parciales', async ({ page }) => {
+  const resultados = '**/via-b/datos/reales/resultados.csv';
+  await page.route(resultados, (ruta) => ruta.fulfill({ body: 'columna_invalida\n1' }));
+  await page.route('**/via-b/datos/reales/ciclo_diario.csv', (ruta) => ruta.abort());
+  await page.goto('/via-b/');
+
+  const alerta = page.getByRole('alert').filter({ hasText: 'No se pudieron abrir los datos de los sectores' });
+  await expect(alerta).toContainText('resultados.csv');
+  await page.unroute(resultados);
+  await page.route(resultados, async (ruta) => {
+    const respuesta = await ruta.fetch();
+    const [cabecera, ...filas] = (await respuesta.text()).split(/\r?\n/);
+    const columnas = cabecera.split(',');
+    const inicioEstadisticas = columnas.indexOf('pendiente_c_decada');
+    const anios = columnas.indexOf('n_anios');
+    expect(inicioEstadisticas).toBeGreaterThan(anios);
+    expect(anios).toBeGreaterThanOrEqual(0);
+    const nuevas = filas.map((fila) => {
+      if (!fila.startsWith('S01,primario,')) return fila;
+      const celdas = fila.split(',');
+      celdas[anios] = '14';
+      celdas.fill('', inicioEstadisticas);
+      return celdas.join(',');
+    });
+    await ruta.fulfill({ response: respuesta, body: [cabecera, ...nuevas].join('\n') });
+  });
+  await alerta.getByRole('button', { name: 'Reintentar' }).click();
+  await expect(alerta).toBeHidden();
+  await expect(page.getByText('Datos parciales', { exact: true })).toBeVisible();
+  const selector = page.getByRole('combobox', { name: 'Explorar un sector' });
+  await expect(selector).toBeEnabled();
+  await selector.selectOption('S01');
+  const lectura = page.getByRole('dialog').getByRole('region', { name: 'Lectura del sector' });
+  await expect(lectura.getByText('Sin cálculo', { exact: true })).toBeVisible();
+});
+
+test('Método muestra una alternativa y permite reintentar', async ({ page }) => {
+  const documento = '**/docs/METODO.md';
+  await page.route(documento, (ruta) => ruta.abort());
+  await page.goto('/metodo/');
+  const alerta = page.getByRole('alert').filter({ hasText: 'No se pudo cargar el método' });
+  await expect(alerta.getByRole('link', { name: 'docs/METODO.md' })).toBeVisible();
+  await page.unroute(documento);
+  await alerta.getByRole('button', { name: 'Reintentar' }).click();
+  await expect(page.getByRole('heading', { name: 'Glosario' })).toBeVisible();
+});

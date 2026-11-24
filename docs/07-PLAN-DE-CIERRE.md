@@ -187,7 +187,7 @@ Vía B:
 ### Fase 4. Calidad
 
 - [x] **C7 · M** axe en el catálogo y en cada ruta, dentro de las pruebas de punta a punta. *Evidencia:* 30 escenarios automáticos con cero infracciones. El recorrido con lector de pantalla se registra aparte.
-- [ ] **C8 · M** Presupuestos de Lighthouse en la integración continua, con los umbrales de la sección 1. El PR #43 añade las mediciones y reduce el trabajo inicial. Se marca cuando las cuatro rutas cumplen los presupuestos.
+- [x] **C8 · M** Presupuestos de Lighthouse en integración continua. Las cuatro rutas pasaron en la [corrida del PR #43](https://github.com/elproshaitron-stack/SunCity/actions/runs/45511732217). Las medianas están en [la auditoría](calidad/condiciones.md).
 - [x] **C9 · M** Seguridad: política de seguridad de contenido, el script en línea de `via-a/index.html` pasa a un archivo, y se revisan los nueve usos de `innerHTML`; los que reciben texto de la dirección, de un CSV o de un nombre editable pasan a `textContent`. *Acepta:* una prueba inyecta HTML en un nombre de sector y no se ejecuta.
 - [x] **C10 · M** Sin red: con los dominios externos bloqueados, cada ruta abre, usa los respaldos y lo dice.
 - [x] **A15 · M** Recorrido manual con teclado y lector de pantalla en las cinco rutas; correcciones. *Depende:* A11, B5.
@@ -236,7 +236,7 @@ flowchart LR
 
 Al 24 de noviembre de 2026, dos frentes pueden avanzar en paralelo para cerrar A18:
 
-- **Calidad.** El verificador básico pasó en la [corrida del PR #41](https://github.com/elproshaitron-stack/SunCity/actions/runs/45486922614). El [PR #36](https://github.com/elproshaitron-stack/SunCity/pull/36) contiene trabajo de C5–C8 y tiene conflictos con `main`. Tras resolverlos, hace falta verificar la matriz de navegadores y tamaños, axe y Lighthouse, además de registrar el recorrido con lector de pantalla y la revisión en celular real.
+- **Calidad.** El verificador básico pasó en la [corrida del PR #41](https://github.com/elproshaitron-stack/SunCity/actions/runs/45486922614). El [PR #43](https://github.com/elproshaitron-stack/SunCity/pull/43) integra C5–C8 y pasó la [matriz ampliada, el catálogo, axe y Lighthouse](https://github.com/elproshaitron-stack/SunCity/actions/runs/45511732217). Falta registrar el recorrido con lector de pantalla y la revisión en celular real (B10).
 - **Datos.** Navarrete y Mario resuelven D15 y entregan los polígonos y exportaciones. C13 termina cuando pasa la aceptación observada y quedan registradas la procedencia, la completitud y la revisión del procesamiento. C12 pide que la procedencia también sea visible en la interfaz.
 
 Antes de ampliar a otra ciudad, se propone que otra persona reconstruya los resultados de Hermosillo a partir de insumos versionados y compare la pendiente, el intervalo y el estado de cada sector. La siguiente ciudad sería un piloto de portabilidad con cobertura y referencias desérticas revisadas localmente.
