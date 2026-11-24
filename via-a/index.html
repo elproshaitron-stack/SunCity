@@ -21,6 +21,9 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Logo de SunCity: un marcador de mapa con el sol, un saguaro y una ciudad al atardecer.">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="../compartido/vendor/fuentes/fraunces-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../compartido/vendor/fuentes/hanken-grotesk-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../compartido/vendor/fuentes/ibm-plex-mono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../compartido/vendor/fuentes/fuentes.css">
   <link rel="stylesheet" href="../compartido/vendor/maplibre/maplibre-gl.css">
   <link rel="stylesheet" href="../compartido/tokens.css">
@@ -33,7 +36,7 @@
   <div class="app">
     <!-- Escenario: el globo y la primera pregunta -->
     <section class="escenario tema-noche" aria-label="Elegir un lugar">
-      <div id="mapa" class="mapa" role="application" aria-label="Globo para elegir un punto. Las casillas de latitud y longitud hacen lo mismo."></div>
+      <div id="mapa" class="mapa" hidden role="application" aria-label="Globo para elegir un punto. Las casillas de latitud y longitud hacen lo mismo."></div>
 
       <header class="cabecera">
         <h1>¿Qué cambia en mi región?</h1>
@@ -42,7 +45,8 @@
 
       <fieldset class="donde">
         <legend><span class="num">1</span> ¿Dónde?</legend>
-        <p class="ayuda">Gira el globo y haz clic en un punto, elige una ciudad de ejemplo o usa tu ubicación.</p>
+        <p class="ayuda">Elige una ciudad de ejemplo, usa tu ubicación o abre el globo para señalar un punto.</p>
+        <button id="abrir-globo" class="sc-boton sc-boton--secundario sc-boton--compacto" type="button">Abrir globo</button>
         <div id="ciudades" class="sc-chips" role="group" aria-label="Ciudades de ejemplo"></div>
         <div class="ubicar">
           <button id="ubicar" class="sc-boton sc-boton--secundario sc-boton--compacto" type="button" aria-describedby="ubicar-nota">
@@ -177,13 +181,12 @@
         </details>
       </section>
 
-      <sc-pie raiz="../" datos="NASA POWER, 1981-2025">
-        <p>Datos: <a href="https://power.larc.nasa.gov/" rel="noopener">NASA POWER</a>, API mensual, modelo MERRA-2, 1981-2025. Cálculo en tu navegador: Theil-Sen e intervalo del 95 % (Sen, 1968) y Mann-Kendall.</p>
+      <sc-pie raiz="../" datos="NASA POWER, 1981-2025" metadatos="datos/metadatos.json">
+        <p>Datos: <a href="https://power.larc.nasa.gov/" rel="noopener">NASA POWER</a>, API mensual, modelo MERRA-2, 1981-2025. El detalle de procedencia describe las copias de respaldo. Cálculo en tu navegador: Theil-Sen e intervalo del 95 % (Sen, 1968) y Mann-Kendall.</p>
       </sc-pie>
     </main>
   </div>
 
-  <script src="../compartido/vendor/maplibre/maplibre-gl.js"></script>
   <script src="js/tendencia.js"></script>
   <script src="js/power.js"></script>
   <script src="js/grafica.js"></script>

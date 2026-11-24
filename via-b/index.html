@@ -15,7 +15,6 @@
   <link rel="stylesheet" href="../compartido/tokens.css">
   <link rel="stylesheet" href="../compartido/componentes.css">
   <link rel="stylesheet" href="estilos.css">
-  <script defer src="../compartido/vendor/maplibre/maplibre-gl.js"></script>
   <script defer src="../compartido/mapa-estilo.js"></script>
   <script defer src="../compartido/componentes.js"></script>
   <script type="module" src="app.js"></script>
@@ -55,8 +54,9 @@
     <div class="espacio">
       <div class="columna">
         <section class="mapa-panel" aria-label="Mapa de sectores">
-          <div id="mapa" class="sc-mapa" aria-label="Sectores y referencias de desierto de Hermosillo sobre la temperatura de la superficie de noche medida por MODIS"></div>
-          <div id="capa-nasa" class="capa-nasa">
+          <div class="mapa-accion"><button id="abrir-mapa" class="sc-boton sc-boton--secundario" type="button" disabled>Abrir mapa</button></div>
+          <div id="mapa" class="sc-mapa" aria-label="Sectores y referencias de desierto de Hermosillo sobre la temperatura de la superficie de noche medida por MODIS" hidden></div>
+          <div id="capa-nasa" class="capa-nasa" hidden>
             <div class="capa-fila">
               <label class="interruptor"><input id="lst-ver" type="checkbox" checked> Temperatura de la superficie de noche</label>
               <div class="sc-campo"><label class="sc-campo__etiqueta" for="lst-anio">Año</label><select id="lst-anio" class="sc-campo__control"></select></div>

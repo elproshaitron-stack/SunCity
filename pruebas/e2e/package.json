@@ -2,9 +2,15 @@
   "name": "suncity-e2e",
   "private": true,
   "scripts": {
-    "flujos": "playwright test"
+    "flujos": "playwright test --project=chromium-* --project=firefox-* --project=webkit-*",
+    "axe": "playwright test --project=axe-*",
+    "visual": "node visual-docker.js",
+    "visual:actualizar": "node visual-docker.js --actualizar",
+    "lighthouse": "lhci autorun --config=lighthouserc.cjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@lhci/cli": "0.16.1",
     "@playwright/test": "1.65.1"
   }
 }

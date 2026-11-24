@@ -83,7 +83,6 @@
       var li = document.createElement("li"), a = document.createElement("a");
       a.href = "#" + h.id; a.textContent = h.textContent; li.appendChild(a); lista.appendChild(li);
     });
-    lista.parentElement.hidden = false;
     // Marca en el índice la sección que se está leyendo: la última cuyo título ya pasó el tercio de la pantalla
     var enlaces = Array.prototype.slice.call(lista.querySelectorAll("a"));
     var pendiente = false;
@@ -100,7 +99,8 @@
     marcar();
   }
 
-  fetch(FUENTE, { cache: "no-cache" })
+  document.getElementById("indice-detalle").open = !matchMedia("(max-width: 900px)").matches;
+  fetch(FUENTE)
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
     .then(function (md) {
       texto.innerHTML = convertir(md);

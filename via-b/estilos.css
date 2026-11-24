@@ -47,6 +47,8 @@ h1 {
 .columna { display: grid; gap: var(--e-6); min-width: 0; }
 
 /* Mapa */
+.mapa-accion { display: flex; justify-content: center; padding: var(--e-4); }
+.mapa-accion[hidden] { display: none; }
 .mapa-panel { border: 1px solid var(--linea); border-radius: var(--r-lg); overflow: hidden; background: var(--superficie); }
 #mapa { height: 52dvh; min-height: 330px; background: var(--superficie-2); }
 #mapa.sin-mapa { display: grid; place-items: center; padding: var(--e-5); text-align: center; color: var(--texto-2); }
@@ -190,3 +192,6 @@ h1 {
   body:not(.ficha-abierta) #expediente { display: none; }
   body:not(.ficha-abierta) .columna { display: block; }
 }
+
+/* La atribución del mapa se distingue también sin color. */
+#mapa .maplibregl-ctrl-attrib a { text-decoration: underline; }

@@ -19,14 +19,29 @@ for (const [motor, dispositivo] of Object.entries(motores)) {
   for (const [ancho, viewport] of Object.entries(anchos)) {
     proyectos.push({
       name: `${motor}-${ancho}`,
+      testMatch: 'flujos.spec.js',
       use: { ...dispositivo, viewport, deviceScaleFactor: 1 },
     });
   }
 }
 
+for (const [ancho, viewport] of Object.entries(anchos)) {
+  proyectos.push({
+    name: `axe-${ancho}`,
+    testMatch: 'accesibilidad.spec.js',
+    use: { ...motores.chromium, viewport, deviceScaleFactor: 1 },
+  });
+}
+
+proyectos.push({
+  name: 'visual',
+  testMatch: 'catalogo-visual.spec.js',
+  use: { ...motores.chromium, viewport: anchos.escritorio, deviceScaleFactor: 1 },
+});
+
 module.exports = defineConfig({
+  snapshotPathTemplate: '{testDir}/capturas/{arg}{ext}',
   testDir: __dirname,
-  testMatch: 'flujos.spec.js',
   outputDir: 'resultados',
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
@@ -47,5 +62,6 @@ module.exports = defineConfig({
     cwd: path.resolve(__dirname, '..', '..'),
     url: baseURL,
     timeout: 20_000,
+    stderr: 'ignore',
   },
 });

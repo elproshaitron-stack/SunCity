@@ -11,6 +11,7 @@
  *   SC.cargando(boton, siONo)             estado cargando de un sc-boton
  *   SC.errorCampo(control, mensaje|null)  muestra o quita el error de un sc-campo
  *   SC.ordenarTabla(tabla)                activa el orden de una sc-tabla (automático con data-sc-ordenable)
+ *   SC.marcosTabla()                      vuelve enfocable cada .sc-tabla-marco que desborda (automático)
  *
  * Y dos elementos propios, en DOM normal para que los estilen tokens y componentes:
  *   <sc-barra raiz="../" actual="via-a" contenido="resultado"><a href="../">SunCity</a></sc-barra>
@@ -309,6 +310,61 @@
     definir("sc-barra", Barra);
 
     class Pie extends HTMLElement {
+      static get observedAttributes() { return ["metadatos", "datos"]; }
+
+      attributeChangedCallback(nombre) {
+        if (nombre === "metadatos" && this.detalleDatos) this.actualizarMetadatos();
+        if (nombre === "datos" && this.versionDatos) this.actualizarVersionDatos();
+      }
+
+      actualizarVersionDatos() {
+        var datos = this.getAttribute("datos");
+        this.versionDatos.hidden = !datos;
+        this.versionDatos.textContent = datos ? "Datos: " + datos : "";
+      }
+
+      actualizarMetadatos() {
+        var detalle = this.detalleDatos;
+        var enlace = detalle.querySelector("a");
+        var lista = detalle.querySelector("ul");
+        var estado = detalle.querySelector("[role='status']");
+        var ruta = this.getAttribute("metadatos");
+        detalle.hidden = !ruta;
+        enlace.href = ruta || "#";
+        lista.replaceChildren();
+        estado.textContent = "";
+        var consultada = false;
+        var cargar = async function () {
+          if (!detalle.open || consultada || !ruta) return;
+          consultada = true;
+          estado.textContent = "Cargando procedencia de los datos.";
+          try {
+            var respuesta = await fetch(enlace.href);
+            if (!respuesta.ok) throw new Error(respuesta.status);
+            var m = await respuesta.json();
+            if (detalle.ontoggle !== cargar) return;
+            var producto = (m.productos || []).map(function (p) { return p.producto; }).join(", ");
+            var version = m.version || {}, fechas = m.fechas || {};
+            [
+              ["Fuente", m.fuente],
+              ["Producto", producto],
+              ["Versión", version.api_power || version.coleccion_modis],
+              ["Fecha", fechas.descarga || fechas.descarga_mas_reciente || fechas.generado],
+              ["Completitud", m.completitud && m.completitud.regla]
+            ].forEach(function (par) {
+              if (par[1]) lista.appendChild(crear("li", null, par[0] + ": " + par[1]));
+            });
+            estado.textContent = "";
+          } catch (error) {
+            if (detalle.ontoggle !== cargar) return;
+            consultada = false;
+            estado.textContent = "No se pudo cargar la procedencia. Cierra y vuelve a abrir para reintentar.";
+          }
+        };
+        detalle.ontoggle = cargar;
+        if (detalle.open) cargar();
+      }
+
       connectedCallback() {
         if (this.dataset.scListo) return;
         this.dataset.scListo = "1";
@@ -326,9 +382,20 @@
         pie.appendChild(linea);
 
         var versiones = crear("p", "sc-pie__versiones");
-        if (this.getAttribute("datos")) versiones.appendChild(crear("span", null, "Datos: " + this.getAttribute("datos")));
+        this.versionDatos = crear("span");
+        versiones.appendChild(this.versionDatos);
+        this.actualizarVersionDatos();
         versiones.appendChild(crear("span", null, "Software: " + (this.getAttribute("software") || SC.VERSION)));
         pie.appendChild(versiones);
+        this.detalleDatos = crear("details");
+        this.detalleDatos.appendChild(crear("summary", null, "Procedencia de los datos"));
+        var estadoDatos = crear("p");
+        estadoDatos.setAttribute("role", "status");
+        this.detalleDatos.appendChild(estadoDatos);
+        this.detalleDatos.appendChild(crear("ul"));
+        this.detalleDatos.appendChild(crear("a", null, "Ver metadatos completos"));
+        pie.appendChild(this.detalleDatos);
+        this.actualizarMetadatos();
         pie.appendChild(crear("p", null, "Proyecto SunCity, NASA Space Apps Challenge 2026, Hermosillo."));
         this.appendChild(pie);
       }
@@ -336,10 +403,61 @@
     definir("sc-pie", Pie);
   }
 
+  /* ── Marco de tabla con desplazamiento ────────────────────────────
+     Una tabla más ancha que su marco solo se puede leer completa desplazándola: el marco recibe
+     el foco (tabindex="0") y un nombre, para moverlo con las flechas sin ratón (WCAG 2.1.1).
+     Se revisa al cargar, al cambiar el ancho y cuando una página agrega tablas después. */
+  SC.marcosTabla = function () {
+    Array.prototype.forEach.call(doc.querySelectorAll(".sc-tabla-marco"), function (m) {
+      var desborda = m.scrollWidth > m.clientWidth + 1;
+      var propio = m.hasAttribute("data-sc-desplazable");
+      if (desborda && !m.hasAttribute("tabindex")) {
+        var titulo = m.querySelector("caption");
+        m.setAttribute("tabindex", "0");
+        m.setAttribute("data-sc-desplazable", "");
+        if (!m.hasAttribute("role")) {
+          m.setAttribute("role", "region");
+          m.setAttribute("data-sc-rol-desplazable", "");
+        }
+        if (!m.hasAttribute("aria-label") && !m.hasAttribute("aria-labelledby")) {
+          m.setAttribute("aria-label", (titulo && titulo.textContent.trim() ? titulo.textContent.trim() + ". " : "") +
+            "Tabla con desplazamiento horizontal");
+          m.setAttribute("data-sc-etiqueta-desplazable", "");
+        }
+      } else if (!desborda && propio) {
+        m.removeAttribute("tabindex");
+        m.removeAttribute("data-sc-desplazable");
+        if (m.hasAttribute("data-sc-rol-desplazable")) {
+          m.removeAttribute("data-sc-rol-desplazable");
+          m.removeAttribute("role");
+        }
+        if (m.hasAttribute("data-sc-etiqueta-desplazable")) {
+          m.removeAttribute("data-sc-etiqueta-desplazable");
+          m.removeAttribute("aria-label");
+        }
+      }
+    });
+  };
+  var turnoMarcos = 0;
+  function revisarMarcos() {
+    if (turnoMarcos) return;
+    turnoMarcos = raiz.requestAnimationFrame(function () { turnoMarcos = 0; SC.marcosTabla(); });
+  }
+
   /* ── Arranque ─────────────────────────────────────────────────── */
 
   function iniciar() {
     Array.prototype.forEach.call(doc.querySelectorAll("table.sc-tabla[data-sc-ordenable]"), SC.ordenarTabla);
+    SC.marcosTabla();
+    raiz.addEventListener("resize", revisarMarcos);
+    if (raiz.MutationObserver) new MutationObserver(function (cambios) {
+      for (var i = 0; i < cambios.length; i++) {
+        var n = cambios[i].addedNodes;
+        for (var j = 0; j < n.length; j++) {
+          if (n[j].nodeType === 1 && (n[j].matches(".sc-tabla-marco") || n[j].querySelector(".sc-tabla-marco"))) { revisarMarcos(); return; }
+        }
+      }
+    }).observe(doc.body, { childList: true, subtree: true });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", iniciar);
   else iniciar();

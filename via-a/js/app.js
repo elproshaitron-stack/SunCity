@@ -429,7 +429,30 @@
 
   /* ---------- Inicio ---------- */
   armarControles();
-  armarMapa();
+  var botonGlobo = $("abrir-globo");
+  botonGlobo.addEventListener("click", async function () {
+    botonGlobo.disabled = true;
+    SC.cargando(botonGlobo, true);
+    try {
+      await MapaEstilo.cargarBiblioteca();
+      var contenedorGlobo = $("mapa");
+      contenedorGlobo.hidden = false;
+      armarMapa();
+      if (globo) {
+        moverMarcador(true);
+        if (matchMedia("(max-width: 900px)").matches) contenedorGlobo.scrollIntoView({ block: "start" });
+        globo.mapa.getCanvas().focus({ preventScroll: true });
+        botonGlobo.hidden = true;
+      } else {
+        mostrarEstado("El globo no está disponible. Puedes elegir una ciudad o escribir las coordenadas.");
+      }
+    } catch (error) {
+      mostrarEstado("No se pudo cargar el globo. Puedes reintentar o elegir un lugar con los otros controles.");
+    } finally {
+      SC.cargando(botonGlobo, false);
+      botonGlobo.disabled = false;
+    }
+  });
   var desdeURL = leerURL();
   sincronizarControles();
   if (desdeURL) fijarLugar(desdeURL, true);

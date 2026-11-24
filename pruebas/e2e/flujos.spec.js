@@ -153,3 +153,18 @@ test.describe('Método y 404', () => {
     await expect(page.getByRole('link', { name: 'Abrir Región' })).toBeVisible();
   });
 });
+
+test('las dos vías muestran la procedencia de sus datos', async ({ page }) => {
+  for (const [ruta, producto, archivo] of [
+    ['/via-a/', 'POWER Monthly and Annual', '/via-a/datos/metadatos.json'],
+    ['/via-b/', 'MYD11A2, MOD11A2', '/via-b/datos/reales/metadatos.json'],
+  ]) {
+    await page.goto(ruta);
+    const pie = page.locator('sc-pie');
+    await pie.getByText('Procedencia de los datos', { exact: true }).click();
+    await expect(pie.getByText(`Producto: ${producto}`, { exact: true })).toBeVisible();
+    await expect(pie.getByText(/Completitud:/)).toBeVisible();
+    const enlace = await pie.getByRole('link', { name: 'Ver metadatos completos' }).getAttribute('href');
+    expect(new URL(enlace, page.url()).pathname).toBe(archivo);
+  }
+});

@@ -159,8 +159,8 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 - [x] **A7 · M** `/metodo/` con método, glosario, fuentes y límites; sale de `docs/` sin duplicar. *Depende:* A6.
 - [x] **A8 · C** `404.html`, ícono del sitio, metadatos para compartir y `manifest.webmanifest`. *Nota:* la Vía B cambia su ícono propio por `compartido/marca/` en B1; la imagen para compartir y el `<base>` de `404.html` necesitan la dirección publicada (C15).
 - [x] **A9 · C** `compartido/mapa-estilo.js`: el estilo del mapa sale de `via-a/js/globo.js` para que la Vía B lo use. *Acepta:* el globo se ve igual.
-- [ ] **C5 · G** Pruebas de punta a punta con Playwright en `pruebas/e2e/`: los flujos de las dos vías en 375, 768 y 1366 px y en tres motores. *Depende:* C4. *Acepta:* corren en la integración continua.
-- [ ] **C6 · M** Capturas de referencia del catálogo; un cambio visual no declarado rompe el PR. *Depende:* A3, C5.
+- [x] **C5 · G** Pruebas de punta a punta con Playwright en `pruebas/e2e/`: los flujos de las dos vías en 375, 768 y 1366 px y en tres motores. *Depende:* C4. *Evidencia:* matriz inicial de 81 casos en la [corrida del PR #43](https://github.com/elproshaitron-stack/SunCity/actions/runs/45490700208).
+- [x] **C6 · M** Capturas de referencia del catálogo; un cambio visual no declarado rompe el PR. *Depende:* A3, C5. El PR #43 compara 40 capturas de referencia en la imagen de Playwright.
 
 ### Fase 3. Pulido de cada vía
 
@@ -186,8 +186,8 @@ Vía B:
 
 ### Fase 4. Calidad
 
-- [ ] **C7 · M** axe en el catálogo y en cada ruta, dentro de las pruebas de punta a punta. *Acepta:* cero infracciones.
-- [ ] **C8 · M** Presupuestos de Lighthouse en la integración continua, con los umbrales de la sección 1.
+- [x] **C7 · M** axe en el catálogo y en cada ruta, dentro de las pruebas de punta a punta. *Evidencia:* 30 escenarios automáticos con cero infracciones. El recorrido con lector de pantalla se registra aparte.
+- [ ] **C8 · M** Presupuestos de Lighthouse en la integración continua, con los umbrales de la sección 1. El PR #43 añade las mediciones y reduce el trabajo inicial. Se marca cuando las cuatro rutas cumplen los presupuestos.
 - [x] **C9 · M** Seguridad: política de seguridad de contenido, el script en línea de `via-a/index.html` pasa a un archivo, y se revisan los nueve usos de `innerHTML`; los que reciben texto de la dirección, de un CSV o de un nombre editable pasan a `textContent`. *Acepta:* una prueba inyecta HTML en un nombre de sector y no se ejecuta.
 - [x] **C10 · M** Sin red: con los dominios externos bloqueados, cada ruta abre, usa los respaldos y lo dice.
 - [x] **A15 · M** Recorrido manual con teclado y lector de pantalla en las cinco rutas; correcciones. *Depende:* A11, B5.
@@ -197,7 +197,7 @@ Vía B:
 ### Fase 5. Datos y publicación
 
 - [x] **C11 · M** `revisar_poligonos.py`: identificadores, tipos, referencias, área mínima y traslapes.
-- [ ] **C12 · M** `metadatos.json` por conjunto de datos: fuente, producto, fecha ISO 8601, versión y completitud. La barra o el pie lo muestran. *Avance:* los tres `metadatos.json` existen (`via-b/datos/reales/`, `via-b/datos/prueba/`, `via-a/datos/`); falta que la interfaz los muestre.
+- [x] **C12 · M** El pie muestra la procedencia, el producto, la fecha, la versión y la regla de completitud de los metadatos disponibles. La Vía A identifica sus copias de respaldo. La Vía B usa los metadatos del conjunto seleccionado.
 - [ ] **C13 · M** Corrida con datos observados y pruebas de aceptación sobre `datos/reales/`. *Depende:* D15 cerrada y la exportación disponible.
 - [x] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13. Calculada sobre el export de GIBS con los polígonos esquemáticos; `procesar.py` la rehace cuando cierre D15.
 - [x] **B11 · C** El aviso de datos de prueba aparece solo con `datos/prueba/`. *Depende:* C13. *Verificado por Claude:* `datosDePrueba` sale de una expresión sobre `RUTA_DATOS`; con `datos/reales/` queda la advertencia de polígonos esquemáticos, no la de prueba.

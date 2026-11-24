@@ -14,6 +14,8 @@ RAIZ = Path(__file__).resolve().parent
 class Servidor(ThreadingHTTPServer):
     # En Windows, SO_REUSEADDR puede permitir dos servidores en el mismo puerto.
     allow_reuse_address = False
+    # Las dos vías cargan varios recursos locales en paralelo.
+    request_queue_size = 64
 
 
 class Manejador(SimpleHTTPRequestHandler):
