@@ -124,7 +124,30 @@
     return estilo;
   }
 
+  var urlBiblioteca = new URL("vendor/maplibre/maplibre-gl.js", document.currentScript.src);
+  var cargaBiblioteca;
+  function cargarBiblioteca() {
+    if (raiz.maplibregl) return Promise.resolve();
+    if (!cargaBiblioteca) {
+      cargaBiblioteca = new Promise(function (resolver, rechazar) {
+        var script = document.createElement("script");
+        script.src = urlBiblioteca.href;
+        script.onload = resolver;
+        script.onerror = function () {
+          script.remove();
+          rechazar(new Error("No se pudo cargar MapLibre"));
+        };
+        document.head.appendChild(script);
+      }).catch(function (error) {
+        cargaBiblioteca = null;
+        throw error;
+      });
+    }
+    return cargaBiblioteca;
+  }
+
   raiz.MapaEstilo = {
+    cargarBiblioteca: cargarBiblioteca,
     base: base,
     insertarAntes: insertarAntes,
     COLOR: COLOR,

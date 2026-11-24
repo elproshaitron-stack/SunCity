@@ -56,6 +56,12 @@ Ejemplo, Hermosillo 1981: `T2M_MIN` de enero = 6.22 °C con `T2M` de enero = 16.
 
 Desde el workspace de Claude la API no es accesible (red restringida); desde un navegador normal sí.
 
+## Respaldo de la Vía B con NASA GIBS (D18)
+
+La exportación vigente decodifica mosaicos de Terra y Aqua con la paleta de GIBS, cuantizada en pasos de 0.6 K. Usa los criterios de cobertura y número de observaciones de D03 y carece del filtro por bits QC descrito abajo y de MOD21. Las geometrías son esquemáticas hasta resolver D15. Consulta los [metadatos y la completitud](../via-b/datos/reales/metadatos.json) y el [origen de la exportación](../via-b/datos/reales/export/origen.json).
+
+POWER aporta series a escala de celda regional. MOD11A2 v6.1 aporta compuestos de ocho días a 1 km. El producto ECOSTRESS L2T de 70 m aporta observaciones instantáneas para el acercamiento, pendiente para Hermosillo en el conjunto vigente. [NASA POWER](https://power.larc.nasa.gov/docs/faqs/data/) · [NASA MOD11A2](https://ladsweb.modaps.eosdis.nasa.gov/missions-and-measurements/products/MOD11A2) · [NASA/JPL ECOSTRESS](https://ecostress.jpl.nasa.gov/data/atbds-summary-table)
+
 ## 4.3 Filtro de calidad de MOD11A2
 
 Se conserva el píxel si:

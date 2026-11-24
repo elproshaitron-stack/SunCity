@@ -75,6 +75,9 @@
       caja.dataset.nombre = par[1];
       var c = t.content.cloneNode(true);
       c.querySelectorAll("[data-codigo-js]").forEach(function (e) { e.remove(); });
+      c.querySelectorAll("nav[aria-label]").forEach(function (nav) {
+        nav.setAttribute("aria-label", nav.getAttribute("aria-label") + " · " + par[1]);
+      });
       caja.appendChild(c);
       sufijar(caja, i ? "-noche" : "");
       // Un diálogo hereda el tema de su caja aunque se muestre en la capa superior

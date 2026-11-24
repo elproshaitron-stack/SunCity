@@ -56,6 +56,8 @@
     };
     if (typeof maplibregl === "undefined" || typeof MapaEstilo === "undefined") return aviso();
 
+    cont.classList.remove("mapa--sin");
+    cont.replaceChildren();
     var quieto = raiz.matchMedia && raiz.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var angosto = raiz.matchMedia && raiz.matchMedia("(max-width: 900px)").matches;
     var mapa;

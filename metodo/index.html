@@ -21,6 +21,9 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Logo de SunCity: un marcador de mapa con el sol, un saguaro y una ciudad al atardecer.">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="../docs/METODO.md" as="fetch" crossorigin>
+  <link rel="preload" href="../compartido/vendor/fuentes/fraunces-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../compartido/vendor/fuentes/hanken-grotesk-400-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../compartido/vendor/fuentes/fuentes.css">
   <link rel="stylesheet" href="../compartido/tokens.css">
   <link rel="stylesheet" href="../compartido/componentes.css">
@@ -35,10 +38,10 @@
     .metodo {
       display: grid; grid-template-columns: 15rem minmax(0, 46rem); gap: var(--e-7);
       width: min(72rem, 100% - 2 * clamp(var(--e-4), 4vw, var(--e-7))); margin: 0 auto;
-      padding: var(--e-7) 0 var(--e-8);
+      padding: var(--e-7) 0 var(--e-8); min-height: 100svh;
     }
     .indice { position: sticky; top: calc(var(--alto-barra) + var(--e-5)); align-self: start; font-size: var(--t-sm); }
-    .indice p { margin: 0 0 var(--e-2); font-size: var(--t-xs); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--texto-2); }
+    .indice summary { margin: 0 0 var(--e-2); font-size: var(--t-xs); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--texto-2); }
     .indice ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
     .indice a { display: block; padding: var(--e-1) var(--e-2); border-left: 2px solid var(--linea); color: var(--texto-2); text-decoration: none; }
     .indice a:hover { color: var(--texto); border-left-color: var(--texto); }
@@ -71,7 +74,7 @@
   <sc-barra raiz="../" actual="metodo" contenido="contenido"><a href="../">SunCity</a></sc-barra>
 
   <div class="metodo">
-    <nav class="indice" aria-labelledby="indice-t" hidden><p id="indice-t">En esta página</p><ol id="indice"></ol></nav>
+    <nav class="indice" aria-labelledby="indice-t"><details id="indice-detalle"><summary id="indice-t">En esta página</summary><ol id="indice"></ol></details></nav>
 
     <main id="contenido" class="doc" tabindex="-1" aria-busy="true">
       <h1>Método</h1>

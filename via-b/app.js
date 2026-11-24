@@ -13,6 +13,12 @@ const $ = id => document.getElementById(id);
 // Los colores salen de compartido/tokens.css (MapLibre y el lienzo necesitan el valor, no var())
 const token = nombre => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
 const base = new URL(RUTA_DATOS, import.meta.url);
+document.querySelector('sc-pie')?.setAttribute('metadatos', new URL('metadatos.json', base).href);
+if (datosDePrueba) {
+  const pie = document.querySelector('sc-pie');
+  pie.setAttribute('datos', 'Datos inventados de prueba');
+  pie.querySelector('p').textContent = 'Datos inventados de prueba. Las series de los sectores son sintéticas.';
+}
 const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fmtC = v => `${v.toFixed(1)} °C`;
 const fmtDif = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)} °C`;
@@ -194,7 +200,7 @@ function montar(datos) {
   const AREA = [caja[0] - .18, caja[1] - .18, caja[2] + .18, caja[3] + .18];
   const esquinasArea = [[AREA[0], AREA[3]], [AREA[2], AREA[3]], [AREA[2], AREA[1]], [AREA[0], AREA[1]]];
   const vacia = Object.assign(document.createElement('canvas'), {width:1, height:1}).toDataURL();
-  try {
+  function crearMapa() {
     if (typeof maplibregl === 'undefined' || typeof MapaEstilo === 'undefined') throw new Error('sin MapLibre');
     const estilo = MapaEstilo.base({proyeccion:'mercator'});
     estilo.sources.lst = {type:'image', url:vacia, coordinates:esquinasArea};
@@ -241,15 +247,11 @@ function montar(datos) {
       mapa.addLayer({id:'sectores-trama', type:'fill', source:'zonas', filter:['all', esSector, ['in', ['get', 'estado'], ['literal', ['sube', 'baja']]]],
         paint:{'fill-pattern':['concat', 'trama-', ['get', 'estado']], 'fill-opacity':.75}}, 'sectores-seleccion');
     });
-  } catch {
-    mapa = null;
-    $('mapa').classList.add('sin-mapa');
-    $('mapa').textContent = 'El mapa no cargó. Usa la tabla "Todos los sectores" o el selector "Explorar un sector" para abrir cada expediente.';
-    $('capa-nasa').hidden = true;
   }
 
   let turnoCapa = 0;
   async function pintarCapa() {
+    if (!mapa) return;
     const turno = ++turnoCapa;
     pintarLeyenda(null);
     try {
@@ -262,7 +264,6 @@ function montar(datos) {
       if (turno === turnoCapa) $('lst-lectura').textContent = 'No se pudo leer la capa de NASA GIBS. Revisa la conexión y vuelve a elegir el periodo.';
     }
   }
-  pintarCapa();
 
   // Lectura del punto bajo el cursor o el dedo
   const sectorDe = f => f?.properties.tipo === 'sector' ? porId(f.properties.id) : null;
@@ -288,7 +289,7 @@ function montar(datos) {
       if (id) mapa.setFeatureState({source:'zonas', id}, {encima:true});
     });
   }
-  if (mapa) {
+  function enlazarMapa() {
     let cuadro = null, ultimo = null;
     mapa.on('mousemove', e => {
       const f = mapa.queryRenderedFeatures(e.point, {layers:['sectores', 'referencias']})[0];
@@ -304,6 +305,36 @@ function montar(datos) {
       if (f) abrir(f.properties.id);
     });
   }
+
+  const botonMapa = $('abrir-mapa');
+  botonMapa.disabled = false;
+  botonMapa.onclick = async () => {
+    botonMapa.disabled = true;
+    SC.cargando(botonMapa, true);
+    const contenedor = $('mapa');
+    try {
+      await MapaEstilo.cargarBiblioteca();
+      contenedor.hidden = false;
+      crearMapa();
+      enlazarMapa();
+      marcarElegido(seleccionado);
+      $('capa-nasa').hidden = false;
+      pintarCapa();
+      mapa.getCanvas().focus({ preventScroll: true });
+      botonMapa.parentElement.hidden = true;
+    } catch {
+      mapa?.remove();
+      mapa = null;
+      mapaListo = false;
+      contenedor.replaceChildren();
+      contenedor.hidden = true;
+      $('capa-nasa').hidden = true;
+      $('estado').textContent = 'El mapa no cargó. Reintenta o abre un expediente con el selector o la tabla.';
+    } finally {
+      SC.cargando(botonMapa, false);
+      botonMapa.disabled = false;
+    }
+  };
 
   function marcarElegido(id) {
     enCuantoCargue(() => sectores.forEach(s => mapa.setFeatureState({source:'zonas', id:s.properties.id}, {elegido:s.properties.id === id})));

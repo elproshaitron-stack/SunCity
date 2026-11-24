@@ -65,7 +65,7 @@ Se cuentan los pares de años en que el valor sube y los pares en que baja. Si h
 
 ### Reglas de cada vía
 
-| | Región | Hermosillo |
+| Aspecto | Región | Hermosillo |
 |---|---|---|
 | Valor p | Mann-Kendall original | El mayor entre Mann-Kendall original y la versión de Hamed-Rao, que corrige la dependencia entre años. Si Hamed-Rao no se puede calcular, se usa el original y el expediente lo dice |
 | Ajuste por probar varias cosas | Ninguno. Tú eliges qué probar, así que el resultado es exploratorio | Benjamini-Hochberg entre sectores (FDR) |

@@ -242,7 +242,7 @@ legend {
   .app { grid-template-columns: minmax(0, 1fr); }
   .escenario { position: relative; height: auto; display: flex; flex-direction: column; }
   .cabecera { position: static; order: -1; padding: var(--e-5) var(--e-4) var(--e-2); background: none; }
-  .mapa { position: relative; inset: auto; height: 56svh; min-height: 320px; }
+  .mapa { position: relative; inset: auto; height: 56svh; min-height: 320px; scroll-margin-top: var(--alto-barra); }
   .donde {
     position: static; width: auto; margin: 0 var(--e-4) var(--e-4);
     -webkit-backdrop-filter: none; backdrop-filter: none;

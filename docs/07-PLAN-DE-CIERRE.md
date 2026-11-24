@@ -159,8 +159,8 @@ Tamaño: **C** medio día, **M** uno o dos días, **G** tres o cuatro días. Una
 - [x] **A7 · M** `/metodo/` con método, glosario, fuentes y límites; sale de `docs/` sin duplicar. *Depende:* A6.
 - [x] **A8 · C** `404.html`, ícono del sitio, metadatos para compartir y `manifest.webmanifest`. *Nota:* la Vía B cambia su ícono propio por `compartido/marca/` en B1; la imagen para compartir y el `<base>` de `404.html` necesitan la dirección publicada (C15).
 - [x] **A9 · C** `compartido/mapa-estilo.js`: el estilo del mapa sale de `via-a/js/globo.js` para que la Vía B lo use. *Acepta:* el globo se ve igual.
-- [ ] **C5 · G** Pruebas de punta a punta con Playwright en `pruebas/e2e/`: los flujos de las dos vías en 375, 768 y 1366 px y en tres motores. *Depende:* C4. *Acepta:* corren en la integración continua.
-- [ ] **C6 · M** Capturas de referencia del catálogo; un cambio visual no declarado rompe el PR. *Depende:* A3, C5.
+- [x] **C5 · G** Pruebas de punta a punta con Playwright en `pruebas/e2e/`: los flujos de las dos vías en 375, 768 y 1366 px y en tres motores. *Depende:* C4. *Evidencia:* matriz inicial de 81 casos en la [corrida del PR #43](https://github.com/elproshaitron-stack/SunCity/actions/runs/45490700208).
+- [x] **C6 · M** Capturas de referencia del catálogo; un cambio visual no declarado rompe el PR. *Depende:* A3, C5. El PR #43 compara 40 capturas de referencia en la imagen de Playwright.
 
 ### Fase 3. Pulido de cada vía
 
@@ -186,8 +186,8 @@ Vía B:
 
 ### Fase 4. Calidad
 
-- [ ] **C7 · M** axe en el catálogo y en cada ruta, dentro de las pruebas de punta a punta. *Acepta:* cero infracciones.
-- [ ] **C8 · M** Presupuestos de Lighthouse en la integración continua, con los umbrales de la sección 1.
+- [x] **C7 · M** axe en el catálogo y en cada ruta, dentro de las pruebas de punta a punta. *Evidencia:* 30 escenarios automáticos con cero infracciones. El recorrido con lector de pantalla se registra aparte.
+- [x] **C8 · M** Presupuestos de Lighthouse en integración continua. Las cuatro rutas pasaron en la [corrida del PR #43](https://github.com/elproshaitron-stack/SunCity/actions/runs/45511732217). Las medianas están en [la auditoría](calidad/condiciones.md).
 - [x] **C9 · M** Seguridad: política de seguridad de contenido, el script en línea de `via-a/index.html` pasa a un archivo, y se revisan los nueve usos de `innerHTML`; los que reciben texto de la dirección, de un CSV o de un nombre editable pasan a `textContent`. *Acepta:* una prueba inyecta HTML en un nombre de sector y no se ejecuta.
 - [x] **C10 · M** Sin red: con los dominios externos bloqueados, cada ruta abre, usa los respaldos y lo dice.
 - [x] **A15 · M** Recorrido manual con teclado y lector de pantalla en las cinco rutas; correcciones. *Depende:* A11, B5.
@@ -197,7 +197,7 @@ Vía B:
 ### Fase 5. Datos y publicación
 
 - [x] **C11 · M** `revisar_poligonos.py`: identificadores, tipos, referencias, área mínima y traslapes.
-- [ ] **C12 · M** `metadatos.json` por conjunto de datos: fuente, producto, fecha ISO 8601, versión y completitud. La barra o el pie lo muestran. *Avance:* los tres `metadatos.json` existen (`via-b/datos/reales/`, `via-b/datos/prueba/`, `via-a/datos/`); falta que la interfaz los muestre.
+- [x] **C12 · M** El pie muestra la procedencia, el producto, la fecha, la versión y la regla de completitud de los metadatos disponibles. La Vía A identifica sus copias de respaldo. La Vía B usa los metadatos del conjunto seleccionado.
 - [ ] **C13 · M** Corrida con datos observados y pruebas de aceptación sobre `datos/reales/`. *Depende:* D15 cerrada y la exportación disponible.
 - [x] **C14 · C** Pendiente mínima detectable por sector en `resumen.json`. *Depende:* C13. Calculada sobre el export de GIBS con los polígonos esquemáticos; `procesar.py` la rehace cuando cierre D15.
 - [x] **B11 · C** El aviso de datos de prueba aparece solo con `datos/prueba/`. *Depende:* C13. *Verificado por Claude:* `datosDePrueba` sale de una expresión sobre `RUTA_DATOS`; con `datos/reales/` queda la advertencia de polígonos esquemáticos, no la de prueba.
@@ -207,7 +207,7 @@ Vía B:
 
 - [ ] **C16 · C** `CHANGELOG.md` y etiqueta `v1.0.0`. *Depende:* todo lo anterior.
 - [x] **A17 · C** Revisión final de documentación: ningún documento contradice al código.
-- [ ] **A18 · C** Las diez condiciones de la sección 1 marcadas, cada una con su evidencia. *Avance:* revisión hecha en `docs/calidad/condiciones.md` (1 cumple, 4 en parte, 5 no); se marca cuando las diez cumplan.
+- [ ] **A18 · C** Las diez condiciones de la sección 1 marcadas, cada una con su evidencia. *Avance:* revisión hecha en `docs/calidad/condiciones.md` con evidencia por condición. Se marca cuando las diez cumplan.
 
 ## 7. Orden y dependencias
 
@@ -226,10 +226,20 @@ flowchart LR
     C5 --> C6
     B4 --> A15[A15 teclado y lector]
     C7 --> A16[A16 evidencia ISO]
+    C8[C8 Lighthouse] --> A16
     A16 --> A18[A18 cierre]
+    D15[D15 geometrías definitivas] --> C13[C13 aceptación observada]
+    C13 --> A18
+    C15[C15 publicación] --> C16[C16 versión]
+    C16 --> A18
 ```
 
-Camino crítico: A1, A2, B1, B4, A15, A16, A18. Mientras A hace los cimientos, C avanza con C1 a C4 y B con B8, que no depende de nadie.
+Al 24 de noviembre de 2026, dos frentes pueden avanzar en paralelo para cerrar A18:
+
+- **Calidad.** El verificador básico pasó en la [corrida del PR #41](https://github.com/elproshaitron-stack/SunCity/actions/runs/45486922614). El [PR #43](https://github.com/elproshaitron-stack/SunCity/pull/43) integra C5–C8 y pasó la [matriz ampliada, el catálogo, axe y Lighthouse](https://github.com/elproshaitron-stack/SunCity/actions/runs/45511732217). Falta registrar el recorrido con lector de pantalla y la revisión en celular real (B10).
+- **Datos.** Navarrete y Mario resuelven D15 y entregan los polígonos y exportaciones. C13 termina cuando pasa la aceptación observada y quedan registradas la procedencia, la completitud y la revisión del procesamiento. C12 pide que la procedencia también sea visible en la interfaz.
+
+Antes de ampliar a otra ciudad, se propone que otra persona reconstruya los resultados de Hermosillo a partir de insumos versionados y compare la pendiente, el intervalo y el estado de cada sector. La siguiente ciudad sería un piloto de portabilidad con cobertura y referencias desérticas revisadas localmente.
 
 Carga por persona: A 18 tareas, B 11, C 16. Si A se atrasa, A5, A8 y A14 pueden pasar a C sin tocar el camino crítico.
 
@@ -241,4 +251,4 @@ Carga por persona: A 18 tareas, B 11, C 16. Si A se atrasa, A5, A8 y A14 pueden 
 | El cambio de mapa en la Vía B rompe algo que ya funciona | Ya ocurrió el cambio (PR #20): Leaflet salió y `aceptacion.py` sigue en 7 PASA. El enlace `?sector=` se rompió y se arregló en el PR #23 |
 | Las pruebas de punta a punta fallan por el mapa | Las pruebas sirven mosaicos locales de `pruebas/e2e/`, no de internet |
 | Servir las fuentes y el mapa desde el sitio lo hace pesado | Fuentes en WOFF2 solo con los pesos usados; el mapa se carga después del primer dibujo |
-| Los datos observados no llegan | La 1.0 se publica con el aviso de datos de prueba visible y la condición 10 abierta; el resto del plan no depende de ella |
+| Los datos observados no llegan | La condición 10 permanece abierta y se pospone la etiqueta 1.0. El equipo puede seguir evaluando la versión 0.9 con los límites de D18 visibles |

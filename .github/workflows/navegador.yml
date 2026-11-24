@@ -1,0 +1,105 @@
+name: Pruebas de navegador
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: navegador-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flujos:
+    name: Playwright (${{ matrix.motor }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        motor: [chromium, firefox, webkit]
+    defaults:
+      run:
+        working-directory: pruebas/e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: pruebas/e2e/package-lock.json
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Instalar navegador
+        run: npx playwright install --with-deps ${{ matrix.motor }}
+      - name: Probar los tres tamaños
+        run: npx playwright test --project='${{ matrix.motor }}-*'
+      - name: Guardar el informe
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-${{ matrix.motor }}
+          path: pruebas/e2e/informe/
+          if-no-files-found: ignore
+
+  catalogo:
+    name: Catálogo y axe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+      options: --ipc=host
+    defaults:
+      run:
+        working-directory: pruebas/e2e
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Comprobar el catálogo y la accesibilidad
+        run: npx playwright test --project=visual --project='axe-*'
+      - name: Guardar el informe
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-catalogo-y-axe
+          path: pruebas/e2e/informe/
+          if-no-files-found: ignore
+
+  lighthouse:
+    name: Lighthouse móvil
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: pruebas/e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: pruebas/e2e/package-lock.json
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Comprobar presupuestos en cuatro rutas
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run lighthouse
+      - name: Guardar el informe
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-lighthouse
+          path: pruebas/e2e/.lighthouseci/
+          include-hidden-files: true
+          if-no-files-found: ignore
