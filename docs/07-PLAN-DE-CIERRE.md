@@ -236,7 +236,7 @@ flowchart LR
 
 Al 24 de noviembre de 2026, dos frentes pueden avanzar en paralelo para cerrar A18:
 
-- **Calidad.** GitHub Actions quedó bloqueado antes de ejecutar el verificador. El titular de la cuenta revisa la facturación o el límite de gasto. El [PR #36](https://github.com/elproshaitron-stack/SunCity/pull/36) contiene trabajo de C5–C8 y tiene conflictos con `main`. Tras resolverlos, hace falta verificar la matriz de navegadores y tamaños, axe y Lighthouse, además de registrar el recorrido con lector de pantalla y la revisión en celular real.
+- **Calidad.** El verificador básico pasó en la [corrida del PR #41](https://github.com/elproshaitron-stack/SunCity/actions/runs/45486922614). El [PR #36](https://github.com/elproshaitron-stack/SunCity/pull/36) contiene trabajo de C5–C8 y tiene conflictos con `main`. Tras resolverlos, hace falta verificar la matriz de navegadores y tamaños, axe y Lighthouse, además de registrar el recorrido con lector de pantalla y la revisión en celular real.
 - **Datos.** Navarrete y Mario resuelven D15 y entregan los polígonos y exportaciones. C13 termina cuando pasa la aceptación observada y quedan registradas la procedencia, la completitud y la revisión del procesamiento. C12 pide que la procedencia también sea visible en la interfaz.
 
 Antes de ampliar a otra ciudad, se propone que otra persona reconstruya los resultados de Hermosillo a partir de insumos versionados y compare la pendiente, el intervalo y el estado de cada sector. La siguiente ciudad sería un piloto de portabilidad con cobertura y referencias desérticas revisadas localmente.

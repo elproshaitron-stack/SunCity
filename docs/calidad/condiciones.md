@@ -2,7 +2,7 @@
 
 Revisión del 24 de noviembre de 2026 sobre `origin/main` (`1a6e815`), versión 0.9.0. De las diez condiciones del [plan de cierre](../07-PLAN-DE-CIERRE.md), 4 se cumplen, 4 se cumplen en parte y 2 siguen pendientes.
 
-`python verificar.py` terminó con **9 PASA, 1 AVISO, 0 FALLA y código 0**. La paridad de tendencia entre Python y JavaScript pasó los 119 casos. Los datos de prueba pasaron 7 de 7 comprobaciones y los observados, 4 de 7. C1 y C2 están en `main` desde el [PR #32](https://github.com/elproshaitron-stack/SunCity/pull/32). La [corrida remota](https://github.com/elproshaitron-stack/SunCity/actions/runs/43758723400) quedó sin iniciar por un problema de facturación o límite de gasto de la cuenta.
+`python verificar.py` terminó con **9 PASA, 1 AVISO, 0 FALLA y código 0**. La paridad de tendencia entre Python y JavaScript pasó los 119 casos. Los datos de prueba pasaron 7 de 7 comprobaciones y los observados, 4 de 7. C1 y C2 están en `main` desde el [PR #32](https://github.com/elproshaitron-stack/SunCity/pull/32). La [corrida remota](https://github.com/elproshaitron-stack/SunCity/actions/runs/43758723400) del 15 de noviembre quedó sin iniciar por un problema de facturación o límite de gasto. El 24 de noviembre, la [corrida del PR #41](https://github.com/elproshaitron-stack/SunCity/actions/runs/45486922614) sí ejecutó el verificador y obtuvo el mismo resumen que la comprobación local.
 
 | # | Condición | Estado | Evidencia hoy | Qué falta y de quién |
 |---|---|---|---|---|
